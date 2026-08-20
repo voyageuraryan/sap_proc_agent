@@ -43,6 +43,18 @@ requires-dist = [{ name = "pydantic" }]
 name = "generator"
 version = "0.1.0"
 source = { editable = "packages/generator" }
+dependencies = [
+    { name = "erp-domain" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "erp-domain", editable = "packages/erp_domain" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
 
 [[package]]
 name = "iniconfig"
@@ -237,9 +249,6 @@ wheels = [
 name = "sap-proc-agent"
 version = "0.1.0"
 source = { virtual = "." }
-dependencies = [
-    { name = "pyyaml" },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -248,7 +257,6 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyyaml", specifier = ">=6.0.3" }]
 
 [package.metadata.requires-dev]
 dev = [
