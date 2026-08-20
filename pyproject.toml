@@ -1,0 +1,35 @@
+[project]
+name = "sap_proc_agent"
+version = "0.1.0"
+description = "SAP procurement exception agent with human-gated writes"
+readme = "README.md"
+authors = [
+    { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+    "packages/mock_erp",
+    "packages/generator",
+    "packages/erp_domain",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "pytest",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages"]

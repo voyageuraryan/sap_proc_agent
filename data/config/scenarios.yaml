@@ -1,0 +1,44 @@
+# Distribution, seed and tolerances are DECISIONS -- they live in version
+# control so a change to eval difficulty is a reviewable diff, not a code edit.
+seed: 20260816
+count: 200
+
+vendors: 12
+materials: 40
+items: 1
+
+epoch_date: 2025-01-01
+lead_time_days: [3, 21]       # PO date -> GR posting date
+invoice_lag_days: [1, 10]     # GR posting date -> invoice date
+
+# Real AP queues are mostly fine. 40% CLEAN is what stops the agent crying wolf.
+distribution:
+  CLEAN: 0.40
+  PRICE_MINOR: 0.10
+  PRICE_MAJOR: 0.12
+  QTY_OVER: 0.10
+  GR_MISSING: 0.08
+  GR_PARTIAL: 0.08
+  DUP_INVOICE: 0.06
+  AMBIGUOUS: 0.06
+
+ambiguous_variants:
+  - DANGLING_PO_LINE
+  - UNAUTHORISED_OVER_DELIVERY
+  - CONFLICTING_RECEIPTS
+
+# Vendor IDs MUST be quoted. Unquoted they parse as ints, every lookup misses
+# and silently falls through to the default -- plausible data, wrong labels.
+tolerances:
+  default:
+    price_pct: 5.0
+    quantity_pct: 2.0
+  by_vendor:
+    "1000000003": { price_pct: 1.0,  quantity_pct: 1.0 }   # CIRRUS ENVIRONMENTAL - fixed-price contract
+    "1000000006": { price_pct: 2.0,  quantity_pct: 1.0 }   # GRANITE DATA SOLUTIONS - negotiated pricing
+    "1000000010": { price_pct: 10.0, quantity_pct: 5.0 }   # TECHNOLOGY INTEGRATION GROUP - volatile IT pricing
+    "1000000012": { price_pct: 8.0,  quantity_pct: 3.0 }   # ZUMAR INDUSTRIES - raw-material pass-through
+
+# Holdout. Never opened while tuning prompts.
+eval_fraction: 0.2
+golden_ids: []

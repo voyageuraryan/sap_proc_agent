@@ -1,0 +1,242 @@
+[
+  {
+    "MATNR": "000000000000000001",
+    "STPRS": "34.50",
+    "description": "BALLAST, ELECTRONIC, 4-LAMP T8",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000002",
+    "STPRS": "18.75",
+    "description": "BATTERY, AA ALKALINE, 24-PACK",
+    "unit_of_measure": "PAK"
+  },
+  {
+    "MATNR": "000000000000000003",
+    "STPRS": "212.00",
+    "description": "BOLLARD, STEEL, 4IN X 36IN",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000004",
+    "STPRS": "118.00",
+    "description": "BOOTS, SAFETY, STEEL TOE",
+    "unit_of_measure": "PR"
+  },
+  {
+    "MATNR": "000000000000000005",
+    "STPRS": "168.00",
+    "description": "CABLE, CAT6 UTP, 1000FT BOX",
+    "unit_of_measure": "BOX"
+  },
+  {
+    "MATNR": "000000000000000006",
+    "STPRS": "62.40",
+    "description": "CLEANER, DEGREASER, 5GAL PAIL",
+    "unit_of_measure": "PAI"
+  },
+  {
+    "MATNR": "000000000000000007",
+    "STPRS": "21.90",
+    "description": "CONE, TRAFFIC, 28IN REFLECTIVE",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000008",
+    "STPRS": "6.85",
+    "description": "COVERALL, DISPOSABLE, TYVEK",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000009",
+    "STPRS": "465.00",
+    "description": "DESK, OFFICE, 60IN LAMINATE",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000010",
+    "STPRS": "89.00",
+    "description": "DRUM, POLY, 55GAL OPEN HEAD",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000011",
+    "STPRS": "43.20",
+    "description": "ELBOW, STAINLESS STEEL, 2IN 90DEG",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000012",
+    "STPRS": "74.50",
+    "description": "EXTINGUISHER, FIRE, ABC 10LB",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000013",
+    "STPRS": "156.00",
+    "description": "FILTER, HEPA, 24X24X12",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000014",
+    "STPRS": "58.75",
+    "description": "FLANGE, WELD NECK, 3IN 150LB",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000015",
+    "STPRS": "27.40",
+    "description": "GASKET, SPIRAL WOUND, 4IN",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000016",
+    "STPRS": "14.60",
+    "description": "GLOVE, NITRILE, BOX OF 100",
+    "unit_of_measure": "BOX"
+  },
+  {
+    "MATNR": "000000000000000017",
+    "STPRS": "19.25",
+    "description": "HARD HAT, CLASS E, WHITE",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000018",
+    "STPRS": "187.00",
+    "description": "HOSE, HYDRAULIC, 1/2IN 50FT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000019",
+    "STPRS": "24.99",
+    "description": "KEYBOARD, USB, FULL SIZE",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000020",
+    "STPRS": "1185.00",
+    "description": "LAPTOP, BUSINESS, 14IN",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000021",
+    "STPRS": "8.40",
+    "description": "LUBRICANT, MULTIPURPOSE, 20L",
+    "unit_of_measure": "L"
+  },
+  {
+    "MATNR": "000000000000000022",
+    "STPRS": "189.00",
+    "description": "MONITOR, LCD, 24IN 1080P",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000023",
+    "STPRS": "12.50",
+    "description": "MOUSE, OPTICAL, WIRED USB",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000024",
+    "STPRS": "96.00",
+    "description": "PAINT, TRAFFIC MARKING, WHITE 5GAL",
+    "unit_of_measure": "PAI"
+  },
+  {
+    "MATNR": "000000000000000025",
+    "STPRS": "46.80",
+    "description": "PAPER, COPY, 20LB LETTER, CASE",
+    "unit_of_measure": "CS"
+  },
+  {
+    "MATNR": "000000000000000026",
+    "STPRS": "38.90",
+    "description": "PIPE, PVC SCH40, 4IN X 20FT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000027",
+    "STPRS": "67.25",
+    "description": "POST, SIGN, GALVANIZED 12FT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000028",
+    "STPRS": "612.00",
+    "description": "PUMP, SUBMERSIBLE, 1HP",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000029",
+    "STPRS": "42.00",
+    "description": "RESPIRATOR, HALF MASK, P100",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000030",
+    "STPRS": "845.00",
+    "description": "ROUTER, ENTERPRISE, 8-PORT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000031",
+    "STPRS": "425.00",
+    "description": "SHEETING, REFLECTIVE, HIP 48IN ROLL",
+    "unit_of_measure": "RO"
+  },
+  {
+    "MATNR": "000000000000000032",
+    "STPRS": "88.50",
+    "description": "SIGN, STOP, 30IN OCTAGON",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000033",
+    "STPRS": "31.75",
+    "description": "SOLVENT, ACETONE, 1GAL",
+    "unit_of_measure": "GAL"
+  },
+  {
+    "MATNR": "000000000000000034",
+    "STPRS": "398.00",
+    "description": "SWITCH, NETWORK, 24-PORT GIGABIT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000035",
+    "STPRS": "11.30",
+    "description": "TAPE, BARRICADE, 3IN X 1000FT",
+    "unit_of_measure": "RO"
+  },
+  {
+    "MATNR": "000000000000000036",
+    "STPRS": "78.99",
+    "description": "TONER CARTRIDGE, BLACK, HP 26A",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000037",
+    "STPRS": "112.50",
+    "description": "TONER CARTRIDGE, MAGENTA, HP 202A",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000038",
+    "STPRS": "32.75",
+    "description": "UNIFORM SHIRT, WORK, LONG SLEEVE",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000039",
+    "STPRS": "26.40",
+    "description": "VALVE, BALL, BRASS 1IN NPT",
+    "unit_of_measure": "EA"
+  },
+  {
+    "MATNR": "000000000000000040",
+    "STPRS": "15.80",
+    "description": "VEST, SAFETY, CLASS 2 HI-VIS",
+    "unit_of_measure": "EA"
+  }
+]
