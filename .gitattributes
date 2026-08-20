@@ -1,0 +1,26 @@
+# Line endings: normalise on commit, check out LF everywhere.
+#
+# The generator writes LF explicitly (newline="\n" in cli.py). Git for Windows
+# ships with core.autocrlf=true in its system config, which would check the
+# committed data back out as CRLF -- so `uv run generator` would immediately
+# rewrite all seven JSON files and `git diff data/` would report changes on
+# every single run. That destroys the property the whole eval system rests on:
+# a clean clone regenerates byte-identical data.
+#
+# Fixed here rather than via `git config core.autocrlf false` because this file
+# travels with the clone. CI, a second laptop and any future contributor all
+# get identical bytes; a machine-level setting is invisible to all of them.
+# Same argument as committing uv.lock.
+* text=auto eol=lf
+
+# Binaries must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
+*.zip binary
+*.db binary
+*.sqlite3 binary
