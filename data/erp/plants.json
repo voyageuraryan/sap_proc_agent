@@ -1,0 +1,18 @@
+[
+  {
+    "WERKS": "1000",
+    "name": "SACRAMENTO DISTRIBUTION CENTER"
+  },
+  {
+    "WERKS": "1100",
+    "name": "FRESNO MAINTENANCE YARD"
+  },
+  {
+    "WERKS": "2000",
+    "name": "LOS ANGELES WAREHOUSE"
+  },
+  {
+    "WERKS": "2100",
+    "name": "OAKLAND FLEET DEPOT"
+  }
+]

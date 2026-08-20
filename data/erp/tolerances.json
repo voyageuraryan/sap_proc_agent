@@ -1,0 +1,24 @@
+{
+  "by_vendor": {
+    "1000000003": {
+      "price_pct": "1.0",
+      "quantity_pct": "1.0"
+    },
+    "1000000006": {
+      "price_pct": "2.0",
+      "quantity_pct": "1.0"
+    },
+    "1000000010": {
+      "price_pct": "10.0",
+      "quantity_pct": "5.0"
+    },
+    "1000000012": {
+      "price_pct": "8.0",
+      "quantity_pct": "3.0"
+    }
+  },
+  "default": {
+    "price_pct": "5.0",
+    "quantity_pct": "2.0"
+  }
+}

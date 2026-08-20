@@ -1,0 +1,3394 @@
+[
+  {
+    "BELNR": "5100000101",
+    "BLDAT": "2025-02-25",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00001",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000001",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "34.84"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000201",
+    "BLDAT": "2025-11-18",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00002",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000002",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "151.02"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000301",
+    "BLDAT": "2025-02-09",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00003",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000003",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "20.02"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000401",
+    "BLDAT": "2025-03-22",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00004",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000004",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "20.80"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000501",
+    "BLDAT": "2025-09-15",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00005",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000005",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "913.53"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000601",
+    "BLDAT": "2025-09-20",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00006",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000006",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "12.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000602",
+    "BLDAT": "2025-09-24",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00006",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000006",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "12.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000701",
+    "BLDAT": "2025-12-23",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00007",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000007",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "409.94"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000801",
+    "BLDAT": "2025-02-11",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00008",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000008",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "22.34"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100000901",
+    "BLDAT": "2025-03-25",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00009",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000009",
+        "EBELP": "00010",
+        "MENGE": "14.000",
+        "NETPR": "41.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001001",
+    "BLDAT": "2025-09-08",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00010",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000010",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "408.00"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001101",
+    "BLDAT": "2025-06-10",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00011",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000011",
+        "EBELP": "00010",
+        "MENGE": "8.000",
+        "NETPR": "446.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001201",
+    "BLDAT": "2025-02-01",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00012",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000012",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "14.45"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001301",
+    "BLDAT": "2025-12-25",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00013",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000013",
+        "EBELP": "00010",
+        "MENGE": "2.000",
+        "NETPR": "67.51"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001401",
+    "BLDAT": "2025-05-01",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00014",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000014",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "63.02"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001501",
+    "BLDAT": "2025-03-11",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00015",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000015",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "44.93"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001502",
+    "BLDAT": "2025-03-29",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00015",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000015",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "44.93"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001601",
+    "BLDAT": "2025-06-27",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00016",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000016",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "190.89"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001701",
+    "BLDAT": "2025-03-24",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00017",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000017",
+        "EBELP": "00030",
+        "MENGE": "12.000",
+        "NETPR": "91.20"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001801",
+    "BLDAT": "2025-02-04",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00018",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000018",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "61.10"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100001901",
+    "BLDAT": "2025-02-07",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00019",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000019",
+        "EBELP": "00010",
+        "MENGE": "26.000",
+        "NETPR": "164.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002001",
+    "BLDAT": "2025-07-01",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00020",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000020",
+        "EBELP": "00010",
+        "MENGE": "8.000",
+        "NETPR": "403.75"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002101",
+    "BLDAT": "2025-05-16",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00021",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000021",
+        "EBELP": "00010",
+        "MENGE": "29.000",
+        "NETPR": "181.23"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002201",
+    "BLDAT": "2025-11-12",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00022",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000022",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "201.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002301",
+    "BLDAT": "2026-01-22",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00023",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000023",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "185.22"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002302",
+    "BLDAT": "2026-01-30",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00023",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000023",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "185.22"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002401",
+    "BLDAT": "2025-09-27",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00024",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000024",
+        "EBELP": "00010",
+        "MENGE": "8.000",
+        "NETPR": "157.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002501",
+    "BLDAT": "2025-04-18",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00025",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000025",
+        "EBELP": "00010",
+        "MENGE": "32.000",
+        "NETPR": "17.81"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002601",
+    "BLDAT": "2025-03-28",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00026",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000026",
+        "EBELP": "00010",
+        "MENGE": "2.000",
+        "NETPR": "96.59"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002701",
+    "BLDAT": "2025-11-08",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00027",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000027",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "198.45"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002801",
+    "BLDAT": "2025-07-21",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00028",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000028",
+        "EBELP": "00010",
+        "MENGE": "36.000",
+        "NETPR": "44.93"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100002901",
+    "BLDAT": "2025-10-21",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00029",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000029",
+        "EBELP": "00010",
+        "MENGE": "2.000",
+        "NETPR": "416.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003001",
+    "BLDAT": "2025-03-17",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00030",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000030",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "62.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003101",
+    "BLDAT": "2025-08-02",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00031",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000031",
+        "EBELP": "00010",
+        "MENGE": "14.000",
+        "NETPR": "14.89"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003201",
+    "BLDAT": "2025-07-20",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00032",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000032",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "11.30"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003301",
+    "BLDAT": "2025-07-17",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00033",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000033",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "82.15"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003401",
+    "BLDAT": "2025-12-22",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00034",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000034",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "60.53"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003501",
+    "BLDAT": "2025-02-09",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00035",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000035",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "18.19"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003502",
+    "BLDAT": "2025-02-15",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00035",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000035",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "18.19"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003601",
+    "BLDAT": "2025-09-15",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00036",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000036",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "176.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003701",
+    "BLDAT": "2025-02-03",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00037",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000037",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "114.08"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003801",
+    "BLDAT": "2025-03-19",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00038",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000038",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "31.43"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100003901",
+    "BLDAT": "2025-11-20",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00039",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000039",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "92.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004001",
+    "BLDAT": "2025-06-04",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00040",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000040",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "437.75"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004101",
+    "BLDAT": "2025-12-15",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00041",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000041",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "68.30"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004201",
+    "BLDAT": "2025-04-12",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00042",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000042",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "44.46"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004301",
+    "BLDAT": "2025-01-19",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00043",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000043",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "40.32"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004401",
+    "BLDAT": "2025-08-17",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00044",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000044",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "15.17"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004501",
+    "BLDAT": "2025-04-01",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00045",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000045",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "96.96"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004502",
+    "BLDAT": "2025-04-09",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00045",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000045",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "96.96"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004601",
+    "BLDAT": "2025-03-26",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00046",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000046",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "18.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004701",
+    "BLDAT": "2025-03-24",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00047",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000047",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "64.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004801",
+    "BLDAT": "2025-10-04",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00048",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000048",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "73.01"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100004901",
+    "BLDAT": "2025-04-30",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00049",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000049",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "85.81"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005001",
+    "BLDAT": "2025-03-20",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00050",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000050",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "67.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005101",
+    "BLDAT": "2025-08-02",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00051",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000051",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "39.29"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005201",
+    "BLDAT": "2025-05-08",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00052",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000052",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "15.96"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005202",
+    "BLDAT": "2025-05-15",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00052",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000052",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "15.96"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005301",
+    "BLDAT": "2025-09-19",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00053",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000053",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "478.95"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005401",
+    "BLDAT": "2025-02-25",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00054",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000054",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "394.02"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005501",
+    "BLDAT": "2025-09-23",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00055",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000055",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "19.06"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005601",
+    "BLDAT": "2025-07-17",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00056",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000056",
+        "EBELP": "00010",
+        "MENGE": "14.000",
+        "NETPR": "474.30"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005701",
+    "BLDAT": "2025-04-15",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00057",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000057",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "60.51"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005801",
+    "BLDAT": "2025-02-15",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00058",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000058",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "35.54"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100005901",
+    "BLDAT": "2026-01-22",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00059",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000059",
+        "EBELP": "00010",
+        "MENGE": "13.000",
+        "NETPR": "34.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006001",
+    "BLDAT": "2025-05-14",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00060",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000060",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "12.12"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006101",
+    "BLDAT": "2025-07-26",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00061",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000061",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "390.04"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006201",
+    "BLDAT": "2025-07-23",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00062",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000062",
+        "EBELP": "00010",
+        "MENGE": "13.000",
+        "NETPR": "92.16"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006301",
+    "BLDAT": "2025-02-06",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00063",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000063",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "15.11"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006401",
+    "BLDAT": "2025-11-15",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00064",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000064",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "32.10"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006501",
+    "BLDAT": "2025-05-13",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00065",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000065",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "63.70"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006601",
+    "BLDAT": "2025-03-15",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00066",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000066",
+        "EBELP": "00010",
+        "MENGE": "25.000",
+        "NETPR": "75.83"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006701",
+    "BLDAT": "2025-09-08",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00067",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000067",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "6.99"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006801",
+    "BLDAT": "2025-08-26",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00068",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000068",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "34.65"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100006901",
+    "BLDAT": "2025-10-15",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00069",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000069",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "90.78"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007001",
+    "BLDAT": "2025-11-23",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00070",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000070",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "605.88"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007101",
+    "BLDAT": "2025-10-08",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00071",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000071",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "46.30"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007201",
+    "BLDAT": "2025-01-28",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00072",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000072",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "6.51"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007301",
+    "BLDAT": "2025-06-21",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00073",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000073",
+        "EBELP": "00010",
+        "MENGE": "26.000",
+        "NETPR": "13.87"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007401",
+    "BLDAT": "2025-09-21",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00074",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000074",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "179.52"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007501",
+    "BLDAT": "2025-06-11",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00075",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000075",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "41.43"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007601",
+    "BLDAT": "2025-11-15",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00076",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000076",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "98.88"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007701",
+    "BLDAT": "2025-02-16",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00077",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000077",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "417.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007801",
+    "BLDAT": "2025-09-12",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00078",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000078",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "1149.45"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100007901",
+    "BLDAT": "2025-01-23",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00079",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000079",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "433.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008001",
+    "BLDAT": "2025-11-19",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00080",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000080",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "65.11"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008101",
+    "BLDAT": "2025-08-04",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00081",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000081",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "41.91"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008201",
+    "BLDAT": "2025-04-14",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00082",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000082",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "212.00"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008301",
+    "BLDAT": "2025-12-02",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00083",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000083",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "20.46"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008401",
+    "BLDAT": "2025-04-26",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00084",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000084",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "11.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008501",
+    "BLDAT": "2025-05-26",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00085",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000085",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "61.87"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008601",
+    "BLDAT": "2025-03-25",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00086",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000086",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "73.42"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008701",
+    "BLDAT": "2025-03-14",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00087",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000087",
+        "EBELP": "00010",
+        "MENGE": "109.000",
+        "NETPR": "8.32"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008801",
+    "BLDAT": "2025-07-07",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00088",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000088",
+        "EBELP": "00010",
+        "MENGE": "13.000",
+        "NETPR": "118.12"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100008901",
+    "BLDAT": "2025-09-25",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00089",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000089",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "34.39"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009001",
+    "BLDAT": "2026-01-19",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00090",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000090",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "30.48"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009101",
+    "BLDAT": "2025-06-29",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00091",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000091",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "14.75"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009201",
+    "BLDAT": "2025-04-16",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00092",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000092",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "887.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009301",
+    "BLDAT": "2025-06-07",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00093",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000093",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "35.88"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009401",
+    "BLDAT": "2025-10-23",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00094",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000094",
+        "EBELP": "00010",
+        "MENGE": "2.000",
+        "NETPR": "636.48"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009501",
+    "BLDAT": "2025-08-04",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00095",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000095",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "11.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009502",
+    "BLDAT": "2025-08-18",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00095",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000095",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "11.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009601",
+    "BLDAT": "2025-02-27",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00096",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000096",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "63.02"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009701",
+    "BLDAT": "2025-05-21",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00097",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000097",
+        "EBELP": "00010",
+        "MENGE": "34.000",
+        "NETPR": "32.07"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009801",
+    "BLDAT": "2025-06-23",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00098",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000098",
+        "EBELP": "00010",
+        "MENGE": "9.000",
+        "NETPR": "502.52"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100009901",
+    "BLDAT": "2025-04-26",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00099",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000099",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "45.33"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010001",
+    "BLDAT": "2025-11-27",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00100",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000100",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "183.26"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010101",
+    "BLDAT": "2025-09-15",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00101",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000101",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "179.55"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010102",
+    "BLDAT": "2025-10-05",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00101",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000101",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "179.55"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010201",
+    "BLDAT": "2025-11-22",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00102",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000102",
+        "EBELP": "00010",
+        "MENGE": "39.000",
+        "NETPR": "20.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010301",
+    "BLDAT": "2025-09-28",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00103",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000103",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "169.68"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010401",
+    "BLDAT": "2025-03-08",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00104",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000104",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "581.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010501",
+    "BLDAT": "2025-08-24",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00105",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000105",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "30.16"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010601",
+    "BLDAT": "2025-03-31",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00106",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000106",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "59.28"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010701",
+    "BLDAT": "2025-02-04",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00107",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000107",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "21.46"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010702",
+    "BLDAT": "2025-02-21",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00107",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000107",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "21.46"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010801",
+    "BLDAT": "2025-07-29",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00108",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000108",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "62.05"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100010901",
+    "BLDAT": "2025-05-18",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00109",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000109",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "111.38"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011001",
+    "BLDAT": "2025-10-14",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00110",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000110",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "207.76"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011002",
+    "BLDAT": "2025-10-31",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00110",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000110",
+        "EBELP": "00010",
+        "MENGE": "20.000",
+        "NETPR": "207.76"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011101",
+    "BLDAT": "2025-04-01",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00111",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000111",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "12.50"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011201",
+    "BLDAT": "2025-08-31",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00112",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000112",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "43.20"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011301",
+    "BLDAT": "2025-09-12",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00113",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000113",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "18.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011401",
+    "BLDAT": "2025-03-18",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00114",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000114",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "44.93"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011501",
+    "BLDAT": "2025-08-29",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00115",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000115",
+        "EBELP": "00010",
+        "MENGE": "25.000",
+        "NETPR": "31.35"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011601",
+    "BLDAT": "2025-10-12",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00116",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000116",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "29.18"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011701",
+    "BLDAT": "2025-11-06",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00117",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000117",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "94.12"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011801",
+    "BLDAT": "2025-05-27",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00118",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000118",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "18.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100011901",
+    "BLDAT": "2025-12-04",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00119",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000119",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "6.85"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012001",
+    "BLDAT": "2025-10-09",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00120",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000120",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "16.27"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012101",
+    "BLDAT": "2025-12-23",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00121",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000121",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "403.75"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012201",
+    "BLDAT": "2025-05-22",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00122",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000122",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "190.95"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012301",
+    "BLDAT": "2025-05-12",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00123",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000123",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "159.12"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012401",
+    "BLDAT": "2025-10-02",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00124",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000124",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "23.99"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012402",
+    "BLDAT": "2025-10-03",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00124",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000124",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "23.99"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012501",
+    "BLDAT": "2025-12-15",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00125",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000125",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "64.56"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012601",
+    "BLDAT": "2025-05-09",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00126",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000126",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "483.60"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012701",
+    "BLDAT": "2025-01-25",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00127",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000127",
+        "EBELP": "00010",
+        "MENGE": "31.000",
+        "NETPR": "30.72"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012801",
+    "BLDAT": "2025-02-20",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00128",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000128",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "1173.15"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100012901",
+    "BLDAT": "2025-07-09",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00129",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000129",
+        "EBELP": "00030",
+        "MENGE": "16.000",
+        "NETPR": "15.01"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013001",
+    "BLDAT": "2025-10-14",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00130",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000130",
+        "EBELP": "00010",
+        "MENGE": "14.000",
+        "NETPR": "15.04"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013101",
+    "BLDAT": "2025-03-17",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00131",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000131",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "26.93"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013201",
+    "BLDAT": "2025-03-06",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00132",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000132",
+        "EBELP": "00010",
+        "MENGE": "25.000",
+        "NETPR": "40.84"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013301",
+    "BLDAT": "2025-11-03",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00133",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000133",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "41.05"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013401",
+    "BLDAT": "2025-06-19",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00134",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000134",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "19.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013501",
+    "BLDAT": "2025-05-11",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00135",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000135",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "93.12"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013601",
+    "BLDAT": "2025-05-24",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00136",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000136",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "192.78"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013701",
+    "BLDAT": "2025-12-09",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00137",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000137",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "36.22"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013801",
+    "BLDAT": "2025-06-19",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00138",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000138",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "64.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100013901",
+    "BLDAT": "2025-09-27",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00139",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000139",
+        "EBELP": "00010",
+        "MENGE": "16.000",
+        "NETPR": "7.19"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014001",
+    "BLDAT": "2025-02-08",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00140",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000140",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "19.69"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014101",
+    "BLDAT": "2025-12-08",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00141",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000141",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "413.92"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014201",
+    "BLDAT": "2025-07-10",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00142",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000142",
+        "EBELP": "00010",
+        "MENGE": "8.000",
+        "NETPR": "50.97"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014301",
+    "BLDAT": "2025-02-09",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00143",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000143",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "38.51"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014401",
+    "BLDAT": "2025-02-25",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00144",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000144",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "47.74"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014501",
+    "BLDAT": "2025-03-29",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00145",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000145",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "19.83"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014601",
+    "BLDAT": "2025-12-04",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00146",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000146",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "27.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014701",
+    "BLDAT": "2025-02-02",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00147",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000147",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "65.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014801",
+    "BLDAT": "2025-10-25",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00148",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000148",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "605.88"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100014901",
+    "BLDAT": "2025-07-04",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00149",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000149",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "90.27"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015001",
+    "BLDAT": "2025-11-28",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00150",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000150",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "73.05"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015101",
+    "BLDAT": "2025-03-23",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00151",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000151",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "39.29"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015201",
+    "BLDAT": "2025-11-13",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00152",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000152",
+        "EBELP": "00030",
+        "MENGE": "5.000",
+        "NETPR": "61.78"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015301",
+    "BLDAT": "2025-04-02",
+    "LIFNR": "1000000004",
+    "XBLNR": "INV-00153",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000153",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "108.74"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015401",
+    "BLDAT": "2025-09-27",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00154",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000154",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "456.59"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015501",
+    "BLDAT": "2025-02-13",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00155",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000155",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "31.77"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015601",
+    "BLDAT": "2025-10-07",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00156",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000156",
+        "EBELP": "00010",
+        "MENGE": "6.000",
+        "NETPR": "107.88"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015701",
+    "BLDAT": "2025-02-26",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00157",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000157",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "59.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015801",
+    "BLDAT": "2025-10-08",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00158",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000158",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "12.91"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100015901",
+    "BLDAT": "2025-09-16",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00159",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000159",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "96.00"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016001",
+    "BLDAT": "2025-07-05",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00160",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000160",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "11.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016101",
+    "BLDAT": "2025-11-09",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00161",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000161",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "199.10"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016201",
+    "BLDAT": "2025-08-08",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00162",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000162",
+        "EBELP": "00010",
+        "MENGE": "17.000",
+        "NETPR": "483.60"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016301",
+    "BLDAT": "2025-02-08",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00163",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000163",
+        "EBELP": "00010",
+        "MENGE": "12.000",
+        "NETPR": "1196.85"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016401",
+    "BLDAT": "2025-06-06",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00164",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000164",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "67.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016501",
+    "BLDAT": "2025-06-02",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00165",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000165",
+        "EBELP": "00010",
+        "MENGE": "23.000",
+        "NETPR": "208.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016601",
+    "BLDAT": "2025-04-05",
+    "LIFNR": "1000000012",
+    "XBLNR": "INV-00166",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000166",
+        "EBELP": "00010",
+        "MENGE": "25.000",
+        "NETPR": "707.24"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016701",
+    "BLDAT": "2025-02-01",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00167",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000167",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "7.19"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016801",
+    "BLDAT": "2025-12-07",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00168",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000168",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "123.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100016901",
+    "BLDAT": "2025-09-25",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00169",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000169",
+        "EBELP": "00010",
+        "MENGE": "22.000",
+        "NETPR": "593.64"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017001",
+    "BLDAT": "2025-11-24",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00170",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000170",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "1220.55"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017101",
+    "BLDAT": "2025-04-25",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00171",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000171",
+        "EBELP": "00010",
+        "MENGE": "95.000",
+        "NETPR": "8.65"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017201",
+    "BLDAT": "2025-09-16",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00172",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000172",
+        "EBELP": "00010",
+        "MENGE": "24.000",
+        "NETPR": "31.44"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017301",
+    "BLDAT": "2025-04-23",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00173",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000173",
+        "EBELP": "00010",
+        "MENGE": "108.000",
+        "NETPR": "8.32"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017401",
+    "BLDAT": "2025-09-02",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00174",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000174",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "1257.78"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017501",
+    "BLDAT": "2025-08-23",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00175",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000175",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "218.00"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017601",
+    "BLDAT": "2025-09-28",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00176",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000176",
+        "EBELP": "00010",
+        "MENGE": "23.000",
+        "NETPR": "190.81"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017701",
+    "BLDAT": "2025-11-15",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00177",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000177",
+        "EBELP": "00010",
+        "MENGE": "2.000",
+        "NETPR": "33.40"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017801",
+    "BLDAT": "2025-04-20",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00178",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000178",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "161.28"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100017901",
+    "BLDAT": "2025-10-08",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00179",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000179",
+        "EBELP": "00010",
+        "MENGE": "19.000",
+        "NETPR": "22.78"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018001",
+    "BLDAT": "2025-03-31",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00180",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000180",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "84.08"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018101",
+    "BLDAT": "2025-12-05",
+    "LIFNR": "1000000011",
+    "XBLNR": "INV-00181",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000181",
+        "EBELP": "00010",
+        "MENGE": "10.000",
+        "NETPR": "179.55"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018201",
+    "BLDAT": "2025-04-18",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00182",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000182",
+        "EBELP": "00010",
+        "MENGE": "18.000",
+        "NETPR": "118.86"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018301",
+    "BLDAT": "2025-10-02",
+    "LIFNR": "1000000010",
+    "XBLNR": "INV-00183",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000183",
+        "EBELP": "00010",
+        "MENGE": "23.000",
+        "NETPR": "57.58"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018401",
+    "BLDAT": "2025-11-13",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00184",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000184",
+        "EBELP": "00010",
+        "MENGE": "13.000",
+        "NETPR": "85.84"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018501",
+    "BLDAT": "2025-06-21",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00185",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000185",
+        "EBELP": "00010",
+        "MENGE": "11.000",
+        "NETPR": "10.96"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018601",
+    "BLDAT": "2025-11-23",
+    "LIFNR": "1000000007",
+    "XBLNR": "INV-00186",
+    "block_reason": "PRICE_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000186",
+        "EBELP": "00010",
+        "MENGE": "25.000",
+        "NETPR": "78.19"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018701",
+    "BLDAT": "2025-07-17",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00187",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000187",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "121.54"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018801",
+    "BLDAT": "2025-06-24",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00188",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000188",
+        "EBELP": "00010",
+        "MENGE": "23.000",
+        "NETPR": "42.00"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100018901",
+    "BLDAT": "2025-05-30",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00189",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000189",
+        "EBELP": "00010",
+        "MENGE": "21.000",
+        "NETPR": "220.48"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019001",
+    "BLDAT": "2025-10-15",
+    "LIFNR": "1000000003",
+    "XBLNR": "INV-00190",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000190",
+        "EBELP": "00030",
+        "MENGE": "13.000",
+        "NETPR": "386.06"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019101",
+    "BLDAT": "2025-10-07",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00191",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000191",
+        "EBELP": "00010",
+        "MENGE": "1.000",
+        "NETPR": "642.60"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019201",
+    "BLDAT": "2025-04-22",
+    "LIFNR": "1000000002",
+    "XBLNR": "INV-00192",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000192",
+        "EBELP": "00010",
+        "MENGE": "3.000",
+        "NETPR": "446.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019301",
+    "BLDAT": "2025-12-24",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00193",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000193",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "417.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019302",
+    "BLDAT": "2025-12-26",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00193",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000193",
+        "EBELP": "00010",
+        "MENGE": "15.000",
+        "NETPR": "417.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019401",
+    "BLDAT": "2025-02-24",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00194",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000194",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "59.90"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019501",
+    "BLDAT": "2025-08-04",
+    "LIFNR": "1000000006",
+    "XBLNR": "INV-00195",
+    "block_reason": "QUANTITY_VARIANCE",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000195",
+        "EBELP": "00010",
+        "MENGE": "7.000",
+        "NETPR": "887.25"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019601",
+    "BLDAT": "2025-05-12",
+    "LIFNR": "1000000009",
+    "XBLNR": "INV-00196",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000196",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "39.68"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019701",
+    "BLDAT": "2026-01-07",
+    "LIFNR": "1000000008",
+    "XBLNR": "INV-00197",
+    "block_reason": "MISSING_GR",
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000197",
+        "EBELP": "00010",
+        "MENGE": "5.000",
+        "NETPR": "100.80"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019801",
+    "BLDAT": "2025-07-23",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00198",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000198",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "41.58"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100019901",
+    "BLDAT": "2025-05-26",
+    "LIFNR": "1000000001",
+    "XBLNR": "INV-00199",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000199",
+        "EBELP": "00010",
+        "MENGE": "4.000",
+        "NETPR": "32.07"
+      }
+    ]
+  },
+  {
+    "BELNR": "5100020001",
+    "BLDAT": "2025-09-01",
+    "LIFNR": "1000000005",
+    "XBLNR": "INV-00200",
+    "block_reason": null,
+    "items": [
+      {
+        "BUZEI": "0001",
+        "EBELN": "4500000200",
+        "EBELP": "00010",
+        "MENGE": "8.000",
+        "NETPR": "642.60"
+      }
+    ]
+  }
+]

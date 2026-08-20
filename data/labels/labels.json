@@ -1,0 +1,1526 @@
+{
+  "SC-0001": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0002": {
+    "detail": {
+      "invoiced_price": "151.02",
+      "po_price": "112.10",
+      "tolerance_pct": "8.0",
+      "variance_pct": "34.72"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0003": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0004": {
+    "detail": {
+      "invoiced_qty": "4.000",
+      "po_qty": "4.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0005": {
+    "detail": {
+      "invoiced_price": "913.53",
+      "po_price": "802.75",
+      "tolerance_pct": "5.0",
+      "variance_pct": "13.80"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0006": {
+    "detail": {
+      "duplicate": "5100000602",
+      "duplicate_of": "5100000601",
+      "vendor_ref": "INV-00006"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0007": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0008": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0009": {
+    "detail": {
+      "invoiced_qty": "14.000",
+      "over_by": "1.000",
+      "po_qty": "14.000",
+      "received_qty": "13.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0010": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0011": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0012": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0013": {
+    "detail": {
+      "invoiced_price": "67.51",
+      "po_price": "61.15",
+      "tolerance_pct": "5.0",
+      "variance_pct": "10.40"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0014": {
+    "detail": {
+      "invoiced_qty": "10.000",
+      "po_qty": "10.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0015": {
+    "detail": {
+      "duplicate": "5100001502",
+      "duplicate_of": "5100001501",
+      "vendor_ref": "INV-00015"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0016": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0017": {
+    "detail": {
+      "po_items": "00010",
+      "referenced_item": "00030"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "DANGLING_PO_LINE"
+  },
+  "SC-0018": {
+    "detail": {
+      "invoiced_qty": "1.000",
+      "po_qty": "13.000",
+      "received_qty": "1.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0019": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0020": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0021": {
+    "detail": {
+      "invoiced_price": "181.23",
+      "po_price": "171.36",
+      "tolerance_pct": "8.0",
+      "variance_pct": "5.76"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0022": {
+    "detail": {
+      "invoiced_qty": "11.000",
+      "over_by": "1.000",
+      "po_qty": "11.000",
+      "received_qty": "10.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0023": {
+    "detail": {
+      "duplicate": "5100002302",
+      "duplicate_of": "5100002301",
+      "vendor_ref": "INV-00023"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0024": {
+    "detail": {
+      "invoiced_qty": "8.000",
+      "over_by": "6.000",
+      "po_qty": "8.000",
+      "received_qty": "2.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0025": {
+    "detail": {
+      "invoiced_qty": "32.000",
+      "po_qty": "32.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0026": {
+    "detail": {
+      "invoiced_price": "96.59",
+      "po_price": "92.92",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.95"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0027": {
+    "detail": {
+      "invoiced_qty": "6.000",
+      "po_qty": "9.000",
+      "received_qty": "6.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0028": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0029": {
+    "detail": {
+      "invoiced_qty": "2.000",
+      "po_qty": "5.000",
+      "received_qty": "2.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0030": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0031": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0032": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0033": {
+    "detail": {
+      "gr_quantities": "7.000,7.000",
+      "invoiced_qty": "7.000",
+      "po_qty": "7.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "CONFLICTING_RECEIPTS"
+  },
+  "SC-0034": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0035": {
+    "detail": {
+      "duplicate": "5100003502",
+      "duplicate_of": "5100003501",
+      "vendor_ref": "INV-00035"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0036": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0037": {
+    "detail": {
+      "invoiced_price": "114.08",
+      "po_price": "97.92",
+      "tolerance_pct": "5.0",
+      "variance_pct": "16.50"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0038": {
+    "detail": {
+      "invoiced_qty": "5.000",
+      "po_qty": "21.000",
+      "received_qty": "5.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0039": {
+    "detail": {
+      "invoiced_qty": "6.000",
+      "po_qty": "17.000",
+      "received_qty": "6.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0040": {
+    "detail": {
+      "invoiced_qty": "10.000",
+      "po_qty": "9.000",
+      "received_qty": "10.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "UNAUTHORISED_OVER_DELIVERY"
+  },
+  "SC-0041": {
+    "detail": {
+      "invoiced_price": "68.30",
+      "po_price": "65.52",
+      "tolerance_pct": "8.0",
+      "variance_pct": "4.24"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0042": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "po_qty": "24.000",
+      "received_qty": "7.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0043": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0044": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0045": {
+    "detail": {
+      "duplicate": "5100004502",
+      "duplicate_of": "5100004501",
+      "vendor_ref": "INV-00045"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0046": {
+    "detail": {
+      "invoiced_qty": "22.000",
+      "po_qty": "22.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0047": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0048": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0049": {
+    "detail": {
+      "invoiced_price": "85.81",
+      "po_price": "67.25",
+      "tolerance_pct": "10.0",
+      "variance_pct": "27.60"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0050": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0051": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0052": {
+    "detail": {
+      "duplicate": "5100005202",
+      "duplicate_of": "5100005201",
+      "vendor_ref": "INV-00052"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0053": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "over_by": "1.000",
+      "po_qty": "7.000",
+      "received_qty": "6.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0054": {
+    "detail": {
+      "invoiced_qty": "9.000",
+      "po_qty": "12.000",
+      "received_qty": "9.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0055": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0056": {
+    "detail": {
+      "invoiced_qty": "14.000",
+      "po_qty": "14.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0057": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0058": {
+    "detail": {
+      "invoiced_qty": "3.000",
+      "po_qty": "4.000",
+      "received_qty": "3.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0059": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0060": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0061": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0062": {
+    "detail": {
+      "invoiced_qty": "13.000",
+      "po_qty": "10.000",
+      "received_qty": "13.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "UNAUTHORISED_OVER_DELIVERY"
+  },
+  "SC-0063": {
+    "detail": {
+      "invoiced_price": "15.11",
+      "po_price": "14.75",
+      "tolerance_pct": "5.0",
+      "variance_pct": "2.44"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0064": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0065": {
+    "detail": {
+      "invoiced_price": "63.70",
+      "po_price": "60.51",
+      "tolerance_pct": "8.0",
+      "variance_pct": "5.27"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0066": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0067": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0068": {
+    "detail": {
+      "invoiced_price": "34.65",
+      "po_price": "33.46",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.56"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0069": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0070": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0071": {
+    "detail": {
+      "invoiced_price": "46.30",
+      "po_price": "44.10",
+      "tolerance_pct": "2.0",
+      "variance_pct": "4.99"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0072": {
+    "detail": {
+      "invoiced_qty": "4.000",
+      "po_qty": "3.000",
+      "received_qty": "4.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "UNAUTHORISED_OVER_DELIVERY"
+  },
+  "SC-0073": {
+    "detail": {
+      "invoiced_qty": "26.000",
+      "over_by": "3.000",
+      "po_qty": "26.000",
+      "received_qty": "23.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0074": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0075": {
+    "detail": {
+      "invoiced_price": "41.43",
+      "po_price": "40.74",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.69"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0076": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "over_by": "6.000",
+      "po_qty": "7.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0077": {
+    "detail": {
+      "gr_quantities": "19.000,19.000",
+      "invoiced_qty": "19.000",
+      "po_qty": "19.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "CONFLICTING_RECEIPTS"
+  },
+  "SC-0078": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0079": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0080": {
+    "detail": {
+      "invoiced_price": "65.11",
+      "po_price": "64.27",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.31"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0081": {
+    "detail": {
+      "invoiced_price": "41.91",
+      "po_price": "40.32",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.94"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0082": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "po_qty": "11.000",
+      "received_qty": "7.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0083": {
+    "detail": {
+      "invoiced_price": "20.46",
+      "po_price": "16.59",
+      "tolerance_pct": "5.0",
+      "variance_pct": "23.33"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0084": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0085": {
+    "detail": {
+      "invoiced_price": "61.87",
+      "po_price": "59.92",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.25"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0086": {
+    "detail": {
+      "invoiced_price": "73.42",
+      "po_price": "72.26",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.61"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0087": {
+    "detail": {
+      "invoiced_qty": "109.000",
+      "po_qty": "109.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0088": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0089": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0090": {
+    "detail": {
+      "invoiced_qty": "5.000",
+      "over_by": "4.000",
+      "po_qty": "5.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0091": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0092": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0093": {
+    "detail": {
+      "invoiced_qty": "1.000",
+      "po_qty": "3.000",
+      "received_qty": "1.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0094": {
+    "detail": {
+      "invoiced_qty": "2.000",
+      "po_qty": "7.000",
+      "received_qty": "2.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0095": {
+    "detail": {
+      "duplicate": "5100009502",
+      "duplicate_of": "5100009501",
+      "vendor_ref": "INV-00095"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0096": {
+    "detail": {
+      "invoiced_qty": "9.000",
+      "po_qty": "9.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0097": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0098": {
+    "detail": {
+      "invoiced_price": "502.52",
+      "po_price": "417.90",
+      "tolerance_pct": "5.0",
+      "variance_pct": "20.25"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0099": {
+    "detail": {
+      "invoiced_price": "45.33",
+      "po_price": "43.20",
+      "tolerance_pct": "2.0",
+      "variance_pct": "4.93"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0100": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0101": {
+    "detail": {
+      "duplicate": "5100010102",
+      "duplicate_of": "5100010101",
+      "vendor_ref": "INV-00101"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0102": {
+    "detail": {
+      "invoiced_price": "20.90",
+      "po_price": "18.38",
+      "tolerance_pct": "5.0",
+      "variance_pct": "13.71"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0103": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0104": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0105": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0106": {
+    "detail": {
+      "invoiced_qty": "15.000",
+      "po_qty": "12.000",
+      "received_qty": "15.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "UNAUTHORISED_OVER_DELIVERY"
+  },
+  "SC-0107": {
+    "detail": {
+      "duplicate": "5100010702",
+      "duplicate_of": "5100010701",
+      "vendor_ref": "INV-00107"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0108": {
+    "detail": {
+      "invoiced_price": "62.05",
+      "po_price": "61.10",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.55"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0109": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0110": {
+    "detail": {
+      "duplicate": "5100011002",
+      "duplicate_of": "5100011001",
+      "vendor_ref": "INV-00110"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0111": {
+    "detail": {
+      "invoiced_qty": "16.000",
+      "po_qty": "22.000",
+      "received_qty": "16.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0112": {
+    "detail": {
+      "invoiced_qty": "12.000",
+      "po_qty": "12.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0113": {
+    "detail": {
+      "invoiced_qty": "24.000",
+      "po_qty": "24.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0114": {
+    "detail": {
+      "invoiced_qty": "4.000",
+      "po_qty": "24.000",
+      "received_qty": "4.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0115": {
+    "detail": {
+      "invoiced_price": "31.35",
+      "po_price": "26.93",
+      "tolerance_pct": "5.0",
+      "variance_pct": "16.41"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0116": {
+    "detail": {
+      "invoiced_price": "29.18",
+      "po_price": "25.34",
+      "tolerance_pct": "5.0",
+      "variance_pct": "15.15"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0117": {
+    "detail": {
+      "invoiced_price": "94.12",
+      "po_price": "71.52",
+      "tolerance_pct": "8.0",
+      "variance_pct": "31.60"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0118": {
+    "detail": {
+      "invoiced_price": "18.25",
+      "po_price": "14.45",
+      "tolerance_pct": "10.0",
+      "variance_pct": "26.30"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0119": {
+    "detail": {
+      "invoiced_qty": "19.000",
+      "over_by": "7.000",
+      "po_qty": "19.000",
+      "received_qty": "12.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0120": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0121": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0122": {
+    "detail": {
+      "invoiced_price": "190.95",
+      "po_price": "188.87",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.10"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0123": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0124": {
+    "detail": {
+      "duplicate": "5100012402",
+      "duplicate_of": "5100012401",
+      "vendor_ref": "INV-00124"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0125": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0126": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0127": {
+    "detail": {
+      "invoiced_price": "30.72",
+      "po_price": "30.16",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.86"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0128": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0129": {
+    "detail": {
+      "po_items": "00010",
+      "referenced_item": "00030"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "DANGLING_PO_LINE"
+  },
+  "SC-0130": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0131": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0132": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0133": {
+    "detail": {
+      "invoiced_price": "41.05",
+      "po_price": "40.84",
+      "tolerance_pct": "2.0",
+      "variance_pct": "0.51"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0134": {
+    "detail": {
+      "invoiced_qty": "6.000",
+      "over_by": "5.000",
+      "po_qty": "6.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0135": {
+    "detail": {
+      "invoiced_qty": "3.000",
+      "over_by": "2.000",
+      "po_qty": "3.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0136": {
+    "detail": {
+      "invoiced_qty": "17.000",
+      "po_qty": "17.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0137": {
+    "detail": {
+      "invoiced_qty": "1.000",
+      "over_by": "0.500",
+      "po_qty": "1.000",
+      "received_qty": "0.500"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0138": {
+    "detail": {
+      "invoiced_qty": "4.000",
+      "po_qty": "4.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0139": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0140": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0141": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0142": {
+    "detail": {
+      "invoiced_price": "50.97",
+      "po_price": "44.93",
+      "tolerance_pct": "5.0",
+      "variance_pct": "13.44"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0143": {
+    "detail": {
+      "invoiced_qty": "24.000",
+      "po_qty": "24.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0144": {
+    "detail": {
+      "gr_quantities": "19.000,19.000",
+      "invoiced_qty": "19.000",
+      "po_qty": "19.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "CONFLICTING_RECEIPTS"
+  },
+  "SC-0145": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0146": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0147": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0148": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0149": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0150": {
+    "detail": {
+      "invoiced_price": "73.05",
+      "po_price": "61.10",
+      "tolerance_pct": "5.0",
+      "variance_pct": "19.56"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0151": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0152": {
+    "detail": {
+      "po_items": "00010",
+      "referenced_item": "00030"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "DANGLING_PO_LINE"
+  },
+  "SC-0153": {
+    "detail": {
+      "invoiced_price": "108.74",
+      "po_price": "87.62",
+      "tolerance_pct": "5.0",
+      "variance_pct": "24.10"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0154": {
+    "detail": {
+      "invoiced_price": "456.59",
+      "po_price": "442.00",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.30"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0155": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "over_by": "3.000",
+      "po_qty": "7.000",
+      "received_qty": "4.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0156": {
+    "detail": {
+      "invoiced_price": "107.88",
+      "po_price": "89.38",
+      "tolerance_pct": "5.0",
+      "variance_pct": "20.70"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0157": {
+    "detail": {
+      "invoiced_qty": "3.000",
+      "over_by": "2.000",
+      "po_qty": "3.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0158": {
+    "detail": {
+      "invoiced_price": "12.91",
+      "po_price": "11.41",
+      "tolerance_pct": "5.0",
+      "variance_pct": "13.15"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0159": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "po_qty": "7.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0160": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0161": {
+    "detail": {
+      "invoiced_price": "199.10",
+      "po_price": "196.35",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.40"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0162": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0163": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0164": {
+    "detail": {
+      "invoiced_qty": "15.000",
+      "over_by": "2.000",
+      "po_qty": "15.000",
+      "received_qty": "13.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0165": {
+    "detail": {
+      "invoiced_price": "208.64",
+      "po_price": "205.64",
+      "tolerance_pct": "2.0",
+      "variance_pct": "1.46"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0166": {
+    "detail": {
+      "invoiced_price": "707.24",
+      "po_price": "599.76",
+      "tolerance_pct": "8.0",
+      "variance_pct": "17.92"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0167": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0168": {
+    "detail": {
+      "invoiced_qty": "3.000",
+      "over_by": "2.000",
+      "po_qty": "3.000",
+      "received_qty": "1.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0169": {
+    "detail": {
+      "invoiced_qty": "22.000",
+      "po_qty": "25.000",
+      "received_qty": "22.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0170": {
+    "detail": {
+      "invoiced_qty": "24.000",
+      "po_qty": "24.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0171": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0172": {
+    "detail": {
+      "invoiced_qty": "24.000",
+      "po_qty": "24.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0173": {
+    "detail": {
+      "invoiced_qty": "108.000",
+      "over_by": "49.000",
+      "po_qty": "108.000",
+      "received_qty": "59.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0174": {
+    "detail": {
+      "invoiced_price": "1257.78",
+      "po_price": "1220.55",
+      "tolerance_pct": "5.0",
+      "variance_pct": "3.05"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0175": {
+    "detail": {
+      "invoiced_price": "218.00",
+      "po_price": "185.22",
+      "tolerance_pct": "10.0",
+      "variance_pct": "17.70"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0176": {
+    "detail": {
+      "invoiced_price": "190.81",
+      "po_price": "154.44",
+      "tolerance_pct": "5.0",
+      "variance_pct": "23.55"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0177": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0178": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0179": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0180": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0181": {
+    "detail": {
+      "invoiced_qty": "10.000",
+      "over_by": "7.000",
+      "po_qty": "10.000",
+      "received_qty": "3.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0182": {
+    "detail": {
+      "invoiced_price": "118.86",
+      "po_price": "113.62",
+      "tolerance_pct": "1.0",
+      "variance_pct": "4.61"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0183": {
+    "detail": {
+      "invoiced_qty": "23.000",
+      "over_by": "2.000",
+      "po_qty": "23.000",
+      "received_qty": "21.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0184": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0185": {
+    "detail": {
+      "invoiced_price": "10.96",
+      "po_price": "10.85",
+      "tolerance_pct": "5.0",
+      "variance_pct": "1.01"
+    },
+    "label": "PRICE_MINOR",
+    "variant": null
+  },
+  "SC-0186": {
+    "detail": {
+      "invoiced_price": "78.19",
+      "po_price": "72.26",
+      "tolerance_pct": "5.0",
+      "variance_pct": "8.21"
+    },
+    "label": "PRICE_MAJOR",
+    "variant": null
+  },
+  "SC-0187": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0188": {
+    "detail": {
+      "invoiced_qty": "23.000",
+      "over_by": "20.000",
+      "po_qty": "23.000",
+      "received_qty": "3.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0189": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0190": {
+    "detail": {
+      "po_items": "00010",
+      "referenced_item": "00030"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "DANGLING_PO_LINE"
+  },
+  "SC-0191": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0192": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0193": {
+    "detail": {
+      "duplicate": "5100019302",
+      "duplicate_of": "5100019301",
+      "vendor_ref": "INV-00193"
+    },
+    "label": "DUP_INVOICE",
+    "variant": null
+  },
+  "SC-0194": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0195": {
+    "detail": {
+      "invoiced_qty": "7.000",
+      "over_by": "5.000",
+      "po_qty": "7.000",
+      "received_qty": "2.000"
+    },
+    "label": "QTY_OVER",
+    "variant": null
+  },
+  "SC-0196": {
+    "detail": {},
+    "label": "CLEAN",
+    "variant": null
+  },
+  "SC-0197": {
+    "detail": {
+      "invoiced_qty": "5.000",
+      "po_qty": "5.000"
+    },
+    "label": "GR_MISSING",
+    "variant": null
+  },
+  "SC-0198": {
+    "detail": {
+      "gr_quantities": "4.000,4.000",
+      "invoiced_qty": "4.000",
+      "po_qty": "4.000"
+    },
+    "label": "AMBIGUOUS",
+    "variant": "CONFLICTING_RECEIPTS"
+  },
+  "SC-0199": {
+    "detail": {
+      "invoiced_qty": "4.000",
+      "po_qty": "15.000",
+      "received_qty": "4.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  },
+  "SC-0200": {
+    "detail": {
+      "invoiced_qty": "8.000",
+      "po_qty": "9.000",
+      "received_qty": "8.000"
+    },
+    "label": "GR_PARTIAL",
+    "variant": null
+  }
+}
