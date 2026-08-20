@@ -1,14 +1,11 @@
 """One defect, injected into a known-good CLEAN scenario.
-
 Every injector has the same shape: (scenario, rng, ctx) -> Scenario. It deep
 copies first, mutates the copy, sets label/variant/detail, and returns it.
-
 Why a registry of functions rather than branches inside build_scenario:
   * one code path builds valid documents, so a bug there is caught by 100% of
     scenarios instead of 12% of them
   * each injector is testable on its own
   * the dict key IS the label, so the two cannot drift apart
-
 v1 has exactly one PO item, so these index [0] directly. Multi-line is
 deliberately out of scope -- see decisions.md.
 """
@@ -16,11 +13,11 @@ deliberately out of scope -- see decisions.md.
 from datetime import timedelta
 from decimal import Decimal
 
+from erp_domain.tolerances import ToleranceBook
 from pydantic import BaseModel
 
 from generator.labels import AmbiguousVariant, BlockReason, ExceptionLabel
 from generator.scenarios import Scenario
-from generator.tolerances import ToleranceBook
 
 MONEY = Decimal("0.01")
 QTY = Decimal("0.001")
@@ -38,7 +35,6 @@ class InjectorContext(BaseModel):
 
 def _price_variance(sc: Scenario, rng, ctx: InjectorContext, lo: int, hi: int, *, exceed: bool):
     """Raise the invoiced price by a fraction/multiple of the vendor's tolerance.
-
     Derived FROM the tolerance, never hardcoded. A flat +3% would be a minor
     variance for a 5% vendor and a major one for a 1% vendor -- the label would
     then disagree with the data and the eval set would be quietly poisoned.
@@ -75,7 +71,6 @@ def _price_variance(sc: Scenario, rng, ctx: InjectorContext, lo: int, hi: int, *
 
 def _short_receipt(sc: Scenario, rng) -> Decimal:
     """Shrink the goods receipt below the ordered quantity. Returns what arrived.
-
     Shared by QTY_OVER and GR_PARTIAL on purpose: called with the same scenario
     index they consume the same draws, so the two labels produce identical POs
     and identical receipts, differing only in the invoiced quantity. That gives
@@ -118,7 +113,6 @@ def inject_price_major(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
 
 def inject_qty_over(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
     """Vendor billed the full PO quantity; only part of it arrived.
-
     The invoice quantity stays equal to the PO quantity, so invoice-vs-PO
     agrees perfectly. The only way to catch this is invoice-vs-receipts. If the
     invoice exceeded the PO too, an agent comparing against the PO would get it
@@ -152,7 +146,6 @@ def inject_gr_missing(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
 
 def inject_gr_partial(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
     """A valid partial delivery. Nothing is wrong and nothing is blocked.
-
     The trap: GR sum < PO qty, so anything comparing the invoice to the PO sees
     a mismatch and raises a false positive.
     """
@@ -171,7 +164,6 @@ def inject_gr_partial(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
 
 def inject_dup_invoice(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
     """Same vendor, same XBLNR, billed twice.
-
     The nastiest trap in the set: in isolation each invoice is perfect. The
     only signal is that the other one exists.
     """
@@ -192,7 +184,6 @@ def inject_dup_invoice(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
 
 def inject_ambiguous(sc: Scenario, rng, ctx: InjectorContext) -> Scenario:
     """Evidence is underdetermined. Correct behaviour is to escalate, not resolve.
-
     Graded on "did it admit it couldn't tell", never on naming the variant.
     """
     sc.label = ExceptionLabel.AMBIGUOUS
@@ -254,7 +245,6 @@ def apply_injection(
     scenario: Scenario, label: ExceptionLabel, rng, ctx: InjectorContext
 ) -> Scenario:
     """Deep copy, then hand off to the injector for the planned label.
-
     The copy happens here rather than in each injector so it cannot be
     forgotten -- without it, mutating a nested list corrupts the base and you
     get "some of my CLEAN scenarios aren't clean".

@@ -1,7 +1,7 @@
 """Procurement domain models, shared by the generator and the mock ERP service.
 
 Field names are readable Python; JSON serialisation uses SAP MM field names via
-`serialization_alias` (EBELN, LIFNR, MENGE, ...). Dump with `by_alias=True` to
+`alias` (EBELN, LIFNR, MENGE, ...). Dump with `by_alias=True` to
 get the SAP-shaped payload.
 
 Structure follows SAP MM: EKKO/EKPO (purchase order header/items),
@@ -13,7 +13,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 # ---------------------------------------------------------------------------
 # SAP-typed field aliases
@@ -23,44 +23,44 @@ from pydantic import BaseModel, Field, StringConstraints
 # ---------------------------------------------------------------------------
 
 PONumber = Annotated[
-    str, StringConstraints(pattern=r"^45\d{8}$"), Field(serialization_alias="EBELN")
+    str, StringConstraints(pattern=r"^45\d{8}$"), Field(alias="EBELN")
 ]
 POItemNumber = Annotated[
-    str, StringConstraints(pattern=r"^\d{5}$"), Field(serialization_alias="EBELP")
+    str, StringConstraints(pattern=r"^\d{5}$"), Field(alias="EBELP")
 ]
 GRNumber = Annotated[
-    str, StringConstraints(pattern=r"^50\d{8}$"), Field(serialization_alias="MBLNR")
+    str, StringConstraints(pattern=r"^50\d{8}$"), Field(alias="MBLNR")
 ]
 InvoiceNumber = Annotated[
-    str, StringConstraints(pattern=r"^51\d{8}$"), Field(serialization_alias="BELNR")
+    str, StringConstraints(pattern=r"^51\d{8}$"), Field(alias="BELNR")
 ]
 InvoiceItemNumber = Annotated[
-    str, StringConstraints(pattern=r"^\d{4}$"), Field(serialization_alias="BUZEI")
+    str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="BUZEI")
 ]
 VendorID = Annotated[
-    str, StringConstraints(pattern=r"^\d{10}$"), Field(serialization_alias="LIFNR")
+    str, StringConstraints(pattern=r"^\d{10}$"), Field(alias="LIFNR")
 ]
 MaterialID = Annotated[
-    str, StringConstraints(pattern=r"^\d{18}$"), Field(serialization_alias="MATNR")
+    str, StringConstraints(pattern=r"^\d{18}$"), Field(alias="MATNR")
 ]
 PlantID = Annotated[
-    str, StringConstraints(pattern=r"^\d{4}$"), Field(serialization_alias="WERKS")
+    str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="WERKS")
 ]
 Currency = Annotated[
-    str, StringConstraints(pattern=r"^[A-Z]{3}$"), Field(serialization_alias="WAERS")
+    str, StringConstraints(pattern=r"^[A-Z]{3}$"), Field(alias="WAERS")
 ]
-VendorRef = Annotated[str, Field(serialization_alias="XBLNR")]
+VendorRef = Annotated[str, Field(alias="XBLNR")]
 
 # Decimal, never float: this system exists to decide whether two amounts match,
 # so binary rounding drift is not acceptable. Pydantic serialises Decimal to a
 # JSON string, which is also what SAP OData V2 does with Edm.Decimal.
-Quantity = Annotated[Decimal, Field(serialization_alias="MENGE")]
-NetPrice = Annotated[Decimal, Field(serialization_alias="NETPR")]
-BasePrice = Annotated[Decimal, Field(serialization_alias="STPRS")]
+Quantity = Annotated[Decimal, Field(alias="MENGE")]
+NetPrice = Annotated[Decimal, Field(alias="NETPR")]
+BasePrice = Annotated[Decimal, Field(alias="STPRS")]
 
-PODate = Annotated[date, Field(serialization_alias="AEDAT")]
-PostingDate = Annotated[date, Field(serialization_alias="BUDAT")]
-InvoiceDate = Annotated[date, Field(serialization_alias="BLDAT")]
+PODate = Annotated[date, Field(alias="AEDAT")]
+PostingDate = Annotated[date, Field(alias="BUDAT")]
+InvoiceDate = Annotated[date, Field(alias="BLDAT")]
 
 
 # ---------------------------------------------------------------------------
@@ -68,13 +68,16 @@ InvoiceDate = Annotated[date, Field(serialization_alias="BLDAT")]
 # ---------------------------------------------------------------------------
 
 
-class Vendor(BaseModel):
+class SapModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+class Vendor(SapModel):
     vendor_id: VendorID
     name: str
     country: str
 
 
-class Material(BaseModel):
+class Material(SapModel):
     material_id: MaterialID
     description: str
     unit_of_measure: str
@@ -83,7 +86,7 @@ class Material(BaseModel):
     base_price: BasePrice
 
 
-class Plant(BaseModel):
+class Plant(SapModel):
     plant_id: PlantID
     name: str
 
@@ -93,14 +96,14 @@ class Plant(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class PurchaseOrderItem(BaseModel):
+class PurchaseOrderItem(SapModel):
     po_item_number: POItemNumber
     material_id: MaterialID
     quantity: Quantity
     net_price: NetPrice
 
 
-class PurchaseOrder(BaseModel):
+class PurchaseOrder(SapModel):
     po_number: PONumber
     vendor_id: VendorID
     plant_id: PlantID
@@ -123,7 +126,7 @@ class PurchaseOrder(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class GoodsReceipt(BaseModel):
+class GoodsReceipt(SapModel):
     gr_number: GRNumber
     po_number: PONumber
     po_item_number: POItemNumber
@@ -136,7 +139,7 @@ class GoodsReceipt(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class InvoiceItem(BaseModel):
+class InvoiceItem(SapModel):
     # BUZEI is this line's position within the invoice. EBELP is the PO line it
     # bills. They are unrelated -- the vendor lays out their invoice however
     # they like, and may bill lines out of order or across several POs.
@@ -149,7 +152,7 @@ class InvoiceItem(BaseModel):
     unit_price: NetPrice
 
 
-class Invoice(BaseModel):
+class Invoice(SapModel):
     invoice_number: InvoiceNumber
     vendor_id: VendorID
     invoice_date: InvoiceDate

@@ -23,12 +23,12 @@ from erp_domain.models import (
     PurchaseOrderItem,
     Vendor,
 )
+from erp_domain.tolerances import ToleranceBook
 from pydantic import BaseModel
 
 from generator.config import GeneratorConfig
 from generator.labels import AmbiguousVariant, ExceptionLabel
 from generator.splits import Splits
-from generator.tolerances import ToleranceBook
 
 # Plausible order sizes per unit of measure. You buy gloves by the box in tens
 # and laptops in ones -- without this the data reads as obviously fake.

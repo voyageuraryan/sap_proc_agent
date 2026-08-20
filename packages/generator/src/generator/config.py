@@ -11,10 +11,10 @@ message, instead of being silently ignored.
 
 from datetime import date
 
+from erp_domain.tolerances import ToleranceBook
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from generator.labels import AmbiguousVariant, ExceptionLabel
-from generator.tolerances import ToleranceBook
 
 
 class GeneratorConfig(BaseModel):
