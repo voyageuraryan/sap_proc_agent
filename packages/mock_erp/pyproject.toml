@@ -1,0 +1,14 @@
+[project]
+name = "mock-erp"
+version = "0.1.0"
+description = "Mock SAP OData service for procurement objects"
+readme = "README.md"
+authors = [
+    { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
