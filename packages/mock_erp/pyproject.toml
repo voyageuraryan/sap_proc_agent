@@ -10,6 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "erp-domain",
     "fastapi",
+    "pydantic>=2.13.4",
     "pydantic-settings",
     "uvicorn[standard]",
 ]

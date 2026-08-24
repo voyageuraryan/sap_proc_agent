@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     # path -- pointing at data/labels/, which is what keeps the ground-truth
     # labels structurally unreachable rather than merely un-read.
     erp_data_dir: Path = Path("data/erp")
+    db_path: Path = Path("data/approvals.sqlite3")
 
 
 @lru_cache
