@@ -23,6 +23,7 @@ package = false
 dev = [
     "ruff",
     "pytest",
+    "httpx>=0.28.1",
 ]
 
 [tool.ruff]
@@ -30,6 +31,12 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Depends()/Query()/Path() in a parameter default is FastAPI's intended
+# API, not the mutable-default bug B008 exists to catch. Silenced
+# deliberately rather than restructuring working framework code.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
 
 [tool.pytest.ini_options]
 testpaths = ["packages"]
