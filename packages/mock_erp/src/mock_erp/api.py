@@ -88,6 +88,8 @@ def _vendor_history_payload(store: ErpStore, vendor_id: str) -> dict:
     )
     res = []
     for inv in store.invoices_by_vendor[vendor_id]:
+        if not inv.items:
+            continue
         grs = store.grs_by_po.get(inv.items[0].po_number, [])
         if not grs:
             continue
@@ -163,8 +165,17 @@ async def list_supplier_invoices(
 
 @router.get("/VendorHistory")
 async def get_vendor_history(request: Request, store=Depends(get_store)) -> dict:
+    reject_unsupported_options(request.query_params, {"$format"})
     vendor_param = request.query_params.get("VendorID")
-    # vendor_id = re.search(r"^\d{10}", vendor_param)
+    if vendor_param is None:
+        # Without this, None.strip() is an AttributeError -> a 500 with a
+        # non-OData body, which then breaks the client's error parsing.
+        raise ODataError(
+            code="MISSING_PARAMETER",
+            message="VendorHistory requires the VendorID parameter, e.g. VendorID='1000000010'",
+            status=400,
+        )
+    # The quotes are the OData literal's, not part of the key.
     vendor_id = vendor_param.strip("'")
     if vendor_id not in store.vendors:
         raise ODataError(

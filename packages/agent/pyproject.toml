@@ -1,0 +1,23 @@
+[project]
+name = "agent"
+version = "0.1.0"
+description = "Procurement exception agent: tool-calling loop over the mock SAP OData service"
+readme = "README.md"
+authors = [
+    { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx",
+    "litellm>=1.98.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings",
+    "python-dotenv",
+]
+
+[project.scripts]
+proc-agent = "agent.cli:_entrypoint"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

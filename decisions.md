@@ -303,3 +303,178 @@ particularly valid partial deliveries (which resemble over-invoicing) and
 underdetermined cases where the correct answer is to escalate rather than resolve.
 
 **Revisit if:** I get access to a real system with permission to write test data.
+---
+
+## 2026-08-25 — The agent does not import `erp_domain`
+
+**Decision:** The `agent` package depends on `httpx`, `litellm`, `pydantic` and
+`pydantic-settings`. It does not depend on `erp-domain`, `mock-erp`, or `generator`. It
+sees SAP documents only as dicts that came back over HTTP.
+
+**Rejected:** Importing the shared models to get typed responses for free.
+
+**Why:** The claim this project makes is "it integrates". If the agent imported the
+ERP's own models, that claim would be a fact about a Python import rather than about
+an interface — and the day it points at real SAP OData, every one of those imports is
+a lie that has to be unwound. An agent that only ever saw dicts needs no change.
+
+**Tradeoff:** No type checking on ERP responses inside the agent, and two definitions
+of the four correction payloads that can drift apart. Paid for by
+`test_contract.py`, which is the only place in the agent package that imports from
+`mock_erp` — and does so to *compare*, not to reuse. It asserts field-name parity and
+posts every payload shape the agent can build against the live endpoint. A shared
+import would have made that test a tautology.
+
+**Revisit if:** never for v1.
+
+---
+
+## 2026-08-25 — The agent gets `propose_correction` but not `apply_correction`
+
+**Decision:** The agent's tool registry has five read/propose tools plus the terminal
+tool. There is no apply, approve, or reject tool, and `ErpClient` has no method for
+them.
+
+**Rejected:** Giving it `apply_correction` and relying on the state machine to return
+409 until a human approves.
+
+**Why:** Within a single run there is no approval, so apply could only ever fail —
+a tool that can only error is a tool the model will waste turns on. More importantly,
+"the agent cannot write" is a much stronger sentence when the capability is *absent*
+rather than *refused*. `test_the_agent_has_no_tool_that_applies_anything` asserts the
+registry by name, and the approval routes live on a different router, so
+`test_the_agent_surface_has_no_approval_capability` can read the OpenAPI paths and
+prove it.
+
+**Tradeoff:** The end-to-end demo needs a human step (or a curl) between proposal and
+effect. That is the demo, not a gap in it.
+
+---
+
+## 2026-08-25 — `Resolution` is registered as the terminal tool's schema
+
+**Decision:** Ending a run means calling `submit_resolution`, whose `args_model` **is**
+the `Resolution` Pydantic model. Structured output is enforced by the tool-call schema.
+A `@model_validator` carries the coherence rules a JSON Schema cannot express
+(PROPOSE_CORRECTION requires a correction payload; ESCALATE requires a reason;
+`classification=CLEAN` cannot ask for a correction). A validation failure is fed back
+to the model as the tool result, and it retries.
+
+**Rejected:** (a) asking for JSON in the system prompt and parsing the final message —
+prose leaks in, there is no schema to point at, and a retry loop has to be hand-rolled;
+(b) `response_format={"type": "json_object"}` — not portable across the providers
+LiteLLM fronts, and it does not compose with tool calling in the same turn.
+
+**Why:** The model cannot finish except by filling in the contract, so the failure mode
+becomes "rejected with an explanation" instead of "returned something unparseable".
+The validator turns the schema into a teacher rather than a gate.
+
+**Tradeoff:** A model that cannot satisfy the validator burns iterations retrying.
+Bounded by `max_iterations`, and visible in the trace as `RESOLUTION_INVALID` records.
+
+---
+
+## 2026-08-25 — Tool failures become message content, never exceptions
+
+**Decision:** `_execute_tool_call` cannot raise. Unknown tool, malformed JSON
+arguments, schema violation, ERP 404, or an unexpected exception all return a string
+that goes back to the model as the `tool` message for that `tool_call_id`.
+
+**Why:** The protocol invariant is that every `tool_call` in an assistant message must
+be answered by exactly one `tool` message with the matching id. Break it one way (drop
+the assistant message) and the model re-asks forever, burning tokens. Break it the
+other (append the assistant message with no results) and the provider returns 400. An
+exception escaping the executor breaks it the second way. `ErpError` therefore exists
+as a single normalised type precisely so there is one thing to catch — including for
+non-OData bodies like FastAPI's own `{"detail": ...}` 404 and an HTML 500, which is
+what `ErpClient._translate` is for.
+
+**Consequence worth naming:** an `ERP error PO_NOT_FOUND` in the transcript is
+*evidence*, and escalating on it is the correct answer. Making the failure legible to
+the model is what lets it behave well.
+
+---
+
+## 2026-08-25 — A duplicated enum value is a silent, not a loud, failure
+
+**Not a decision — a bug worth remembering.** Three `Classification` members were
+written with the same value:
+
+```python
+VALID_PARTIAL_DELIVERY = "VALID_PARTIAL_DELIVERY"
+DUPLICATE_INVOICE      = "VALID_PARTIAL_DELIVERY"   # copy-paste
+INSUFFICIENT_EVIDENCE  = "VALID_PARTIAL_DELIVERY"   # copy-paste
+```
+
+Python's `Enum` turns a duplicate value into an **alias**, not a member. The two
+members disappear from `list(Classification)` and therefore from the JSON Schema, so
+the model could never emit `DUPLICATE_INVOICE` — and nothing raised. The eval would
+have scored every DUP_INVOICE scenario against the wrong class and reported a
+plausible number.
+
+`test_no_classification_value_is_an_accidental_alias` compares
+`len(list(Classification))` against `len(Classification.__members__)`. The general
+lesson is the one worth keeping: **a wrong answer that does not crash is more expensive
+than a crash.**
+
+---
+
+## 2026-08-25 — Classifications are the agent's vocabulary; the eval owns the mapping
+
+**Decision:** `Classification` uses names like `PRICE_VARIANCE_EXCEEDS_TOLERANCE`, not
+the generator's `PRICE_MAJOR`. `LABEL_FOR_CLASSIFICATION` maps one to the other, and a
+test asserts it is total and one-to-one over both taxonomies.
+
+**Rejected:** Making the agent emit the generator's label names directly.
+
+**Why:** Two reasons. Scoring becomes an explicit, reviewable table instead of an
+accident of string equality — adding a classification cannot compile without deciding
+what it scores as. And the agent's vocabulary describes *what it observed*, which is
+the thing a human reviewer reads; the label is grader bookkeeping.
+
+---
+
+## 2026-08-25 — `scenario_id` is closed over, not asked for
+
+**Decision:** `build_tools(client, scenario_id=...)` captures the id; it is not a field
+on `ProposeCorrectionArgs`.
+
+**Why:** The model has no way to know it, so asking invites a hallucinated value — and
+a proposal tagged with the wrong scenario means the eval scores the wrong row. Eval
+bookkeeping is the harness's business. Asserted by
+`test_scenario_id_is_not_something_the_model_can_set`.
+
+---
+
+## 2026-08-25 — One nudge before giving up on a bare reply
+
+**Decision:** If the model answers with prose and no tool call, the loop appends a
+short `user` message telling it to call a tool or submit, and continues. A second bare
+reply ends the run with `NO_TOOL_CALL`.
+
+**Rejected:** (a) stopping immediately — a model that opens with "Let me start by
+fetching the invoice." would kill the run for a formatting slip; (b) nudging
+indefinitely — that is just `max_iterations` with extra steps and a worse trace.
+
+**Tradeoff:** One wasted round trip in the bad case. `NO_TOOL_CALL` now means "asked
+twice, still would not use a tool", which is a real signal rather than noise.
+
+---
+
+## 2026-08-25 — The agent's tests use a scripted model and a real ERP
+
+**Decision:** `completion_fn` is injected into `run_agent`, and the tests drive it with
+a fixed sequence of tool calls. The ERP is *not* faked: FastAPI's `TestClient` is an
+`httpx.Client` subclass, so it is injected straight into `ErpClient` and requests go
+through real routing, real dependency injection, real Pydantic serialisation and the
+real store — with no socket.
+
+**Why:** Model output is the one input that cannot be made deterministic, so it gets
+scripted; that tests the harness, and Step 8's evals test the reasoning. Faking the ERP
+as well would have tested our *idea* of the contract instead of the contract — which is
+exactly how the Step 5 SAP-alias leak survived as long as it did.
+
+**Tradeoff:** The scripted-model fakes are ~90 lines of `conftest.py` mimicking the
+provider's message shape, and they can drift from LiteLLM's actual objects. Bounded by
+`_message_to_dict` handling both pydantic models and mappings, and by the real-socket
+smoke run in the README.

@@ -269,8 +269,6 @@ class ProposalRepository:
         )
 
     def amendments_for_invoice(self, invoice_number) -> list[AppliedAmendment]:
-        # res: list[AppliedAmendment]
-        #     )
 
         cursor = self.conn.execute(
             """

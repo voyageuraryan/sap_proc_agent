@@ -120,14 +120,18 @@ def test_label_matches_data(generated):
                 assert variance > tol, f"{where}: {variance:.2f}% within tolerance {tol}%"
             # Both must look identical to the agent: SAP says the price check
             # failed, not whether the variance is acceptable.
-            assert inv["block_reason"] == "PRICE_VARIANCE", f"{where}: block_reason must be PRICE_VARIANCE"
+            assert inv["block_reason"] == "PRICE_VARIANCE", (
+                f"{where}: block_reason must be PRICE_VARIANCE"
+            )
 
         elif label == "QTY_OVER":
             assert inv_qty > gr_sum, f"{where}: invoiced {inv_qty} not > received {gr_sum}"
             # Must NOT exceed the PO, or an agent comparing invoice-to-PO would
             # catch it by accident and this label would test nothing.
             assert inv_qty <= po_qty, f"{where}: invoiced {inv_qty} exceeds ordered {po_qty}"
-            assert inv["block_reason"] == "QUANTITY_VARIANCE", f"{where}: block_reason must be QUANTITY_VARIANCE"
+            assert inv["block_reason"] == "QUANTITY_VARIANCE", (
+                f"{where}: block_reason must be QUANTITY_VARIANCE"
+            )
 
         elif label == "GR_MISSING":
             assert not grs, f"{where}: expected no GR rows, got {len(grs)}"
@@ -176,7 +180,8 @@ def test_splits_valid(generated):
     for side, name in ((dev, "dev"), (held, "eval")):
         present = {labels[i]["label"] for i in side}
         assert present == {str(k) for k in generated["cfg"].distribution}, (
-            f"{name} is missing labels: { {str(k) for k in generated['cfg'].distribution} - present}"
+            f"{name} is missing labels: "
+            f"{ {str(k) for k in generated['cfg'].distribution} - present}"
         )
 
 

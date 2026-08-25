@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 
 from mock_erp.odata import collection, entity, error_body
-from mock_erp.proposals import CorrectionPayload, payload_hash
+from mock_erp.proposals import CorrectionPayload
 from mock_erp.repository import ProposalError, ProposalRepository
 
 
@@ -21,12 +21,10 @@ class ProposeRequest(BaseModel):
 
 
 class ApproveRequest(BaseModel):
-    # proposal_id: str
     approved_by: str
 
 
 class RejectRequest(BaseModel):
-    # proposal_id: str
     rejected_by: str
     reason: str
 
@@ -45,9 +43,9 @@ agent_router = APIRouter(prefix="/sap/opu/odata/sap/ZPROC_SRV")
 
 @agent_router.post("/ProposeCorrection")
 async def propose_correction(
-    request: ProposeRequest, PropRep: ProposalRepository = Depends(get_repository)
+    request: ProposeRequest, repo: ProposalRepository = Depends(get_repository)
 ):
-    proposal = PropRep.create(
+    proposal = repo.create(
         invoice_number=request.invoice_number,
         payload=request.payload,
         agent_reasoning=request.agent_reasoning,
@@ -58,16 +56,18 @@ async def propose_correction(
         {
             "proposal_id": proposal.proposal_id,
             "status": "PROPOSED",
-            "payload_hash": payload_hash(request.payload),
+            # The stored hash, not a recomputed one: if hashing ever changes
+            # on one side, this must diverge loudly rather than agree by luck.
+            "payload_hash": proposal.payload_hash,
         }
     )
 
 
 @agent_router.post("/ApplyCorrection")
 async def apply_correction(
-    request: ApplyRequest, PropRep: ProposalRepository = Depends(get_repository)
+    request: ApplyRequest, repo: ProposalRepository = Depends(get_repository)
 ):
-    res = PropRep.apply(request.proposal_id, request.payload)
+    res = repo.apply(request.proposal_id, request.payload)
     return entity(res.model_dump(mode="json"))
 
 
@@ -76,26 +76,26 @@ human_router = APIRouter(prefix="/approval")
 
 @human_router.post("/proposals/{proposal_id}/approve")
 async def approve_proposal(
-    proposal_id: str, request: ApproveRequest, PropRep: ProposalRepository = Depends(get_repository)
+    proposal_id: str, request: ApproveRequest, repo: ProposalRepository = Depends(get_repository)
 ):
-    proposal = PropRep.approve(proposal_id, request.approved_by)
+    proposal = repo.approve(proposal_id, request.approved_by)
     return entity(proposal.model_dump(mode="json"))
 
 
 @human_router.post("/proposals/{proposal_id}/reject")
 async def reject_proposal(
-    proposal_id: str, request: RejectRequest, PropRep: ProposalRepository = Depends(get_repository)
+    proposal_id: str, request: RejectRequest, repo: ProposalRepository = Depends(get_repository)
 ):
-    proposal = PropRep.reject(proposal_id, request.rejected_by, request.reason)
+    proposal = repo.reject(proposal_id, request.rejected_by, request.reason)
     return entity(proposal.model_dump(mode="json"))
 
 
 @human_router.get("/proposals")
 async def list_proposals(
     status: str | None = None,
-    PropRep: ProposalRepository = Depends(get_repository),
+    repo: ProposalRepository = Depends(get_repository),
 ) -> dict:
-    proposals = PropRep.list_proposals(status)
+    proposals = repo.list_proposals(status)
     return collection([p.model_dump(mode="json") for p in proposals])
 
 
