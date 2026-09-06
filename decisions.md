@@ -478,3 +478,163 @@ exactly how the Step 5 SAP-alias leak survived as long as it did.
 provider's message shape, and they can drift from LiteLLM's actual objects. Bounded by
 `_message_to_dict` handling both pydantic models and mappings, and by the real-socket
 smoke run in the README.
+
+---
+
+## 2026-08-25 — Tracing is an interface with three backends, one of which is a file
+
+**Decision:** `loop.py` imports `Tracer` from `agent.tracing` and calls
+`tracer.span(name, kind=..., **fields)`. It never imports langfuse. Three
+implementations sit behind that interface: `NullTracer` (off), `JsonlTracer` (one
+JSON object per span, appended to a local file), and `LangfuseTracer`.
+`build_tracer(settings)` is the only place that decides, and `CompositeTracer`
+lets more than one run at once.
+
+**Rejected:** (a) calling the Langfuse SDK directly from the loop — then the agent
+cannot run without an account, and "observability is part of the demo" becomes "the
+demo needs a SaaS signup"; (b) the SDK's `@observe` decorator — it works, but it
+puts the tracing vendor's name on every function signature in the call path, and
+swapping vendors then means editing the loop.
+
+**Why the file backend exists at all:** it makes tracing *demonstrable offline*. A
+reviewer clones the repo, runs one command with `--trace-file`, and sees the span
+tree with token usage and cost, with no signup and no network. That is worth more in
+a portfolio than a screenshot of someone else's dashboard.
+
+**Tradeoff:** an adapter layer to maintain, and my field names
+(`error`, `usage`, `cost`) have to be mapped onto the SDK's (`level` +
+`status_message`, `usage_details`, `cost_details`). Paid for by
+`test_the_langfuse_adapter_matches_the_real_sdk`, which runs the real SDK against a
+dead host — so the mapping is checked against the actual API rather than my memory
+of it.
+
+---
+
+## 2026-08-25 — Instrumentation must not change the run
+
+**Decision:** `test_tracing_does_not_change_the_run` executes the same script twice,
+once with tracing off and once with a recording tracer, and asserts the two
+`AgentRun` objects are equal — excluding only the trace pointer fields, wall-clock
+durations, and provider-generated tool_call ids.
+
+**Why:** if instrumentation can change an outcome, every bug report starts with "does
+it still happen with tracing off?" and the trace stops being evidence. This is also
+the test that would catch the classic mistake of consuming a generator or mutating a
+message list while building a span payload.
+
+**Related:** every backend call is wrapped so a tracing failure cannot fail the run.
+`LangfuseTracer.span` degrades to a no-op span if the client raises; `JsonlTracer`
+swallows `OSError` on write. An observability tool that can take down the thing it
+observes is worse than no observability tool.
+
+---
+
+## 2026-08-25 — Span payloads are an allow-list, and prompts are switchable
+
+**Decision:** `TRACED_SETTINGS` names the five configuration fields that may appear in
+a span. `settings_metadata()` reads only those. Nothing dumps a settings object, an
+environment, or a `**kwargs` into a span.
+
+**Why:** blocklisting secrets means being right every time forever; allow-listing
+means being right once. A key added to `AgentSettings` next month cannot leak into a
+trace by default — and a test asserts no traced field name contains "key", "secret",
+"token", "password" or "credential".
+
+**Separately:** `trace_payloads` (default True) controls whether prompts and tool
+results reach spans. They are the most useful thing in a trace and the most likely
+place for anything sensitive to appear. The ERP data here is synthetic, so they are
+on; the switch exists because that will not always be true, and because the switch is
+much easier to add now than after the first customer transcript lands in a
+third-party dashboard. Redaction goes through a single `payload()` closure so it
+cannot be half-applied.
+
+---
+
+## 2026-08-25 — Cost lives on the run, not in the tracer
+
+**Decision:** `cost.py` computes cost; `AgentRun` carries `llm_calls`
+(a `LlmCallRecord` per model call) plus `input_usd` / `output_usd` / `total_usd`.
+Tracing is one *consumer* of that, not the owner.
+
+**Rejected:** letting Langfuse compute cost from the model name and token counts,
+which it will happily do.
+
+**Why:** cost is a property of the run whether or not anyone is watching. It has to be
+in `--json` for the Step 8 eval table, printed by the CLI with no backend configured,
+and available in CI where there is no dashboard. Deriving it once and *sending* it to
+the tracer also means the number in the terminal and the number in the dashboard
+cannot disagree.
+
+**Input and output are kept separate** because output tokens cost several times what
+input tokens do — so a run that looks expensive is usually one where the model wrote
+too much, not one where it read too much, and the split is the diagnosis.
+
+---
+
+## 2026-08-25 — An unknown model is "unpriced", never zero
+
+**Decision:** `cost_for()` consults LiteLLM's maintained price map first, then a small
+pinned `LOCAL_PRICES` table, and returns `UNPRICED` (a `TokenCost` with `None`
+fields) if neither knows the model. `total_cost()` of a list containing any unpriced
+call is itself unpriced. The CLI prints `unpriced`.
+
+**Rejected:** defaulting to `0.0`. A zero in a cost column reads as *free*, which is a
+wrong answer. A blank reads as *we do not know*, which is the true one. Summing the
+priced calls and labelling the result "total" is the same mistake one level up: a
+partial sum presented as a total is a false number, and a false number is worse than
+a missing one.
+
+**On the pinned table:** `LOCAL_PRICES` exists as the escape hatch for models LiteLLM
+has never heard of (self-hosted, behind a gateway, newer than the pinned litellm),
+and as a **drift detector**. Every entry carries `checked_on` and `source` as
+required fields, because a price with no date is indistinguishable from a guess — and
+the values currently there were read from LiteLLM's own map, *not* independently
+verified against the provider's pricing page.
+`test_pinned_prices_have_not_drifted_from_litellm` compares the two exactly and is
+deliberately brittle: a pricing change *should* break the build of a system that
+reports cost to a human.
+
+---
+
+## 2026-08-25 — The caller flushes, not the loop
+
+**Decision:** `run_agent` never calls `tracer.flush()`. The CLI does, in a `finally`
+block; the Step 8 eval harness will do it once at the end.
+
+**Why:** Langfuse batches spans in a background thread, so a process that exits
+without flushing silently loses the trace it just paid to produce — which is why the
+CLI builds the tracer itself and passes it in, rather than letting `run_agent` build
+one it cannot then flush. But flushing *inside* `run_agent` would make an eval over
+200 invoices pay a network round trip 200 times. The party that knows when the process
+is ending is the party that should flush.
+
+**Tested by** `test_the_tracer_is_flushed_even_when_the_run_raises`.
+
+---
+
+## 2026-08-25 — Span time and provider time are both recorded
+
+**Decision:** `LlmCallRecord.duration_ms` times only the provider call. The
+`llm.completion` span additionally carries `provider_ms` in its metadata.
+
+**Why:** the span wraps the completion *and* the bookkeeping around it (usage
+accounting, the price lookup, appending the assistant message). Recording only the
+span duration silently attributes our overhead to the model — which showed up
+immediately: the first span in a run was 3.1 seconds because that is when litellm's
+price map gets imported. Span time minus `provider_ms` is our overhead, and having
+both numbers is what makes that subtraction possible.
+
+---
+
+## 2026-08-25 — Known gap: cache tokens are not accounted for
+
+**Not a decision, a limitation to state before someone finds it.** `_usage()` reads
+only `prompt_tokens` and `completion_tokens`. Anthropic's prompt caching reports
+`cache_creation_input_tokens` and `cache_read_input_tokens` separately, priced
+differently from ordinary input tokens. This agent re-sends a large system prompt on
+every iteration, which is exactly the workload caching is for, so the cost table will
+*overstate* input cost once caching is enabled.
+
+Deliberately not fixed in Step 7: the eval suite comes first, and there is no point
+optimising a cost number before there is a benchmark to measure the optimisation
+against. Recorded here so the number is read with the right caveat.

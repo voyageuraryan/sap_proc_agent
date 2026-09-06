@@ -6,11 +6,13 @@ code, and that --json emits something a machine can consume.
 """
 
 import json
+from decimal import Decimal
 
 import pytest
 from agent import cli
-from agent.loop import AgentRun, StopReason
+from agent.loop import AgentRun, LlmCallRecord, StopReason
 from agent.schemas import Classification, Decision, Resolution
+from agent.tracing import JsonlTracer, NullTracer
 from conftest import INVOICE
 
 
@@ -30,6 +32,32 @@ def _run(**kwargs) -> AgentRun:
         ),
         prompt_tokens=1200,
         completion_tokens=300,
+        llm_calls=[
+            LlmCallRecord(
+                iteration=1,
+                model="test/scripted",
+                prompt_tokens=400,
+                completion_tokens=100,
+                duration_ms=812.0,
+                input_usd=Decimal("0.00240000"),
+                output_usd=Decimal("0.00225000"),
+                tool_calls_requested=1,
+            ),
+            LlmCallRecord(
+                iteration=2,
+                model="test/scripted",
+                prompt_tokens=800,
+                completion_tokens=200,
+                duration_ms=904.0,
+                input_usd=Decimal("0.00480000"),
+                output_usd=Decimal("0.00450000"),
+                tool_calls_requested=1,
+            ),
+        ],
+        input_usd=Decimal("0.00720000"),
+        output_usd=Decimal("0.00675000"),
+        total_usd=Decimal("0.01395000"),
+        trace_backend="jsonl",
     )
     defaults.update(kwargs)
     return AgentRun(**defaults)
@@ -49,10 +77,11 @@ def patched(monkeypatch, erp_app):
         def close(self):
             captured["closed"] = True
 
-    def fake_run_agent(invoice_number, client, settings, *, scenario_id=None, **kw):
+    def fake_run_agent(invoice_number, client, settings, *, scenario_id=None, tracer=None, **kw):
         captured["invoice_number"] = invoice_number
         captured["settings"] = settings
         captured["scenario_id"] = scenario_id
+        captured["tracer"] = tracer
         return captured.get("result") or _run(invoice_number=invoice_number)
 
     monkeypatch.setattr(cli, "ErpClient", FakeClient)
@@ -112,3 +141,93 @@ def test_the_client_is_closed_even_when_the_run_raises(monkeypatch, patched):
     with pytest.raises(RuntimeError):
         cli.main(["--invoice", INVOICE])
     assert patched["closed"] is True
+
+
+# ---------------------------------------------------------------------------
+# step 7: cost and tracing at the CLI edge
+# ---------------------------------------------------------------------------
+
+
+def test_the_cost_table_shows_one_row_per_call_and_a_total(patched, capsys):
+    cli.main(["--invoice", INVOICE])
+    out = capsys.readouterr().out
+    assert "cost" in out
+    # per-call rows, then the total
+    assert "$0.004650" in out  # call 1: 0.0024 + 0.00225
+    assert "$0.009300" in out  # call 2: 0.0048 + 0.0045
+    assert "$0.013950" in out  # total
+    assert "1200" in out and "300" in out
+
+
+def test_an_unpriced_run_says_so_rather_than_showing_zero(patched, capsys):
+    patched["result"] = _run(
+        llm_calls=[LlmCallRecord(iteration=1, model="test/scripted", prompt_tokens=10)],
+        input_usd=None,
+        output_usd=None,
+        total_usd=None,
+    )
+    cli.main(["--invoice", INVOICE])
+    out = capsys.readouterr().out
+    assert "unpriced" in out
+    assert "$0.000000" not in out
+
+
+def test_the_trace_backend_and_url_are_printed_when_present(patched, capsys):
+    patched["result"] = _run(
+        trace_backend="langfuse", trace_url="https://cloud.langfuse.com/trace/abc"
+    )
+    out_lines = (cli.main(["--invoice", INVOICE]), capsys.readouterr().out)[1]
+    assert "tracing   langfuse" in out_lines
+    assert "https://cloud.langfuse.com/trace/abc" in out_lines
+
+
+def test_no_trace_disables_tracing(patched):
+    cli.main(["--invoice", INVOICE, "--no-trace"])
+    assert patched["settings"].tracing is False
+
+
+def test_tracing_is_on_by_default(patched):
+    cli.main(["--invoice", INVOICE])
+    assert patched["settings"].tracing is True
+
+
+def test_trace_file_selects_the_jsonl_backend(patched, tmp_path):
+    target = tmp_path / "traces" / "run.jsonl"
+    cli.main(["--invoice", INVOICE, "--trace-file", str(target)])
+    assert patched["settings"].trace_file == target
+    assert isinstance(patched["tracer"], JsonlTracer)
+
+
+def test_no_trace_wins_over_trace_file(patched, tmp_path):
+    """An explicit off must not be overridden by a backend flag."""
+    cli.main(["--invoice", INVOICE, "--no-trace", "--trace-file", str(tmp_path / "t.jsonl")])
+    assert isinstance(patched["tracer"], NullTracer)
+
+
+def test_the_tracer_is_flushed_even_when_the_run_raises(monkeypatch, patched):
+    """Langfuse batches in a background thread; exiting without a flush
+    silently loses the trace you just paid to produce."""
+    flushed: list[bool] = []
+
+    class SpyTracer(NullTracer):
+        def flush(self):
+            flushed.append(True)
+
+    monkeypatch.setattr(cli, "build_tracer", lambda settings: SpyTracer())
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("model exploded")
+
+    monkeypatch.setattr(cli, "run_agent", boom)
+    with pytest.raises(RuntimeError):
+        cli.main(["--invoice", INVOICE])
+    assert flushed == [True]
+
+
+def test_json_mode_includes_the_cost_table_and_trace_pointer(patched, capsys):
+    cli.main(["--invoice", INVOICE, "--json"])
+    parsed = json.loads(capsys.readouterr().out)
+    assert parsed["total_usd"] == "0.01395000"
+    assert len(parsed["llm_calls"]) == 2
+    assert parsed["llm_calls"][0]["input_usd"] == "0.00240000"
+    assert parsed["trace_backend"] == "jsonl"

@@ -186,6 +186,12 @@ sap-proc-agent/
     ├── generator/       # deterministic scenario generator
     ├── mock_erp/        # OData read service + approval state machine
     └── agent/           # tool-calling loop; talks HTTP, imports none of the above
+        ├── erp_client.py   the only thing that speaks to the ERP
+        ├── tools.py        what the model is allowed to do
+        ├── schemas.py      the output contract
+        ├── loop.py         messages in, AgentRun out
+        ├── cost.py         tokens -> dollars, or an honest "unpriced"
+        └── tracing.py      Null / JSONL / Langfuse behind one interface
 ```
 
 Directories appear in the commit where they first do something. There are no empty
@@ -202,8 +208,8 @@ because it shapes the data model.
 - [x] Scenario generator + exception taxonomy (200 scenarios, 8 labels, byte-reproducible)
 - [x] Read-only tool endpoints on the mock ERP (OData V2 dialect, per-vendor tolerance)
 - [x] Approval state machine (allow-list transitions, payload hash, amendment overlay)
-- [x] Agent loop (tool-calling, terminal-tool structured output, 157 tests green)
-- [ ] Tracing
+- [x] Agent loop (tool-calling, terminal-tool structured output)
+- [x] Tracing + cost accounting (Langfuse, local JSONL, per-call cost table; 218 tests green)
 - [ ] Eval suite in CI
 - [ ] Review UI
 - [ ] Case study + demo video
@@ -271,10 +277,46 @@ curl -s -X POST localhost:8000/approval/proposals/PR-000001/approve \
 # 5. re-read the invoice: MENGE is now 13.000, on the same URL as step 0
 ```
 
+**Watch what it did** -- tracing needs no account:
+
+```bash
+uv run proc-agent --invoice 5100000901 --trace-file traces/run.jsonl
+uv run python -m json.tool --json-lines < traces/run.jsonl | less
+```
+
+One JSON object per span, written on close, so the file reads bottom-up like a
+flame graph: `agent.run` last, its children above it. Every `llm.completion`
+span carries token usage and cost; a failed tool call carries the ERP error
+code. `--no-trace` disables it entirely.
+
+For the shareable version, set `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY`
+and the same run also lands in Langfuse -- nested spans, cost per generation,
+and a URL printed at the top of the transcript. Set both or neither: a
+half-configured client disables itself with a confusing error. If both a trace
+file and Langfuse keys are present, spans go to both.
+
+**Cost** is printed as a table, one row per model call:
+
+```
+cost
+   #       in    out       ms  tools          usd
+   1     4200     95      812      1    $0.014025
+   2     5100     88      904      1    $0.016620
+   3     6050     91      770      1    $0.019515
+        15350    274                    $0.050160
+  in $0.046200 / out $0.003960
+```
+
+The shape is the point: input tokens grow every iteration because the whole
+transcript is re-sent, so cost is roughly quadratic in tool calls. That is the
+number to quote when someone asks what this would cost at 10,000 invoices a
+month. An unknown model reports `unpriced` rather than `$0.000000` -- a silent
+zero reads as free.
+
 **Tests and lint:**
 
 ```bash
-uv run pytest -q          # 157 passed
+uv run pytest -q          # 218 passed
 uv run ruff check .
 ```
 

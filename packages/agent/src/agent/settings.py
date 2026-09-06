@@ -10,6 +10,7 @@ that could be logged, repr'd into a traceback, or serialised into an AgentRun.
 """
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -33,6 +34,28 @@ class AgentSettings(BaseSettings):
     # 0.0 because this is a classification task with a right answer, and
     # because the eval suite has to be reproducible run to run.
     temperature: float = 0.0
+
+    # -- observability ---------------------------------------------------
+    # On by default, because a run you cannot inspect is a run you cannot
+    # debug. It degrades to a no-op when no backend is configured, so this
+    # being True never requires anything to be installed or reachable.
+    tracing: bool = True
+
+    # A local JSONL file. Dependency-free, offline, greppable -- this is what
+    # makes tracing demonstrable without a Langfuse account.
+    trace_file: Path | None = None
+
+    # Sent to Langfuse so a CI run and a laptop run are distinguishable in the
+    # UI. Without these every trace looks like it came from the same place,
+    # which is the first thing you want to filter by.
+    trace_environment: str = "local"
+    trace_release: str | None = None
+
+    # Prompts and tool results are the most useful thing in a trace and the
+    # most likely place for anything sensitive to appear. On here because the
+    # ERP data is synthetic; the switch exists because that will not always be
+    # true. See decisions.md.
+    trace_payloads: bool = True
 
 
 @lru_cache

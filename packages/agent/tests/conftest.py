@@ -17,11 +17,13 @@ Two fakes, and one thing that is deliberately NOT fake.
 import json
 import tempfile
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
 from agent.erp_client import ErpClient
 from agent.settings import AgentSettings
+from agent.tracing import Tracer
 from fastapi.testclient import TestClient
 from mock_erp.app import create_app
 from mock_erp.settings import Settings
@@ -69,7 +71,68 @@ def erp_client(erp_app):
 
 @pytest.fixture
 def settings():
-    return AgentSettings(model="test/scripted", max_iterations=4, temperature=0.0)
+    """Tracing off by default in tests, so a span backend is never implicit."""
+    return AgentSettings(model="test/scripted", max_iterations=4, temperature=0.0, tracing=False)
+
+
+class RecordingTracer(Tracer):
+    """A tracer that keeps every span in memory.
+
+    Lets the tests assert on the shape of the span tree -- names, kinds,
+    nesting, usage, cost -- without a backend, a network, or an account.
+    Spans are recorded on OPEN so ordering is the order they were entered, and
+    the same dict is mutated by update(), so the final state is what a real
+    backend would have received.
+    """
+
+    backend = "recording"
+
+    def __init__(self, trace_id: str | None = "trace-test"):
+        self.spans: list[dict] = []
+        self._trace_id = trace_id
+        self._depth = 0
+
+    @contextmanager
+    def span(self, name, *, kind, **fields):
+        record = {"name": name, "kind": kind, "depth": self._depth, **fields}
+        self.spans.append(record)
+        parent = self
+
+        class _S:
+            def update(self, **f):
+                record.update(f)
+
+            @property
+            def trace_id(self):
+                return parent._trace_id
+
+        self._depth += 1
+        try:
+            yield _S()
+        finally:
+            self._depth -= 1
+
+    @property
+    def trace_id(self):
+        return self._trace_id
+
+    @property
+    def trace_url(self):
+        return None if self._trace_id is None else f"https://langfuse.test/t/{self._trace_id}"
+
+    def flush(self):
+        self.flushed = True
+
+    def named(self, name: str) -> list[dict]:
+        return [s for s in self.spans if s["name"] == name]
+
+    def of_kind(self, kind: str) -> list[dict]:
+        return [s for s in self.spans if s["kind"] == kind]
+
+
+@pytest.fixture
+def tracer():
+    return RecordingTracer()
 
 
 # ---------------------------------------------------------------------------
