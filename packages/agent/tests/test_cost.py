@@ -80,6 +80,17 @@ def test_negative_tokens_is_a_programming_error():
 # ---------------------------------------------------------------------------
 
 
+def test_zero_tokens_costs_zero_even_for_an_unknown_model():
+    """Zero tokens cost zero at any rate, so no price is needed.
+
+    Without this the rule-based eval baseline -- which consumes nothing --
+    would report "unpriced", which reads as unknown rather than as free.
+    """
+    cost = cost_for("baseline/rules", 0, 0)
+    assert cost.priced
+    assert cost.total_usd == Decimal("0").quantize(COST_PRECISION)
+
+
 def test_an_unknown_model_is_unpriced_not_free():
     """A silent zero would read as free. None reads as 'we do not know'."""
     cost = cost_for("test/scripted", 5000, 900)

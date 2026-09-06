@@ -41,4 +41,21 @@ tolerances:
 
 # Holdout. Never opened while tuning prompts.
 eval_fraction: 0.2
-golden_ids: []
+
+# The live-run set: small enough to hit a real model on demand without a
+# meaningful bill, stratified so every label and every AMBIGUOUS variant is
+# represented at least once. Hand-picked and therefore stable -- a golden set
+# that moves when the seed changes cannot be compared across runs.
+# Must be drawn from dev: golden cases get read by eye, so they cannot also
+# be holdout (assign_splits enforces this).
+golden_ids:
+  - SC-0001   # CLEAN
+  - SC-0002   # PRICE_MAJOR
+  - SC-0004   # GR_MISSING
+  - SC-0006   # DUP_INVOICE
+  - SC-0009   # QTY_OVER      \
+  - SC-0018   # GR_PARTIAL    /  the pair the whole eval exists to separate
+  - SC-0021   # PRICE_MINOR
+  - SC-0017   # AMBIGUOUS / DANGLING_PO_LINE
+  - SC-0033   # AMBIGUOUS / CONFLICTING_RECEIPTS
+  - SC-0040   # AMBIGUOUS / UNAUTHORISED_OVER_DELIVERY

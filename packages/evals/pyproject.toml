@@ -1,0 +1,27 @@
+[project]
+name = "evals"
+version = "0.1.0"
+description = "Offline eval harness: scores the agent against ground truth, and gates on safety"
+readme = "README.md"
+authors = [
+    { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "agent",
+    "generator",
+    "httpx",
+    "pydantic",
+    "pyyaml",
+]
+
+[project.scripts]
+proc-evals = "evals.cli:_entrypoint"
+
+[tool.uv.sources]
+agent = { workspace = true }
+generator = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

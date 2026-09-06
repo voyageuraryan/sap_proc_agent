@@ -28,5 +28,9 @@ htmlcov/
 *.sqlite3-wal
 *.sqlite3-shm
 
+# Eval outputs. Reports are regenerated on every run; cassettes ARE
+# committed (they are the recorded transcripts CI replays).
+evals/reports/
+
 # Local transfer/staging scratch, not part of the project
 _to_delete/

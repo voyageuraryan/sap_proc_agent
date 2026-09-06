@@ -638,3 +638,218 @@ every iteration, which is exactly the workload caching is for, so the cost table
 Deliberately not fixed in Step 7: the eval suite comes first, and there is no point
 optimising a cost number before there is a benchmark to measure the optimisation
 against. Recorded here so the number is read with the right caveat.
+
+---
+
+## 2026-09-06 — A Python harness in the repo, not promptfoo
+
+**Decision:** `packages/evals` is a workspace member with its own CLI
+(`proc-evals`). The original spec named promptfoo.
+
+**Why the change:** promptfoo grades prompt/response pairs well. This agent is a
+stateful multi-turn tool-calling loop, so promptfoo would have driven
+`proc-agent --json` as a custom provider and graded the output — meaning the real
+work (running the loop, mapping classifications onto labels, aggregating cost,
+checking that nothing was written) still happens in Python behind a shell-out,
+and CI grows a Node toolchain to reach it.
+
+Doing it natively means the harness reuses what already exists: `AgentRun` as the
+unit of measurement, `completion_fn` injection as the seam for baselines and
+replay, `LABEL_FOR_CLASSIFICATION` as the scoring bridge, `total_usd` as a
+column. One `uv run`, one language, one lockfile.
+
+**Tradeoff:** no web UI, and "promptfoo" is a recognisable line on a CV that
+"I wrote the harness" is not. Accepted: the harness is more interesting than the
+tool would have been, and Langfuse already provides the UI for individual runs.
+
+---
+
+## 2026-09-06 — Safety hard-fails; accuracy is reported
+
+**Decision:** `proc-evals` exits `1` only when a safety gate fails: an invoice
+changed during the run, a proposal reached APPLIED, or a ground-truth string
+appeared in something the agent was shown. Accuracy, over-escalation and cost
+are printed and written to a report, and never fail the build. Exit `2` is
+reserved for the harness being unable to run at all.
+
+**Rejected:** accuracy thresholds from day one.
+
+**Why:** a threshold chosen before there is a baseline tests the person who
+chose it. When it goes red you learn that your guess was wrong, and the
+reflex — lower the number — teaches you nothing. Safety gates are different in
+kind: they are claims that are either true or false, they cost nothing to
+check, and the one time they matter is the time nobody was looking.
+
+Three exit codes rather than two because three different people need to hear
+about the three outcomes: nobody, the person who broke the gate, and the person
+whose cassette went stale.
+
+---
+
+## 2026-09-06 — CI replays; the live model runs on demand
+
+**Decision:** every push runs the rule baseline over all 200 scenarios, plus a
+replay of committed cassettes once they exist. A separate manual and weekly
+workflow runs a real model against the golden split.
+
+**Rejected:** hitting the API on every push. It costs money per push, it turns
+the build red on provider flakiness rather than on the change under review, it
+needs a key in secrets that forks cannot have, and it makes non-determinism a
+property of CI.
+
+**What each one actually proves:** the replay job proves the *harness* did not
+regress — the loop, the tool layer, the OData service, the approval gate, the
+scoring. It proves nothing about the model, and the report says so. The weekly
+live job is what catches provider drift: a model update that quietly changes
+behaviour shows up as a dated report rather than as a surprise during a demo.
+
+---
+
+## 2026-09-06 — Cassettes carry a request fingerprint, and refuse to replay when it changes
+
+**Decision:** each recorded turn stores a SHA-256 of the request that produced
+it — messages, tool names and descriptions, model, temperature. On replay the
+hash is recomputed and compared, and a mismatch raises rather than replaying.
+
+**Why:** a cassette that happily replays against a changed prompt reports a
+green eval for a prompt that was never run. That is a false negative on exactly
+the change you most wanted to measure, and it is silent. Failing loudly and
+demanding a re-record is the correct cost.
+
+**What is deliberately excluded from the hash:** tool_call ids, because the
+provider generates them and they differ between the recording run and the
+replay run through no fault of ours — including them would make every cassette
+single-use. Registry *order* is excluded too (the names and descriptions sort),
+because reordering a dict is not a prompt change.
+
+`--allow-stale` exists for debugging the harness itself and records which turns
+mismatched. It must never be used to produce a number.
+
+---
+
+## 2026-09-06 — A rule-based baseline, and what it does NOT prove
+
+**Decision:** `evals/baseline.py` is a deterministic three-way match that plugs
+in as `completion_fn`. It reads prior tool results out of the message list
+exactly as a model does, emits real tool calls, and scores **100% ideal on all
+200 scenarios**.
+
+**Why it earns its place:** CI has something real to run with no API key and no
+cassettes; it is the cost and latency floor every model call has to beat (five
+iterations, zero tokens, 24 ms); and a perfect score is the strongest available
+evidence that the *scoring tables* are correct — if a rule engine cannot score
+perfectly against labels a rule engine generated, the bug is in the scoring, not
+in the "model".
+
+**What it does not prove, stated before anyone else says it:** it scores 100%
+*because the dataset was generated by rules and this encodes the same rules*.
+That is a fact about synthetic data, not evidence that AP needs no judgement.
+The runner attaches that caveat to the report itself, in `notes`, so the number
+cannot travel without it.
+
+The honest framing is the interesting one: here is exactly what a rule engine
+already does for free, so here is what the model has to be worth paying for.
+
+---
+
+## 2026-09-06 — Decisions are graded, not scored pass/fail
+
+**Decision:** each case gets a grade of `ideal`, `acceptable` or `wrong`, plus
+two separate flags: `over_escalated` and `unsafe_action`.
+
+**Why:** collapsing this to a boolean loses the distinction that matters.
+Escalating a PRICE_MAJOR the agent could have corrected costs a human five
+minutes and is never unsafe — `acceptable`. Correcting an AMBIGUOUS case the
+agent could not possibly have resolved means it invented a figure — `wrong`,
+and flagged `unsafe`. Both would have been "incorrect" under a single boolean,
+and they need different fixes.
+
+The asymmetry is deliberate and encoded in `ALSO_ACCEPTABLE`: escalation is a
+fallback for the hard labels and **not** for CLEAN or PRICE_MINOR, which are
+half the queue. An agent allowed to punt on the easy majority scores no wrong
+answers and automates nothing.
+
+`GR_MISSING` has no acceptable alternative to escalating at all: nothing was
+received, so there is no quantity to amend *to*, and any correction is a
+fabrication. That table originally listed PROPOSE_CORRECTION as acceptable for
+GR_MISSING while `is_unsafe_action` simultaneously flagged it — a direct
+contradiction that produced confident, wrong numbers with nothing failing.
+`is_unsafe_action` is now defined *through* `grade_decision` so the two cannot
+disagree, and a parametrised test asserts it for every (label, decision) pair.
+
+---
+
+## 2026-09-06 — Corrections are checked for their figures, not just their shape
+
+**Decision:** when the agent proposes a correction, the harness checks the
+correction *type* against the label and then the target *value* against the
+figure in the label's `detail` block — `to_quantity` against `received_qty`,
+`to_price` against `po_price`, `duplicate_of` against the original invoice.
+`correction_type_correct` and `correction_value_correct` are reported
+separately, and both are `None` when nothing was proposed (distinct from
+`False`, which means something wrong was).
+
+**Why:** "proposed a quantity amendment" and "proposed amending 14.000 down to
+the 13.000 that actually arrived" are very different outcomes. A correction with
+the right type and a fabricated number is the *worst* possible output, because
+it looks right to a human skimming an approval queue — which is precisely the
+human the gate depends on.
+
+Values compare as `Decimal`, not as strings: `13.0` and `13.000` are the same
+quantity and a model may emit either. Comparing text would have made the eval
+measure formatting.
+
+---
+
+## 2026-09-06 — The eval package is the only reader of the answer key
+
+**Decision:** `evals/dataset.py` is the sole module that opens
+`data/labels/`. A test parses every other `.py` in `packages/` and asserts that
+no string literal names the labels directory.
+
+**Why:** this repo has claimed since Step 3 that ground truth is structurally
+unreachable from the served data. That claim was previously supported by a leak
+test over HTTP responses, which shows nothing *arrived* — this shows nothing can
+*reach*. Together they cover both directions.
+
+**Detail worth keeping:** the first version of the test grepped raw file text
+and failed on `mock_erp/settings.py`, whose docstring says it has "no code path
+pointing at data/labels/" — prose asserting the very property under test. It now
+parses the AST and inspects non-docstring string literals only. A test that
+punishes you for documenting the rule is a bad test.
+
+---
+
+## 2026-09-06 — The scenario-to-invoice map comes from the generator, not a convention
+
+**Decision:** `load_cases` rebuilds the dataset in memory via
+`generator.cli.build_dataset` to learn which invoice belongs to which scenario,
+and cross-checks every label against the committed `labels.json`. A disagreement
+is a hard error telling you to regenerate.
+
+**Rejected:** deriving the invoice number from the numbering convention
+(`51` + zero-padded sequence + line). It works today and would break silently
+the day the convention changes — and a harness that quietly targets the wrong
+document still prints a confident number.
+
+**Consequence worth naming:** for a `DUP_INVOICE` scenario the harness targets
+the **second** invoice. The first one is legitimate; asking the agent to judge it
+and rejecting it would be the wrong answer.
+
+---
+
+## 2026-09-06 — golden_ids was empty, and nothing noticed
+
+**Not a decision — a gap found while building the harness.** `splits.py` has
+always populated `golden` from `cfg.golden_ids`, and `scenarios.yaml` has always
+had `golden_ids: []`. So `data/labels/splits.json` shipped with an empty golden
+split for three steps, and the determinism tests passed the whole time because
+an empty list is perfectly reproducible.
+
+Now filled with ten hand-picked dev cases covering all eight labels and all
+three AMBIGUOUS variants, and `load_cases` refuses an empty split with a message
+naming the config key to fix. Regenerating changed `splits.json` and nothing
+else, which is itself the evidence that the generator is still deterministic.
+
+The lesson is the one that keeps recurring in this project: **a test that passes
+on empty input is not a test.**

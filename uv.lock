@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 members = [
     "agent",
     "erp-domain",
+    "evals",
     "generator",
     "mock-erp",
     "sap-proc-agent",
@@ -376,6 +377,27 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "pydantic" }]
+
+[[package]]
+name = "evals"
+version = "0.1.0"
+source = { editable = "packages/evals" }
+dependencies = [
+    { name = "agent" },
+    { name = "generator" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "agent", editable = "packages/agent" },
+    { name = "generator", editable = "packages/generator" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
 
 [[package]]
 name = "fastapi"
@@ -1589,6 +1611,7 @@ source = { virtual = "." }
 dev = [
     { name = "agent" },
     { name = "erp-domain" },
+    { name = "evals" },
     { name = "generator" },
     { name = "httpx" },
     { name = "mock-erp" },
@@ -1602,6 +1625,7 @@ dev = [
 dev = [
     { name = "agent", editable = "packages/agent" },
     { name = "erp-domain", editable = "packages/erp_domain" },
+    { name = "evals", editable = "packages/evals" },
     { name = "generator", editable = "packages/generator" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mock-erp", editable = "packages/mock_erp" },

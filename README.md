@@ -185,13 +185,21 @@ sap-proc-agent/
     ├── erp_domain/      # shared SAP-flavoured models (generator + service only)
     ├── generator/       # deterministic scenario generator
     ├── mock_erp/        # OData read service + approval state machine
-    └── agent/           # tool-calling loop; talks HTTP, imports none of the above
+    ├── agent/           # tool-calling loop; talks HTTP, imports none of the above
         ├── erp_client.py   the only thing that speaks to the ERP
         ├── tools.py        what the model is allowed to do
         ├── schemas.py      the output contract
         ├── loop.py         messages in, AgentRun out
-        ├── cost.py         tokens -> dollars, or an honest "unpriced"
-        └── tracing.py      Null / JSONL / Langfuse behind one interface
+    │   ├── cost.py         tokens -> dollars, or an honest "unpriced"
+    │   └── tracing.py      Null / JSONL / Langfuse behind one interface
+    └── evals/           # the only package that reads data/labels/
+        ├── dataset.py      splits -> runnable cases, with integrity checks
+        ├── expectations.py what the right answer IS, per label
+        ├── scoring.py      one run -> one scored row
+        ├── safety.py       the gates that fail the build
+        ├── cassettes.py    record a live run once, replay it forever
+        ├── baseline.py     a rule engine dressed as a model
+        └── report.py       terminal / Markdown / JSON
 ```
 
 Directories appear in the commit where they first do something. There are no empty
@@ -209,8 +217,8 @@ because it shapes the data model.
 - [x] Read-only tool endpoints on the mock ERP (OData V2 dialect, per-vendor tolerance)
 - [x] Approval state machine (allow-list transitions, payload hash, amendment overlay)
 - [x] Agent loop (tool-calling, terminal-tool structured output)
-- [x] Tracing + cost accounting (Langfuse, local JSONL, per-call cost table; 218 tests green)
-- [ ] Eval suite in CI
+- [x] Tracing + cost accounting (Langfuse, local JSONL, per-call cost table)
+- [x] Eval suite in CI (rule baseline, cassette replay, safety gates; 328 tests green)
 - [ ] Review UI
 - [ ] Case study + demo video
 
@@ -313,10 +321,35 @@ number to quote when someone asks what this would cost at 10,000 invoices a
 month. An unknown model reports `unpriced` rather than `$0.000000` -- a silent
 zero reads as free.
 
+**Score it against ground truth:**
+
+```bash
+# a deterministic rule engine over all 200 scenarios -- free, no API key
+uv run proc-evals --split all --mode baseline
+
+# a real model over the 10-case golden set, saving transcripts
+uv run proc-evals --split golden --mode record
+
+# replay those transcripts: free, identical every time. This is what CI runs.
+uv run proc-evals --split golden --mode replay
+```
+
+Reports land in `evals/reports/` as both Markdown and JSON. Exit code is `0`
+if the safety gates passed, `1` if one failed, `2` if the harness could not
+run — three different people need to hear about those three outcomes.
+
+Accuracy never fails the build; **safety always does**. Zero invoices changed,
+zero proposals reaching APPLIED, zero ground-truth labels in anything the
+agent saw. Those are claims that are either true or false. An accuracy
+threshold picked before there is a baseline tests your guess, not the agent.
+
+The rule baseline scores 100% on all 200 scenarios, which is exactly what it
+should do and means less than it looks like — see `packages/evals/README.md`.
+
 **Tests and lint:**
 
 ```bash
-uv run pytest -q          # 218 passed
+uv run pytest -q          # 328 passed
 uv run ruff check .
 ```
 

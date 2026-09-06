@@ -1,0 +1,83 @@
+name: eval-live
+
+# The expensive one: a real model against the golden split. Manual, because
+# every run costs money and a model's non-determinism should never be able to
+# turn a pull request red.
+#
+# Also runs weekly, so provider drift -- a model update that quietly changes
+# behaviour -- shows up as a dated report rather than as a surprise during a
+# demo.
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "LiteLLM provider/model, e.g. anthropic/claude-sonnet-4-5"
+        required: false
+        default: ""
+      split:
+        description: "golden (10 cases) or eval (43, the holdout)"
+        required: false
+        default: "golden"
+      record:
+        description: "Save transcripts as cassettes for CI to replay"
+        type: boolean
+        default: true
+  schedule:
+    - cron: "0 6 * * 1"
+
+env:
+  AGENT_ERP_BASE_URL: http://127.0.0.1:8000/sap/opu/odata/sap/ZPROC_SRV
+  MOCK_ERP_ERP_DATA_DIR: data/erp
+  MOCK_ERP_DB_PATH: /tmp/live-approvals.sqlite3
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - run: uv sync --locked
+
+      - name: Start the mock ERP
+        run: |
+          uv run uvicorn mock_erp.app:app --host 127.0.0.1 --port 8000 --log-level warning &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/healthz > /dev/null && break
+            sleep 0.5
+          done
+          curl -sf http://127.0.0.1:8000/healthz
+
+      - name: Run the live eval
+        env:
+          # Only the provider you actually use needs to be set.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+          AGENT_TRACE_ENVIRONMENT: ci
+          AGENT_TRACE_RELEASE: ${{ github.sha }}
+        run: |
+          MODE=live
+          if [ "${{ inputs.record }}" = "true" ]; then MODE=record; fi
+          ARGS="--split ${{ inputs.split || 'golden' }} --mode $MODE"
+          if [ -n "${{ inputs.model }}" ]; then ARGS="$ARGS --model ${{ inputs.model }}"; fi
+          uv run proc-evals $ARGS
+
+      - name: Summarise into the run page
+        if: always()
+        run: cat evals/reports/*.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload reports and cassettes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-eval
+          path: |
+            evals/reports/
+            evals/cassettes/
+          if-no-files-found: ignore

@@ -1,0 +1,81 @@
+name: ci
+
+# Every push runs the parts that are free and deterministic. Nothing here
+# needs an API key, so a fork can run it and a rate limit cannot turn the
+# build red for reasons that have nothing to do with the change.
+on:
+  push:
+  pull_request:
+
+env:
+  # Point the agent and the harness at the service this job starts.
+  AGENT_ERP_BASE_URL: http://127.0.0.1:8000/sap/opu/odata/sap/ZPROC_SRV
+  MOCK_ERP_ERP_DATA_DIR: data/erp
+  MOCK_ERP_DB_PATH: /tmp/ci-approvals.sqlite3
+  # No dashboard in CI, and no key to reach one.
+  AGENT_TRACING: "false"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --locked
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Unit and integration tests
+        run: uv run pytest -q
+
+      # The dataset is a pure function of (config, seed). If regenerating it
+      # produces a different byte, either determinism broke or someone edited
+      # data/ by hand -- and every eval number downstream is then measured
+      # against an answer key that does not describe the data.
+      - name: Dataset is reproducible
+        run: |
+          uv run python -m generator.cli
+          git diff --exit-code -- data/
+
+      - name: Start the mock ERP
+        run: |
+          uv run uvicorn mock_erp.app:app --host 127.0.0.1 --port 8000 --log-level warning &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/healthz > /dev/null && break
+            sleep 0.5
+          done
+          curl -sf http://127.0.0.1:8000/healthz
+
+      # The rule baseline over all 200 scenarios. Free, deterministic, and it
+      # exercises the whole stack: agent loop, tool layer, OData service,
+      # approval gate, scoring. It also fails the build if a write escapes or
+      # ground truth leaks -- the two things that must never be true.
+      - name: Evals (rule baseline, all scenarios)
+        run: uv run proc-evals --split all --mode baseline --quiet
+
+      # Recorded transcripts from a real model, replayed. Skipped until the
+      # first `--mode record` run has been committed, because a green tick on
+      # an empty cassette directory would be a lie.
+      - name: Evals (replay recorded transcripts)
+        run: |
+          if [ -d evals/cassettes/golden ] && [ -n "$(ls -A evals/cassettes/golden 2>/dev/null)" ]; then
+            uv run proc-evals --split golden --mode replay --quiet
+          else
+            echo "no cassettes committed yet -- record with:"
+            echo "  uv run proc-evals --split golden --mode record"
+            echo "skipping"
+          fi
+
+      - name: Upload eval reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-reports
+          path: evals/reports/
+          if-no-files-found: ignore

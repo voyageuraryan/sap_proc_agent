@@ -15,13 +15,14 @@ members = [
     "packages/generator",
     "packages/erp_domain",
     "packages/agent",
+    "packages/evals",
 ]
 
 [tool.uv]
 package = false
 
 [dependency-groups]
-# The four workspace members are dev dependencies of the root so that a plain
+# The five workspace members are dev dependencies of the root so that a plain
 # `uv sync` installs everything and `uv run pytest` works with no extra flag.
 # Without them, a virtual workspace root installs NO members and every import
 # in the test suite fails.
@@ -31,6 +32,7 @@ dev = [
     "httpx>=0.28.1",
     "agent",
     "erp-domain",
+    "evals",
     "generator",
     "mock-erp",
 ]
@@ -38,6 +40,7 @@ dev = [
 [tool.uv.sources]
 agent = { workspace = true }
 erp-domain = { workspace = true }
+evals = { workspace = true }
 generator = { workspace = true }
 mock-erp = { workspace = true }
 

@@ -99,6 +99,9 @@ class TokenCost:
 
 UNPRICED = TokenCost(input_usd=None, output_usd=None)
 
+#: Quantised zero, so a free run reads as $0.000000 rather than as unknown.
+ZERO_USD = Decimal("0").quantize(COST_PRECISION)
+
 #: A cost function takes (model, prompt_tokens, completion_tokens) and returns
 #: (input_usd, output_usd) or None if it does not know the model.
 CostFn = Callable[[str, int, int], "tuple[Decimal, Decimal] | None"]
@@ -161,6 +164,11 @@ def cost_for(
     """
     if prompt_tokens < 0 or completion_tokens < 0:
         raise ValueError("token counts cannot be negative")
+    # Zero tokens cost zero at any rate, so this needs no price. Without it a
+    # run that consumed nothing -- the rule-based eval baseline, a cached
+    # no-op -- would report "unpriced" and read as unknown rather than free.
+    if prompt_tokens == 0 and completion_tokens == 0:
+        return TokenCost(input_usd=ZERO_USD, output_usd=ZERO_USD)
     if not model:
         return UNPRICED
 
@@ -179,10 +187,7 @@ def total_cost(costs: list[TokenCost]) -> TokenCost:
     blank.
     """
     if not costs:
-        return TokenCost(
-            input_usd=Decimal("0").quantize(COST_PRECISION),
-            output_usd=Decimal("0").quantize(COST_PRECISION),
-        )
+        return TokenCost(input_usd=ZERO_USD, output_usd=ZERO_USD)
     if any(not c.priced for c in costs):
         return UNPRICED
     return TokenCost(
