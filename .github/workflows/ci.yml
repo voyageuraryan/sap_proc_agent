@@ -52,6 +52,21 @@ jobs:
           done
           curl -sf http://127.0.0.1:8000/healthz
 
+      # The review UI is a second app that talks to the ERP over HTTP. Its
+      # /healthz reports whether the ERP is reachable, not merely whether the
+      # process booted -- so this step proves both apps and the link between
+      # them, which no unit test can.
+      - name: Start the review UI and check it can reach the ERP
+        run: |
+          REVIEW_ERP_BASE_URL=http://127.0.0.1:8000 \
+            uv run uvicorn review_ui.app:app --host 127.0.0.1 --port 8001 --log-level warning &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8001/healthz > /dev/null && break
+            sleep 0.5
+          done
+          curl -sf http://127.0.0.1:8001/healthz | tee /tmp/review-health.json
+          grep -q '"ok":true' /tmp/review-health.json
+
       # The rule baseline over all 200 scenarios. Free, deterministic, and it
       # exercises the whole stack: agent loop, tool layer, OData service,
       # approval gate, scoring. It also fails the build if a write escapes or

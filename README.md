@@ -192,14 +192,18 @@ sap-proc-agent/
         ├── loop.py         messages in, AgentRun out
     │   ├── cost.py         tokens -> dollars, or an honest "unpriced"
     │   └── tracing.py      Null / JSONL / Langfuse behind one interface
-    └── evals/           # the only package that reads data/labels/
+    ├── evals/           # the only package that reads data/labels/
         ├── dataset.py      splits -> runnable cases, with integrity checks
         ├── expectations.py what the right answer IS, per label
         ├── scoring.py      one run -> one scored row
         ├── safety.py       the gates that fail the build
         ├── cassettes.py    record a live run once, replay it forever
-        ├── baseline.py     a rule engine dressed as a model
-        └── report.py       terminal / Markdown / JSON
+    │   ├── baseline.py     a rule engine dressed as a model
+    │   └── report.py       terminal / Markdown / JSON
+    └── review_ui/       # the human half of the gate; a client of the ERP
+        ├── client.py       has approve/reject/apply -- the agent's client does not
+        ├── views.py        proposal -> what a reviewer needs to disagree
+        └── templates/      server-rendered, zero JavaScript
 ```
 
 Directories appear in the commit where they first do something. There are no empty
@@ -218,8 +222,8 @@ because it shapes the data model.
 - [x] Approval state machine (allow-list transitions, payload hash, amendment overlay)
 - [x] Agent loop (tool-calling, terminal-tool structured output)
 - [x] Tracing + cost accounting (Langfuse, local JSONL, per-call cost table)
-- [x] Eval suite in CI (rule baseline, cassette replay, safety gates; 328 tests green)
-- [ ] Review UI
+- [x] Eval suite in CI (rule baseline, cassette replay, safety gates)
+- [x] Review UI (server-rendered approval queue; 377 tests green)
 - [ ] Case study + demo video
 
 ---
@@ -346,10 +350,33 @@ threshold picked before there is a baseline tests your guess, not the agent.
 The rule baseline scores 100% on all 200 scenarios, which is exactly what it
 should do and means less than it looks like — see `packages/evals/README.md`.
 
+**Approve something as a human:**
+
+```bash
+uv run uvicorn mock_erp.app:app --port 8000     # the ERP
+uv run uvicorn review_ui.app:app --port 8001    # the review queue
+open http://localhost:8001
+```
+
+A separate app, not routes on the ERP — SAP does not serve your review screen.
+It reaches documents over the same HTTP contract the agent does and calls the
+same approval endpoints a `curl` would, so it holds no privileged path. Server
+-rendered, zero JavaScript, no build step: it works offline.
+
+The screen shows the proposed change, the agent's reasoning, and **the evidence
+unsummarised** — the PO line, every goods receipt, the invoice line and this
+supplier's tolerance, side by side. An approval queue that only says "the agent
+wants to change something" trains people to click Approve, which converts a
+human gate into a slower rubber stamp.
+
+Each action form carries the payload hash it rendered, and the server refuses
+if the proposal has moved since the page was drawn: **you approved what you
+were shown**. There is no authentication, and the header says so on every page.
+
 **Tests and lint:**
 
 ```bash
-uv run pytest -q          # 328 passed
+uv run pytest -q          # 377 passed
 uv run ruff check .
 ```
 

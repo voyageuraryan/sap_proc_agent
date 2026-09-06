@@ -1,0 +1,97 @@
+{# One stylesheet, inlined. No CDN, no build step, no JavaScript: this page
+   has to render on a laptop with no network, and an approval screen is a poor
+   place to introduce a supply chain. #}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Invoice review{% endblock %}</title>
+<style>
+  :root {
+    --bg: #fbfbfa; --fg: #1a1a19; --muted: #6b6b68; --line: #e2e2df;
+    --panel: #ffffff; --accent: #2f5d50; --warn-bg: #fdf3e3; --warn-fg: #7a4b00;
+    --warn-line: #e8c98a; --bad-bg: #fdeeee; --bad-fg: #8a2626; --good: #2f5d50;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181a; --fg: #e8e8e6; --muted: #9a9a96; --line: #2e3134;
+      --panel: #1d2022; --accent: #7fc9b0; --warn-bg: #33290f; --warn-fg: #f0cf8e;
+      --warn-line: #6b551f; --bad-bg: #3a1e1e; --bad-fg: #f0a1a1; --good: #7fc9b0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    border-bottom: 1px solid var(--line); padding: 14px 22px;
+    display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap;
+  }
+  header a.brand { font-weight: 650; color: var(--fg); text-decoration: none; }
+  header .who { margin-left: auto; color: var(--muted); font-size: 13px; }
+  main { padding: 22px; max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .07em;
+       color: var(--muted); margin: 26px 0 10px; font-weight: 600; }
+  a { color: var(--accent); }
+  .sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+  .panel { background: var(--panel); border: 1px solid var(--line);
+           border-radius: 8px; padding: 16px 18px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px;
+       text-transform: uppercase; letter-spacing: .05em; }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs a {
+    padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px;
+    text-decoration: none; color: var(--fg); font-size: 13px; background: var(--panel);
+  }
+  .tabs a.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .pill { display: inline-block; padding: 2px 9px; border-radius: 999px;
+          font-size: 12px; border: 1px solid var(--line); }
+  .pill.PROPOSED { border-color: var(--warn-line); background: var(--warn-bg); color: var(--warn-fg); }
+  .pill.APPROVED { border-color: var(--good); color: var(--good); }
+  .pill.APPLIED  { background: var(--good); border-color: var(--good); color: var(--bg); }
+  .pill.REJECTED { background: var(--bad-bg); color: var(--bad-fg); border-color: var(--bad-fg); }
+  .note { border-radius: 8px; padding: 12px 14px; margin: 0 0 16px; font-size: 14px; }
+  .note.warn { background: var(--warn-bg); color: var(--warn-fg); border: 1px solid var(--warn-line); }
+  .note.bad  { background: var(--bad-bg); color: var(--bad-fg); border: 1px solid var(--bad-fg); }
+  .note.ok   { background: var(--panel); border: 1px solid var(--good); color: var(--good); }
+  .arrow { color: var(--muted); padding: 0 8px; }
+  form.act { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  input[type=text] {
+    padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); font: inherit; font-size: 14px; min-width: 240px;
+  }
+  button {
+    padding: 7px 16px; border-radius: 6px; border: 1px solid var(--accent);
+    background: var(--accent); color: var(--bg); font: inherit; font-weight: 600;
+    font-size: 14px; cursor: pointer;
+  }
+  button.secondary { background: transparent; color: var(--fg); border-color: var(--line); }
+  .actions { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 8px; }
+  .empty { color: var(--muted); padding: 26px 0; }
+  .foot { color: var(--muted); font-size: 12px; margin-top: 34px;
+          border-top: 1px solid var(--line); padding-top: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/">Invoice review</a>
+  <span class="mono" style="color:var(--muted);font-size:13px">{{ erp_base_url }}</span>
+  <span class="who">signed in as <strong>{{ reviewer }}</strong> &mdash; not authenticated</span>
+</header>
+<main>
+{% block body %}{% endblock %}
+  <p class="foot">
+    Every change on this screen goes through the same approval endpoints an API
+    client would use. This app holds no privileged path to the documents.
+  </p>
+</main>
+</body>
+</html>

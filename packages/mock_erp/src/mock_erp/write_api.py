@@ -90,6 +90,20 @@ async def reject_proposal(
     return entity(proposal.model_dump(mode="json"))
 
 
+@human_router.get("/proposals/{proposal_id}")
+async def get_proposal(
+    proposal_id: str, repo: ProposalRepository = Depends(get_repository)
+) -> dict:
+    """One proposal by id.
+
+    Added for the review UI: filtering the list client-side would work but
+    would silently return nothing for a proposal outside the current status
+    filter, which is exactly when a reviewer is most likely to be looking
+    for it.
+    """
+    return entity(repo.get(proposal_id).model_dump(mode="json"))
+
+
 @human_router.get("/proposals")
 async def list_proposals(
     status: str | None = None,

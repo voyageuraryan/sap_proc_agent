@@ -1,0 +1,22 @@
+[project]
+name = "review-ui"
+version = "0.1.0"
+description = "The human half of the approval gate: a reviewer queue over the mock ERP"
+readme = "README.md"
+authors = [
+    { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "httpx",
+    "jinja2",
+    "pydantic",
+    "pydantic-settings",
+    "python-multipart",
+    "uvicorn",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

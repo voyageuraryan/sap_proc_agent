@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Review queue{% endblock %}
+{% block body %}
+<h1>Review queue</h1>
+<p class="sub">
+  Corrections the agent has proposed. Nothing here has changed a document:
+  a proposal only becomes real once it is approved and applied.
+</p>
+
+{% if error %}<p class="note bad"><strong>{{ error.code }}</strong> &mdash; {{ error.message }}</p>{% endif %}
+{% if flash %}<p class="note ok">{{ flash }}</p>{% endif %}
+
+<div class="tabs">
+  <a href="/queue" class="{{ 'on' if not status }}">All ({{ total }})</a>
+  {% for name in status_order %}
+    <a href="/queue?status={{ name }}" class="{{ 'on' if status == name }}">
+      {{ name|capitalize }} ({{ counts[name] }})
+    </a>
+  {% endfor %}
+</div>
+
+<div class="panel">
+{% if proposals %}
+  <table>
+    <thead>
+      <tr>
+        <th>Proposal</th><th>Invoice</th><th>Correction</th>
+        <th>Proposed</th><th>Status</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in proposals %}
+      <tr>
+        <td class="mono">{{ p.proposal_id }}</td>
+        <td class="mono">{{ p.invoice_number }}</td>
+        <td>{{ p.correction_type.replace('_', ' ')|lower|capitalize }}</td>
+        <td style="color:var(--muted)">{{ p.proposed_at[:19].replace('T', ' ') }}</td>
+        <td><span class="pill {{ p.status }}">{{ p.status }}</span></td>
+        <td><a href="/proposals/{{ p.proposal_id }}">Review &rarr;</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty">
+    Nothing here.
+    {% if status %}No proposal is currently {{ status|lower }}.
+    {% else %}Run the agent against a blocked invoice to raise one.{% endif %}
+  </p>
+{% endif %}
+</div>
+{% endblock %}

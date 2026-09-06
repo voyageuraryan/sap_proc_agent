@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ view.proposal_id }} &mdash; review{% endblock %}
+{% block body %}
+<p class="sub"><a href="/queue">&larr; Back to the queue</a></p>
+
+<h1>
+  {{ view.proposal_id }}
+  <span class="pill {{ view.status }}">{{ view.status }}</span>
+</h1>
+<p class="sub">
+  Invoice <span class="mono">{{ view.invoice_number }}</span>
+  &middot; supplier <span class="mono">{{ evidence.supplier }}</span>
+  &middot; their ref <span class="mono">{{ evidence.vendor_ref }}</span>
+  &middot; dated {{ evidence.invoice_date }}
+  &middot; proposed {{ view.proposed_at[:19].replace('T', ' ') }}
+  {% if view.scenario_id %} &middot; scenario <span class="mono">{{ view.scenario_id }}</span>{% endif %}
+</p>
+
+{% if error %}<p class="note bad"><strong>{{ error.code }}</strong> &mdash; {{ error.message }}</p>{% endif %}
+{% if flash %}<p class="note ok">{{ flash }}</p>{% endif %}
+{% for warning in view.warnings %}<p class="note warn">{{ warning }}</p>{% endfor %}
+
+<h2>What would change</h2>
+<div class="panel">
+  <table>
+    <thead><tr><th>Field</th><th>Now</th><th></th><th>Proposed</th></tr></thead>
+    <tbody>
+    {% for row in view.diff %}
+      <tr>
+        <td>{{ row.label }}</td>
+        <td class="mono">{{ row.before }}{% if row.stale %}
+          <span style="color:var(--warn-fg)"> (no longer current)</span>{% endif %}</td>
+        <td class="arrow">&rarr;</td>
+        <td class="mono"><strong>{{ row.after }}</strong></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Why the agent says so</h2>
+<div class="panel">
+  <p style="margin:0">{{ view.agent_reasoning }}</p>
+</div>
+
+<h2>The evidence, unsummarised</h2>
+<div class="panel">
+  <table>
+    <thead><tr><th>Document</th><th class="num">Quantity</th><th class="num">Unit price</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Purchase order <span class="mono">{{ evidence.po_number }}</span>
+            line <span class="mono">{{ evidence.po_item }}</span></td>
+        <td class="num mono">{{ evidence.ordered_qty }}</td>
+        <td class="num mono">{{ evidence.po_price }}</td>
+        <td style="color:var(--muted)">ordered</td>
+      </tr>
+      <tr>
+        <td>Goods receipts</td>
+        <td class="num mono">{{ evidence.received_qty or '—' }}</td>
+        <td class="num">—</td>
+        <td style="color:var(--muted)">
+          {% if evidence.receipts %}
+            {% for gr in evidence.receipts %}<span class="mono">{{ gr.MBLNR }}</span>
+              ({{ gr.MENGE }} on {{ gr.BUDAT }}){% if not loop.last %}, {% endif %}{% endfor %}
+          {% else %}nothing received{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>Invoice <span class="mono">{{ view.invoice_number }}</span></td>
+        <td class="num mono">{{ evidence.invoiced_qty }}</td>
+        <td class="num mono">{{ evidence.invoiced_price }}</td>
+        <td style="color:var(--muted)">
+          {% if evidence.block_reason %}blocked: {{ evidence.block_reason }}
+          {% else %}not blocked{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>Tolerance for this supplier</td>
+        <td class="num mono">{{ evidence.quantity_tolerance }}%</td>
+        <td class="num mono">{{ evidence.price_tolerance }}%</td>
+        <td style="color:var(--muted)">{{ evidence.tolerance_source }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% if view.actions %}
+<h2>Your decision</h2>
+<div class="panel">
+  <div class="actions">
+    {% if 'approve' in view.actions %}
+      <form class="act" method="post" action="/proposals/{{ view.proposal_id }}/approve">
+        {# The hash of the payload rendered ABOVE. The server refuses if the
+           proposal has moved since this page was drawn, so an approval always
+           means "I approved what I was shown". #}
+        <input type="hidden" name="payload_hash" value="{{ view.payload_hash }}">
+        <input type="text" name="reviewer" value="{{ reviewer }}" required
+               aria-label="Your identity">
+        <button type="submit">Approve</button>
+      </form>
+    {% endif %}
+
+    {% if 'reject' in view.actions %}
+      <form class="act" method="post" action="/proposals/{{ view.proposal_id }}/reject">
+        <input type="hidden" name="payload_hash" value="{{ view.payload_hash }}">
+        <input type="text" name="reason" placeholder="Why not?" required aria-label="Reason">
+        <button class="secondary" type="submit">Reject</button>
+      </form>
+    {% endif %}
+
+    {% if 'apply' in view.actions %}
+      <form class="act" method="post" action="/proposals/{{ view.proposal_id }}/apply">
+        <input type="hidden" name="payload_hash" value="{{ view.payload_hash }}">
+        <button type="submit">Apply to the invoice</button>
+      </form>
+      <span style="color:var(--muted);font-size:13px">
+        Approved by {{ view.approved_by }}. Applying is the first moment the
+        document changes.
+      </span>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+<h2>Outcome</h2>
+<div class="panel">
+  {% if view.status == 'APPLIED' %}
+    <p style="margin:0">Applied {{ view.applied_at[:19].replace('T', ' ') }},
+      approved by <strong>{{ view.approved_by }}</strong>. The invoice above already
+      reflects it.</p>
+  {% elif view.status == 'REJECTED' %}
+    <p style="margin:0">Rejected by <strong>{{ view.rejected_by }}</strong>
+      {{ (view.rejected_at or '')[:19].replace('T', ' ') }}
+      &mdash; {{ view.rejection_reason }}. Nothing was changed, and this cannot
+      be reopened.</p>
+  {% else %}
+    <p style="margin:0">No action is available from this state.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<h2>Audit</h2>
+<div class="panel">
+  <table>
+    <tbody>
+      <tr><td>Payload hash</td><td class="mono">{{ view.payload_hash }}</td></tr>
+      <tr><td>Proposed by</td><td>agent, {{ view.proposed_at[:19].replace('T', ' ') }}</td></tr>
+      {% if view.approved_by %}
+        <tr><td>Approved by</td><td>{{ view.approved_by }},
+          {{ (view.approved_at or '')[:19].replace('T', ' ') }}</td></tr>
+      {% endif %}
+      {% if view.rejected_by %}
+        <tr><td>Rejected by</td><td>{{ view.rejected_by }},
+          {{ (view.rejected_at or '')[:19].replace('T', ' ') }}</td></tr>
+      {% endif %}
+      {% if view.applied_at %}
+        <tr><td>Applied</td><td>{{ view.applied_at[:19].replace('T', ' ') }}</td></tr>
+      {% endif %}
+      <tr><td>Raw payload</td><td class="mono">{{ view.payload }}</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

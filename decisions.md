@@ -853,3 +853,147 @@ else, which is itself the evidence that the generator is still deterministic.
 
 The lesson is the one that keeps recurring in this project: **a test that passes
 on empty input is not a test.**
+
+---
+
+## 2026-09-06 — The review UI is a separate app, not routes on the mock ERP
+
+**Decision:** `packages/review_ui` is its own FastAPI application. It reaches
+documents through the same OData endpoints the agent uses and drives the
+approval state machine through the same `/approval` routes a `curl` would hit.
+
+**Rejected:** adding HTML routes to `mock_erp`. It would have been less code and
+one fewer process.
+
+**Why:** the mock ERP stands in for SAP, and SAP does not serve your review
+screen. Putting them in one process would have made the UI an *insider* — able
+to reach the repository directly, able to grow a shortcut past the state
+machine, and impossible to point at a different backend later. As a separate
+app it is a client with no privileged path, and that is a property a test can
+assert rather than a claim: `test_the_review_app_exposes_no_odata_read_path_of_its_own`
+enumerates its OpenAPI paths and finds six, none of them a document route.
+
+**Tradeoff:** two processes to run for a demo, and a second HTTP hop on every
+page. Both are the honest cost of the separation being real.
+
+---
+
+## 2026-09-06 — A second client, because the agent's must stay unable to approve
+
+**Decision:** `review_ui.client.ReviewClient` duplicates the five read methods
+of `agent.erp_client.ErpClient` and adds `approve`, `reject` and `apply`.
+
+**Rejected:** importing `ErpClient` and subclassing it, or adding the three
+methods to it behind a flag.
+
+**Why:** "the agent has no way to approve its own proposal" has been the central
+claim since Step 5, and it is currently true in the strongest possible sense —
+the capability is *absent*, not refused. Adding the human methods to the shared
+client would have made it true only by convention, and one careless
+`build_tools` edit away from false.
+
+`test_the_agents_client_still_cannot_approve` asserts the two method sets stay
+disjoint, and `test_the_agent_has_no_tool_for_anything_the_ui_does` checks the
+same thing from the tool registry — which is what the model actually sees.
+
+**Tradeoff:** ~40 duplicated lines of read methods. Cheap insurance on the one
+property the project is about.
+
+---
+
+## 2026-09-06 — You approved what you were shown
+
+**Decision:** every action form carries the `payload_hash` that was rendered
+into the page. The route re-reads the proposal and refuses with `STALE_PAGE` if
+the hash no longer matches, before calling the ERP at all.
+
+**Why:** the ERP already guarantees that *applying* uses the bytes that were
+approved (`PAYLOAD_MISMATCH`). Nothing guaranteed that *approving* used the
+bytes that were displayed. A reviewer with a tab open from this morning could
+approve a payload they never read — the exact failure the gate exists to
+prevent, arriving through the human instead of the agent.
+
+The mechanism is deliberately the hash that already exists, not a new one: one
+concept, checked at both ends of the human's involvement.
+
+**Related, and separate:** the detail page warns *before* the click when the
+effective invoice no longer holds the value the correction was computed from.
+The ERP would refuse that apply anyway, but telling someone after they have
+approved is a worse experience than telling them before they decide.
+
+---
+
+## 2026-09-06 — Server-rendered, zero JavaScript
+
+**Decision:** Jinja2 templates, plain form POSTs, POST-then-redirect, one
+inlined stylesheet. No React, no htmx, no CDN, no npm.
+
+**Rejected:** htmx from a CDN (breaks offline, adds a supply chain to an
+approval screen), and a React SPA (adds a build step to a repo whose whole
+setup story is `uv sync`).
+
+**Why:** the demo has to run on a laptop with no network, and `uv run` should be
+the entire setup. POST-then-redirect means refreshing after approving does not
+re-submit, and the back button does not show a stale form — the two ways a
+naive form UI double-applies things.
+
+**Tradeoff:** a full page load per action and no live updates. For a queue a
+person works through one item at a time, neither costs anything real.
+
+---
+
+## 2026-09-06 — Buttons are rendered from the state machine, not hardcoded
+
+**Decision:** `ACTIONS_FOR_STATUS` maps each proposal status to the actions the
+page offers, and a test asserts it equals the complement of `ALLOWED_TRANSITIONS`
+in `mock_erp.proposals`.
+
+**Why:** a button the server will refuse is worse than no button — it teaches
+the reviewer that the screen lies. Deriving the buttons from a table that is
+tested against the ERP's own transition map means the screen and the state
+machine cannot drift apart silently.
+
+---
+
+## 2026-09-06 — The evidence is shown unsummarised
+
+**Decision:** the detail page renders the PO line, every goods-receipt document
+with its quantity and posting date, the invoice line, the supplier and their
+reference, and this supplier's tolerance percentages — side by side, in the
+units the documents use.
+
+**Why:** the point of a human gate is that a person can *disagree*. A queue that
+shows only "the agent proposes changing 14.000 to 13.000, because it says so"
+gives them nothing to disagree with, and a gate nobody can fail is a slower
+rubber stamp with worse ergonomics than no gate at all. The reviewer should be
+checking the evidence, not checking the agent's summary of it.
+
+**Detail worth keeping:** an invoice with no receipts renders "nothing received"
+rather than `0`. They are the same number and very different facts, and the
+difference is exactly what separates GR_MISSING from a partial delivery.
+
+---
+
+## 2026-09-06 — There is no authentication, and the page says so
+
+**Decision:** the reviewer identity is a form field pre-filled from
+`REVIEW_DEFAULT_REVIEWER`. Every page header reads "signed in as X — not
+authenticated".
+
+**Rejected:** a login form backed by a hardcoded password or a cookie that
+checks nothing. That would *look* like authentication, which is worse than
+having none: a reviewer would trust the `approved_by` field in the audit log,
+and it would be worth nothing.
+
+**Where it attaches when it matters:** an auth dependency on the FastAPI app,
+resolving to a verified principal, replacing the `reviewer` form field on the
+approve route. Two other things have to change with it, and neither is free:
+the ERP must stop accepting `approved_by` as a caller-supplied string
+(otherwise the gate is bypassable by anyone who can reach the approval router),
+and the approval routes need CSRF protection, which plain form POSTs currently
+do not have. A localhost demo does not need any of it; a system holding real
+money needs all three together, and doing one of them would be theatre.
+
+**This is stated here rather than discovered by a reviewer,** because "I know
+exactly what is missing and why I stopped there" is a better answer than a
+half-built login screen.
