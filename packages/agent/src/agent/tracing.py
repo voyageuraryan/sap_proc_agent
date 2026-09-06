@@ -27,6 +27,7 @@ Two rules hold everywhere below:
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import time
@@ -176,7 +177,7 @@ class JsonlTracer(Tracer):
         except OSError:
             # A full disk must not end the run. Losing a trace line is the
             # correct thing to lose.
-            pass
+            return
 
 
 # ---------------------------------------------------------------------------
@@ -216,10 +217,9 @@ class _LangfuseSpan:
 
         if not payload:
             return
-        try:
+        # Suppressed on purpose: tracing must never break the run.
+        with contextlib.suppress(Exception):
             self._native.update(**payload)
-        except Exception:  # noqa: BLE001 - tracing must not break the run
-            pass
 
     @property
     def trace_id(self) -> str | None:
@@ -277,10 +277,10 @@ class LangfuseTracer(Tracer):
             return None
 
     def flush(self) -> None:
-        try:
+        # A backend that cannot be reached must not fail the process that was
+        # only trying to tell it something.
+        with contextlib.suppress(Exception):
             self._client.flush()
-        except Exception:  # noqa: BLE001
-            pass
 
 
 # ---------------------------------------------------------------------------
@@ -377,10 +377,8 @@ def build_tracer(settings: Any, *, environ: dict[str, str] | None = None) -> Tra
 
     trace_file = getattr(settings, "trace_file", None)
     if trace_file:
-        try:
+        with contextlib.suppress(OSError):
             tracers.append(JsonlTracer(Path(trace_file)))
-        except OSError:
-            pass
 
     if langfuse_is_configured(environ):
         client = _langfuse_client(settings)

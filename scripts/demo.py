@@ -205,15 +205,15 @@ class Demo:
             data={"reviewer": "ap.supervisor@example.com", "payload_hash": payload_hash},
         )
         self.say(f"{GREEN}approved{OFF} by ap.supervisor@example.com")
-        self.say(f"  quantity {BOLD}{self.quantity(OVER_INVOICED)}{OFF}  "
-                 f"{DIM}— approval is not application{OFF}")
+        self.say(
+            f"  quantity {BOLD}{self.quantity(OVER_INVOICED)}{OFF}  "
+            f"{DIM}— approval is not application{OFF}"
+        )
         self.beat(1.5)
 
         self.say()
         self.say(f"{DIM}Now applying a payload the human never approved:{OFF}")
-        proposal = self.http.get(
-            f"{self.erp}/approval/proposals/{proposal_id}"
-        ).json()["d"]
+        proposal = self.http.get(f"{self.erp}/approval/proposals/{proposal_id}").json()["d"]
         tampered = dict(proposal["payload"])
         for key in ("to_quantity", "to_price"):
             if key in tampered:
@@ -222,9 +222,11 @@ class Demo:
             f"{self.erp}{ODATA}/ApplyCorrection",
             json={"proposal_id": proposal_id, "payload": tampered},
         )
-        self.say(f"  {RED}{response.status_code} "
-                 f"{response.json().get('error', {}).get('code', '?')}{OFF}"
-                 f"  {DIM}— approving a payload is not approving any payload{OFF}")
+        self.say(
+            f"  {RED}{response.status_code} "
+            f"{response.json().get('error', {}).get('code', '?')}{OFF}"
+            f"  {DIM}— approving a payload is not approving any payload{OFF}"
+        )
         self.say(f"  quantity still {self.quantity(OVER_INVOICED)}")
         self.beat(1.5)
 
@@ -232,8 +234,10 @@ class Demo:
             f"{self.ui}/proposals/{proposal_id}/apply", data={"payload_hash": payload_hash}
         )
         self.say(f"{GREEN}applied{OFF}")
-        self.say(f"  quantity {BOLD}{self.quantity(OVER_INVOICED)}{OFF}  "
-                 f"{DIM}— the first and only write{OFF}")
+        self.say(
+            f"  quantity {BOLD}{self.quantity(OVER_INVOICED)}{OFF}  "
+            f"{DIM}— the first and only write{OFF}"
+        )
         self.say()
         self.say("Visible on the same URL the agent read from.")
         self.beat(3)
@@ -243,10 +247,8 @@ class Demo:
         free = run["prompt_tokens"] == 0
 
         if free:
-            self.say(f"This run used the {BOLD}rule baseline{OFF}: no model, no tokens, "
-                     f"no cost.")
-            self.say(f"{DIM}It is the floor the model has to beat — 6 tool calls, "
-                     f"~25 ms, $0.{OFF}")
+            self.say(f"This run used the {BOLD}rule baseline{OFF}: no model, no tokens, no cost.")
+            self.say(f"{DIM}It is the floor the model has to beat — 6 tool calls, ~25 ms, $0.{OFF}")
             self.say(f"{DIM}Re-run with --mode live to see the real curve.{OFF}")
             self.say()
 
@@ -260,24 +262,26 @@ class Demo:
                 f"{call['completion_tokens']:>6}  {usd:>11}"
             )
         total = run.get("total_usd")
-        self.say(f"{'':>2}  {run['prompt_tokens']:>7} {run['completion_tokens']:>6}  "
-                 f"{('$' + f'{Decimal(total):.6f}') if total is not None else 'unpriced':>11}")
+        self.say(
+            f"{'':>2}  {run['prompt_tokens']:>7} {run['completion_tokens']:>6}  "
+            f"{('$' + f'{Decimal(total):.6f}') if total is not None else 'unpriced':>11}"
+        )
         self.say()
 
         if not free:
-            self.say(f"{DIM}Input tokens grow every turn — the whole transcript is "
-                     f"re-sent,{OFF}")
-            self.say(f"{DIM}so cost is roughly quadratic in tool calls. That is the "
-                     f"number{OFF}")
+            self.say(f"{DIM}Input tokens grow every turn — the whole transcript is re-sent,{OFF}")
+            self.say(f"{DIM}so cost is roughly quadratic in tool calls. That is the number{OFF}")
             self.say(f"{DIM}to quote at 10,000 invoices a month.{OFF}")
         else:
-            self.say(f"{DIM}With a real model the input column grows every turn — the "
-                     f"whole{OFF}")
-            self.say(f"{DIM}transcript is re-sent — so cost is roughly quadratic in "
-                     f"tool calls.{OFF}")
+            self.say(f"{DIM}With a real model the input column grows every turn — the whole{OFF}")
+            self.say(
+                f"{DIM}transcript is re-sent — so cost is roughly quadratic in tool calls.{OFF}"
+            )
         self.say()
-        self.say(f"{DIM}Spans also go to a local JSONL file or to Langfuse: "
-                 f"--trace-file traces/run.jsonl{OFF}")
+        self.say(
+            f"{DIM}Spans also go to a local JSONL file or to Langfuse: "
+            f"--trace-file traces/run.jsonl{OFF}"
+        )
         self.beat(3)
 
     def act_7_the_score(self) -> None:

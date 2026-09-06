@@ -40,6 +40,7 @@ FORBIDDEN_KEYS = ("label", "scenario_id", "ground_truth")
 # helpers
 # --------------------------------------------------------------------------
 
+
 def repo_root() -> Path:
     """Walk up from this file until we find the repo's config directory.
 
@@ -78,10 +79,15 @@ def run_generator_subprocess(config_path: Path, base: Path, hash_seed: int) -> N
     env = dict(os.environ, PYTHONHASHSEED=str(hash_seed))
     result = subprocess.run(
         [
-            sys.executable, "-m", "generator.cli",
-            "--config", str(config_path),
-            "--erp-dir", str(base / "erp"),
-            "--labels-dir", str(base / "labels"),
+            sys.executable,
+            "-m",
+            "generator.cli",
+            "--config",
+            str(config_path),
+            "--erp-dir",
+            str(base / "erp"),
+            "--labels-dir",
+            str(base / "labels"),
         ],
         env=env,
         cwd=repo_root(),
@@ -100,10 +106,8 @@ def assert_trees_identical(a: Path, b: Path, hint: str = "") -> None:
 
     only_left = sorted(set(left) - set(right))
     only_right = sorted(set(right) - set(left))
-    assert not only_left and not only_right, (
-        f"different files produced between runs.\n"
-        f"only in first: {only_left}\nonly in second: {only_right}"
-    )
+    assert not only_left, f"files only in the first run: {only_left}"
+    assert not only_right, f"files only in the second run: {only_right}"
 
     drifted = sorted(k for k in left if left[k] != right[k])
     assert not drifted, f"byte-level drift in {drifted}. {hint}"
@@ -112,6 +116,7 @@ def assert_trees_identical(a: Path, b: Path, hint: str = "") -> None:
 # --------------------------------------------------------------------------
 # fixtures
 # --------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def config_path() -> Path:
@@ -127,6 +132,7 @@ def config(config_path: Path) -> GeneratorConfig:
 # --------------------------------------------------------------------------
 # determinism
 # --------------------------------------------------------------------------
+
 
 def test_deterministic_in_process(config: GeneratorConfig, tmp_path: Path) -> None:
     """Same config, same seed, two runs -> identical bytes.
@@ -163,13 +169,14 @@ def test_deterministic_across_processes(config_path: Path, tmp_path: Path) -> No
         first,
         second,
         hint="Output depends on PYTHONHASHSEED: look for hash() on a string, "
-             "or iteration over a set/dict built from unsorted input.",
+        "or iteration over a set/dict built from unsorted input.",
     )
 
 
 # --------------------------------------------------------------------------
 # label isolation
 # --------------------------------------------------------------------------
+
 
 def test_no_label_leak(config: GeneratorConfig, tmp_path: Path) -> None:
     """No ground-truth label may appear in anything the mock ERP serves.
@@ -206,9 +213,7 @@ def test_labels_written_separately(config: GeneratorConfig, tmp_path: Path) -> N
         "labels.json must be a single object mapping scenario_id -> label, "
         "not a list of one-key dicts"
     )
-    assert len(labels) == config.count, (
-        f"expected {config.count} labels, got {len(labels)}"
-    )
+    assert len(labels) == config.count, f"expected {config.count} labels, got {len(labels)}"
     # Each value is an object: label + variant + injected detail. The detail is
     # what later lets you report "unreliable just outside tolerance" rather than
     # only a pass percentage.
@@ -216,12 +221,8 @@ def test_labels_written_separately(config: GeneratorConfig, tmp_path: Path) -> N
         assert set(meta) == {"label", "variant", "detail"}, (
             f"{scenario_id}: unexpected sidecar keys {sorted(meta)}"
         )
-        assert meta["label"] in LABEL_VALUES, (
-            f"{scenario_id}: unknown label {meta['label']!r}"
-        )
+        assert meta["label"] in LABEL_VALUES, f"{scenario_id}: unknown label {meta['label']!r}"
         if meta["label"] == "AMBIGUOUS":
             assert meta["variant"], f"{scenario_id}: AMBIGUOUS must record a variant"
         else:
-            assert meta["variant"] is None, (
-                f"{scenario_id}: only AMBIGUOUS may carry a variant"
-            )
+            assert meta["variant"] is None, f"{scenario_id}: only AMBIGUOUS may carry a variant"

@@ -181,7 +181,7 @@ def test_splits_valid(generated):
         present = {labels[i]["label"] for i in side}
         assert present == {str(k) for k in generated["cfg"].distribution}, (
             f"{name} is missing labels: "
-            f"{ {str(k) for k in generated['cfg'].distribution} - present}"
+            f"{ {str(k) for k in generated['cfg'].distribution} - present }"
         )
 
 
@@ -193,9 +193,7 @@ def test_price_labels_are_tolerance_relative(generated):
     by_tol = collections.defaultdict(list)
     for meta in generated["labels"].values():
         if meta["label"] == "PRICE_MAJOR":
-            by_tol[meta["detail"]["tolerance_pct"]].append(
-                Decimal(meta["detail"]["variance_pct"])
-            )
+            by_tol[meta["detail"]["tolerance_pct"]].append(Decimal(meta["detail"]["variance_pct"]))
 
     assert len(by_tol) > 1, "no vendor tolerance variety in PRICE_MAJOR scenarios"
     for tol, variances in by_tol.items():

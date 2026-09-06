@@ -56,11 +56,7 @@ def _pod_specs() -> list[tuple[str, dict]]:
 
 
 def _containers() -> list[tuple[str, dict]]:
-    return [
-        (f"{owner}/{c['name']}", c)
-        for owner, spec in _pod_specs()
-        for c in spec["containers"]
-    ]
+    return [(f"{owner}/{c['name']}", c) for owner, spec in _pod_specs() for c in spec["containers"]]
 
 
 # ---------------------------------------------------------------------------
@@ -103,25 +99,25 @@ def test_both_services_are_deployed():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("owner,spec", _pod_specs(), ids=_ids)
+@pytest.mark.parametrize(("owner", "spec"), _pod_specs(), ids=_ids)
 def test_no_workload_runs_as_root(owner, spec):
     assert spec.get("securityContext", {}).get("runAsNonRoot") is True, owner
 
 
-@pytest.mark.parametrize("name,container", _containers(), ids=_ids)
+@pytest.mark.parametrize(("name", "container"), _containers(), ids=_ids)
 def test_every_container_drops_capabilities_and_cannot_escalate(name, container):
     security = container.get("securityContext", {})
     assert security.get("allowPrivilegeEscalation") is False, name
     assert security.get("capabilities", {}).get("drop") == ["ALL"], name
 
 
-@pytest.mark.parametrize("name,container", _containers(), ids=_ids)
+@pytest.mark.parametrize(("name", "container"), _containers(), ids=_ids)
 def test_every_container_has_a_read_only_root_filesystem(name, container):
     """The only mutable state is the approval database, on its own volume."""
     assert container.get("securityContext", {}).get("readOnlyRootFilesystem") is True, name
 
 
-@pytest.mark.parametrize("name,container", _containers(), ids=_ids)
+@pytest.mark.parametrize(("name", "container"), _containers(), ids=_ids)
 def test_every_container_declares_resource_requests(name, container):
     """Without requests the scheduler cannot place it and it is the first thing
     evicted under pressure."""
@@ -131,7 +127,7 @@ def test_every_container_declares_resource_requests(name, container):
 
 
 @pytest.mark.parametrize(
-    "name,container",
+    ("name", "container"),
     [(n, c) for n, c in _containers() if "evals" not in n],
     ids=_ids,
 )
@@ -156,9 +152,7 @@ def test_the_read_only_filesystem_still_has_somewhere_to_write():
     """readOnlyRootFilesystem with no /tmp is how a container that passed
     review dies on its first temp file."""
     for owner, spec in _pod_specs():
-        mounts = {
-            m["mountPath"] for c in spec["containers"] for m in c.get("volumeMounts", [])
-        }
+        mounts = {m["mountPath"] for c in spec["containers"] for m in c.get("volumeMounts", [])}
         assert "/tmp" in mounts, owner
 
 
@@ -170,12 +164,16 @@ def test_the_read_only_filesystem_still_has_somewhere_to_write():
 def test_the_erp_keeps_its_approval_database_on_a_persistent_volume():
     """The approval log is the audit trail. An emptyDir would lose who approved
     what on the first reschedule."""
-    erp = next(doc for _, doc in _all_docs() if doc["metadata"]["name"] == "erp"
-               and doc["kind"] == "StatefulSet")
+    erp = next(
+        doc
+        for _, doc in _all_docs()
+        if doc["metadata"]["name"] == "erp" and doc["kind"] == "StatefulSet"
+    )
     claims = erp["spec"]["volumeClaimTemplates"]
     assert [c["metadata"]["name"] for c in claims] == ["approvals"]
     mounts = {
-        m["mountPath"] for c in erp["spec"]["template"]["spec"]["containers"]
+        m["mountPath"]
+        for c in erp["spec"]["template"]["spec"]["containers"]
         for m in c["volumeMounts"]
     }
     assert "/data" in mounts
@@ -185,14 +183,20 @@ def test_the_erp_is_single_writer():
     """SQLite is a single-writer store. A second replica would serve stale
     approvals -- so this is a constraint, and it is asserted rather than
     assumed."""
-    erp = next(doc for _, doc in _all_docs() if doc["metadata"]["name"] == "erp"
-               and doc["kind"] == "StatefulSet")
+    erp = next(
+        doc
+        for _, doc in _all_docs()
+        if doc["metadata"]["name"] == "erp" and doc["kind"] == "StatefulSet"
+    )
     assert erp["spec"]["replicas"] == 1
 
 
 def test_the_review_ui_is_stateless_and_can_scale():
-    review = next(doc for _, doc in _all_docs() if doc["metadata"]["name"] == "review"
-                  and doc["kind"] == "Deployment")
+    review = next(
+        doc
+        for _, doc in _all_docs()
+        if doc["metadata"]["name"] == "review" and doc["kind"] == "Deployment"
+    )
     assert review["spec"]["replicas"] >= 2
     for container in review["spec"]["template"]["spec"]["containers"]:
         for mount in container.get("volumeMounts", []):

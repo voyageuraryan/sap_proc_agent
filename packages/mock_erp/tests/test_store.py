@@ -112,7 +112,7 @@ def test_store_knows_nothing_about_labels(store: ErpStore):
 
 def test_missing_file_raises_at_load(tmp_path: Path):
     """A service that starts with three of seven files is worse than one that refuses."""
-    with pytest.raises(ErpDataError, match="vendors.json"):
+    with pytest.raises(ErpDataError, match=r"vendors\.json"):
         load_store(tmp_path)
 
 

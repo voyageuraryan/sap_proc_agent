@@ -17,12 +17,12 @@ from conftest import INVOICE
 
 
 def _run(**kwargs) -> AgentRun:
-    defaults = dict(
-        invoice_number=INVOICE,
-        model="test/scripted",
-        stop_reason=StopReason.SUBMITTED,
-        iterations=3,
-        resolution=Resolution(
+    defaults = {
+        "invoice_number": INVOICE,
+        "model": "test/scripted",
+        "stop_reason": StopReason.SUBMITTED,
+        "iterations": 3,
+        "resolution": Resolution(
             classification=Classification.PARTIAL_DELIVERY,
             decision=Decision.ESCALATE,
             reasoning="Receipts total less than invoiced; both readings are defensible.",
@@ -30,9 +30,9 @@ def _run(**kwargs) -> AgentRun:
             escalate_to="AP_SUPERVISOR",
             escalation_reason="Cannot distinguish a partial delivery from an over-invoice.",
         ),
-        prompt_tokens=1200,
-        completion_tokens=300,
-        llm_calls=[
+        "prompt_tokens": 1200,
+        "completion_tokens": 300,
+        "llm_calls": [
             LlmCallRecord(
                 iteration=1,
                 model="test/scripted",
@@ -54,11 +54,11 @@ def _run(**kwargs) -> AgentRun:
                 tool_calls_requested=1,
             ),
         ],
-        input_usd=Decimal("0.00720000"),
-        output_usd=Decimal("0.00675000"),
-        total_usd=Decimal("0.01395000"),
-        trace_backend="jsonl",
-    )
+        "input_usd": Decimal("0.00720000"),
+        "output_usd": Decimal("0.00675000"),
+        "total_usd": Decimal("0.01395000"),
+        "trace_backend": "jsonl",
+    }
     defaults.update(kwargs)
     return AgentRun(**defaults)
 
@@ -156,7 +156,8 @@ def test_the_cost_table_shows_one_row_per_call_and_a_total(patched, capsys):
     assert "$0.004650" in out  # call 1: 0.0024 + 0.00225
     assert "$0.009300" in out  # call 2: 0.0048 + 0.0045
     assert "$0.013950" in out  # total
-    assert "1200" in out and "300" in out
+    assert "1200" in out
+    assert "300" in out
 
 
 def test_an_unpriced_run_says_so_rather_than_showing_zero(patched, capsys):

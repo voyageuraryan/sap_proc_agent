@@ -77,9 +77,7 @@ class ErpStore:
 
 def _read_json(path: Path) -> object:
     if not path.exists():
-        raise ErpDataError(
-            f"missing {path.name} at {path} -- run `uv run generator` first"
-        )
+        raise ErpDataError(f"missing {path.name} at {path} -- run `uv run generator` first")
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -113,8 +111,7 @@ def _check_references(store: ErpStore) -> None:
     for invoice in store.invoices.values():
         if invoice.vendor_id not in store.vendors:
             problems.append(
-                f"invoice {invoice.invoice_number} references "
-                f"unknown vendor {invoice.vendor_id}"
+                f"invoice {invoice.invoice_number} references unknown vendor {invoice.vendor_id}"
             )
         for item in invoice.items:
             if item.po_number not in store.purchase_orders:
@@ -125,8 +122,7 @@ def _check_references(store: ErpStore) -> None:
 
     if problems:
         raise ErpDataError(
-            f"{len(problems)} referential integrity problem(s):\n  "
-            + "\n  ".join(problems[:10])
+            f"{len(problems)} referential integrity problem(s):\n  " + "\n  ".join(problems[:10])
         )
 
 
@@ -138,22 +134,16 @@ def load_store(erp_data_dir: Path) -> ErpStore:
     500-ing on the third request.
     """
     vendors = {
-        v.vendor_id: v
-        for v in (Vendor(**r) for r in _read_json(erp_data_dir / "vendors.json"))
+        v.vendor_id: v for v in (Vendor(**r) for r in _read_json(erp_data_dir / "vendors.json"))
     }
     materials = {
         m.material_id: m
         for m in (Material(**r) for r in _read_json(erp_data_dir / "materials.json"))
     }
-    plants = {
-        p.plant_id: p
-        for p in (Plant(**r) for r in _read_json(erp_data_dir / "plants.json"))
-    }
+    plants = {p.plant_id: p for p in (Plant(**r) for r in _read_json(erp_data_dir / "plants.json"))}
     purchase_orders = {
         po.po_number: po
-        for po in (
-            PurchaseOrder(**r) for r in _read_json(erp_data_dir / "purchase_orders.json")
-        )
+        for po in (PurchaseOrder(**r) for r in _read_json(erp_data_dir / "purchase_orders.json"))
     }
 
     grs_by_po: dict[str, list[GoodsReceipt]] = defaultdict(list)

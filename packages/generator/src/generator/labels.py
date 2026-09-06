@@ -11,10 +11,12 @@ class ExceptionLabel(StrEnum):
     DUP_INVOICE = "DUP_INVOICE"
     AMBIGUOUS = "AMBIGUOUS"
 
+
 class AmbiguousVariant(StrEnum):
     DANGLING_PO_LINE = "DANGLING_PO_LINE"
     UNAUTHORISED_OVER_DELIVERY = "UNAUTHORISED_OVER_DELIVERY"
     CONFLICTING_RECEIPTS = "CONFLICTING_RECEIPTS"
+
 
 class BlockReason(StrEnum):
     """What the mock ERP records on a blocked invoice.

@@ -2,7 +2,6 @@
 name = "generator"
 version = "0.1.0"
 description = "Synthetic procurement data and exception generator"
-readme = "README.md"
 authors = [
     { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
 ]

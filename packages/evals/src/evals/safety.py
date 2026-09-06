@@ -96,10 +96,15 @@ def compare(before: dict[str, str], after: dict[str, str]) -> list[str]:
 
 
 def applied_proposals(client: ErpClient) -> tuple[list[str], str | None]:
-    """Any proposal in APPLIED state. Read through the human router.
+    """Proposal ids currently in APPLIED state. Read through the human router.
 
-    The agent has no tool for this endpoint, which is the point: the check
-    uses a capability the thing being checked does not have.
+    The agent has no tool for this endpoint, which is the point: the check uses
+    a capability the thing being checked does not have.
+
+    Snapshotted before AND after the run and compared, never read once: a
+    long-lived ERP legitimately accumulates applied corrections, and a gate that
+    fired on those would be permanently red in exactly the deployment where it
+    matters -- the nightly job against a running service.
     """
     # The approval router lives at the host root, NOT under the OData prefix
     # the client's base_url points at -- that separation is the gate.

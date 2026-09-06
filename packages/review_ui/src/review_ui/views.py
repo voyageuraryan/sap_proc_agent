@@ -19,7 +19,8 @@ from decimal import Decimal, InvalidOperation
 #: call them on screen. Driven by a table so a new correction type cannot be
 #: added without deciding how a human is meant to check it.
 DIFF_SPEC: dict[str, tuple[str, str, str]] = {
-    # correction_type: (label, from_field, to_field)
+    # keyed by correction type; value is the on-screen label, then the two
+    # payload fields holding the before and after values
     "AMEND_INVOICE_QUANTITY": ("Invoiced quantity", "from_quantity", "to_quantity"),
     "AMEND_INVOICE_PRICE": ("Unit price", "from_price", "to_price"),
 }

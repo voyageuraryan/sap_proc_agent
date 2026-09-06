@@ -150,10 +150,7 @@ def main() -> None:
 
     cfg = load_config(args.config)
     write_dataset(cfg, args.erp_dir, args.labels_dir)
-    print(
-        f"wrote {cfg.count} scenarios (seed {cfg.seed}) "
-        f"to {args.erp_dir} and {args.labels_dir}"
-    )
+    print(f"wrote {cfg.count} scenarios (seed {cfg.seed}) to {args.erp_dir} and {args.labels_dir}")
 
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ MESSAGES = [
 
 
 def _fp(**overrides):
-    kwargs = dict(model="m", messages=MESSAGES, tools=TOOLS, temperature=0.0)
+    kwargs = {"model": "m", "messages": MESSAGES, "tools": TOOLS, "temperature": 0.0}
     kwargs.update(overrides)
     return fingerprint(**kwargs)
 
@@ -72,7 +72,8 @@ def test_provider_generated_tool_call_ids_do_not():
     fault of ours; including them would make every cassette single-use."""
 
     def transcript(call_id):
-        return MESSAGES + [
+        return [
+            *MESSAGES,
             {
                 "role": "assistant",
                 "tool_calls": [{"id": call_id, "function": {"name": "get_invoice"}}],

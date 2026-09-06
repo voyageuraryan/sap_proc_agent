@@ -49,9 +49,38 @@ review-ui = { workspace = true }
 
 [tool.ruff]
 line-length = 100
+extend-exclude = ["_to_delete"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+# Curated rather than maximal. Every family here earns its place; the ones left
+# out (ARG, N, TRY, PL) produced mostly noise against this codebase, and a lint
+# config nobody can keep green is a lint config people learn to ignore.
+select = [
+    "E", "F",    # pycodestyle errors, pyflakes
+    "I",         # import sorting
+    "UP",        # pyupgrade -- this targets 3.13, so old idioms are just debt
+    "B",         # bugbear
+    "SIM", "C4", # simplifications, comprehensions
+    "PIE", "PT", # misc lint, pytest style
+    "RUF",       # ruff's own, including unused-noqa
+    "ERA",       # commented-out code
+    "DTZ",       # naive datetimes -- this system compares timestamps across machines
+    "S",         # bandit: this project's whole point is a security boundary
+    "A",         # builtin shadowing
+    "T20",       # print()
+    "BLE",       # blind except -- every one must be justified with a noqa
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests assert, use throwaway credentials, and write to temp paths. That is what
+# tests are; flagging it would only teach people to add noqa everywhere.
+"**/tests/**" = ["S101", "S105", "S106", "S108", "S603", "PT011"]
+# The CLIs and the demo exist to print. That is their entire job.
+"**/cli.py" = ["T20"]
+"scripts/*.py" = ["T20"]
+# The generator's randomness is synthetic test data seeded from config, not
+# anything cryptographic. Documented at the call site.
+"packages/generator/src/**" = ["S311"]
 
 [tool.ruff.lint.flake8-bugbear]
 # Depends()/Query()/Path() in a parameter default is FastAPI's intended
@@ -60,6 +89,19 @@ select = ["E", "F", "I", "UP", "B"]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
 
 [tool.pytest.ini_options]
+# Warnings are errors. A DeprecationWarning is a bug with a grace period, and
+# the grace period always ends on a day nobody chose. The one exception is
+# Starlette's TestClient notice, which is about a dependency we do not control.
+filterwarnings = [
+    "error",
+    # Starlette raises its own subclass, not DeprecationWarning, so the
+    # category has to be named by import path for the filter to match.
+    "ignore:Using .httpx. with .starlette.testclient.:starlette.exceptions.StarletteDeprecationWarning",
+    # ResourceWarning fires whenever the collector gets round to it, so as an
+    # error it lands on an unrelated test and reads as flakiness. Kept visible
+    # as a warning; the fixtures that own connections close them explicitly.
+    "default::ResourceWarning",
+]
 # `tests/` holds the checks that belong to no package: deployment manifests,
 # compose, and the repo layout itself.
 testpaths = ["packages", "tests"]

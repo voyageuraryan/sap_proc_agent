@@ -145,7 +145,7 @@ def test_one_llm_span_per_iteration_and_one_tool_span_per_call(erp_client, setti
     run = run_agent(INVOICE, erp_client, settings, completion_fn=_script(), tracer=tracer)
 
     assert len(tracer.named("llm.completion")) == run.iterations == 3
-    tool_spans = [s for s in tracer.of_kind("tool")]
+    tool_spans = list(tracer.of_kind("tool"))
     assert [s["name"] for s in tool_spans] == [
         "tool.get_invoice",
         "tool.get_goods_receipts",
@@ -381,7 +381,8 @@ def test_the_jsonl_file_serialises_cost_as_plain_numbers(erp_client, tmp_path):
         for line in path.read_text(encoding="utf-8").splitlines()
         if json.loads(line)["kind"] == "llm"
     ]
-    assert llm and set(llm[0]["cost"]) == {"input", "output", "total"}
+    assert llm
+    assert set(llm[0]["cost"]) == {"input", "output", "total"}
     assert llm[0]["cost"]["total"] > 0
 
 
@@ -463,14 +464,13 @@ def langfuse_client(monkeypatch):
 def test_the_langfuse_adapter_matches_the_real_sdk(erp_client, langfuse_client):
     """An unreachable backend must produce a complete run and a real trace id."""
     tracer = LangfuseTracer(langfuse_client)
-    settings = AgentSettings(
-        model="anthropic/claude-sonnet-4-5", max_iterations=4, tracing=True
-    )
+    settings = AgentSettings(model="anthropic/claude-sonnet-4-5", max_iterations=4, tracing=True)
     run = run_agent(INVOICE, erp_client, settings, completion_fn=_script(), tracer=tracer)
 
     assert run.stop_reason is StopReason.SUBMITTED
     assert run.trace_backend == "langfuse"
-    assert run.trace_id and len(run.trace_id) == 32  # OTel trace id, 16 bytes hex
+    assert run.trace_id
+    assert len(run.trace_id) == 32
     # The URL needs the project id, which the SDK resolves over the API. With
     # the backend unreachable it is legitimately None -- and that must not
     # break the run or the CLI's printing.

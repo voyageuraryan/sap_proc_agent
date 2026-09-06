@@ -108,7 +108,7 @@ def make_payload(target: dict, to_quantity: str | None = None) -> AmendQuantityP
 
 
 @pytest.fixture
-def repo(tmp_path: Path, erp_dir: Path) -> ProposalRepository:
+def repo(tmp_path: Path, erp_dir: Path):
     """A fresh repository per test, over its own SQLite file.
 
     Function-scoped on purpose: state machine tests mutate state, and a shared
@@ -117,14 +117,18 @@ def repo(tmp_path: Path, erp_dir: Path) -> ProposalRepository:
     """
     conn = open_db(tmp_path / "approvals.sqlite3")
     store = load_store(erp_dir)
-    return ProposalRepository(conn, store)
+    try:
+        yield ProposalRepository(conn, store)
+    finally:
+        # Closed explicitly. Leaving it to the garbage collector emits a
+        # ResourceWarning attributed to whichever test happened to trigger GC,
+        # which is how a suite acquires mysterious intermittent failures.
+        conn.close()
 
 
 @pytest.fixture
 def client(tmp_path: Path, erp_dir: Path) -> TestClient:
-    app = create_app(
-        Settings(erp_data_dir=erp_dir, db_path=tmp_path / "approvals.sqlite3")
-    )
+    app = create_app(Settings(erp_data_dir=erp_dir, db_path=tmp_path / "approvals.sqlite3"))
     with TestClient(app) as c:
         yield c
 
@@ -168,7 +172,7 @@ def test_hash_ignores_keyword_order(target: dict):
 
 
 def test_hash_is_byte_sensitive_not_value_sensitive(target: dict):
-    """"1.0" and "1.000" are the same NUMBER and must be different HASHES.
+    """ "1.0" and "1.000" are the same NUMBER and must be different HASHES.
 
     This confirms the hash is over canonical bytes, not over semantics. It is
     also why payload numeric fields are strings: if they were Decimal or float,
@@ -223,7 +227,8 @@ def test_create_persists_a_proposed_proposal(repo: ProposalRepository, target: d
     assert p.proposal_id
     assert p.payload_hash == payload_hash(make_payload(target))
     assert p.proposed_at is not None
-    assert p.approved_by is None and p.approved_hash is None
+    assert p.approved_by is None
+    assert p.approved_hash is None
 
     # It must be readable back -- create has to actually write to SQLite.
     assert repo.get(p.proposal_id).proposal_id == p.proposal_id
@@ -249,9 +254,7 @@ def test_get_unknown_proposal_raises(repo: ProposalRepository):
     assert exc.value.status == 404
 
 
-def test_approve_records_who_when_and_the_hash_seen(
-    repo: ProposalRepository, target: dict
-):
+def test_approve_records_who_when_and_the_hash_seen(repo: ProposalRepository, target: dict):
     """approved_hash freezes the exact bytes the human was shown.
 
     It is stored separately from payload_hash so that apply() compares "what I
@@ -282,9 +285,7 @@ def test_reject_is_terminal(repo: ProposalRepository, target: dict):
     assert exc.value.code == "ILLEGAL_TRANSITION"
 
 
-def test_apply_after_approval_records_one_amendment(
-    repo: ProposalRepository, target: dict
-):
+def test_apply_after_approval_records_one_amendment(repo: ProposalRepository, target: dict):
     payload = make_payload(target)
     p = repo.create(target["invoice_number"], payload, "why", None)
     repo.approve(p.proposal_id, "aryan@ap-team")
@@ -324,9 +325,7 @@ def test_apply_without_approval_is_refused(repo: ProposalRepository, target: dic
 # ------------------------- ATTACK 2: payload swap -------------------------
 
 
-def test_apply_with_a_swapped_payload_is_refused(
-    repo: ProposalRepository, target: dict
-):
+def test_apply_with_a_swapped_payload_is_refused(repo: ProposalRepository, target: dict):
     """Approve a small change, attempt to apply a large one.
 
     Without the hash check this passes the status test, the write executes, and
@@ -351,9 +350,7 @@ def test_apply_with_a_swapped_payload_is_refused(
     assert repo.get(p.proposal_id).status is ProposalStatus.APPROVED
 
 
-def test_hash_is_compared_against_the_approved_hash(
-    repo: ProposalRepository, target: dict
-):
+def test_hash_is_compared_against_the_approved_hash(repo: ProposalRepository, target: dict):
     """The comparison must use approved_hash, not payload_hash.
 
     Comparing against payload_hash compares the stored payload with itself and
@@ -390,9 +387,7 @@ def test_apply_twice_writes_once(repo: ProposalRepository, target: dict):
     assert len(repo.amendments_for_invoice(target["invoice_number"])) == 1
 
 
-def test_replay_with_a_different_payload_is_still_refused(
-    repo: ProposalRepository, target: dict
-):
+def test_replay_with_a_different_payload_is_still_refused(repo: ProposalRepository, target: dict):
     """An APPLIED proposal is not a licence to write something else."""
     payload = make_payload(target, to_quantity="1.000")
     p = repo.create(target["invoice_number"], payload, "why", None)
@@ -459,13 +454,18 @@ def test_every_illegal_transition_is_refused(
     pid = _reach(repo, target, status)
     payload = make_payload(target)
 
-    with pytest.raises(ProposalError) as exc:
+    def attempt() -> None:
         if action is ProposalAction.APPROVE:
             repo.approve(pid, "aryan@ap-team")
         elif action is ProposalAction.REJECT:
             repo.reject(pid, "aryan@ap-team", "no")
         else:
             repo.apply(pid, payload)
+
+    # Only the call is inside raises(): dispatching on the action is setup, and
+    # a raises() block that also contains setup can pass for the wrong reason.
+    with pytest.raises(ProposalError) as exc:
+        attempt()
 
     assert exc.value.code in {"ILLEGAL_TRANSITION", "PAYLOAD_MISMATCH"}
     assert exc.value.status == 409
@@ -568,11 +568,7 @@ def test_full_gate_walkthrough_changes_the_invoice(client: TestClient, target: d
 
     def served_quantity() -> str:
         body = client.get(url).json()["d"]
-        return next(
-            i["MENGE"]
-            for i in body["items"]
-            if i["BUZEI"] == target["inv_item_number"]
-        )
+        return next(i["MENGE"] for i in body["items"] if i["BUZEI"] == target["inv_item_number"])
 
     assert served_quantity() == original
 
@@ -649,7 +645,8 @@ def test_proposal_id_is_not_sql_injectable(client: TestClient, target: dict):
     body = listed.json()
     rows = body["d"]["results"] if "d" in body else body
     match = [r for r in rows if r["proposal_id"] == proposal_id]
-    assert match and match[0]["status"] == "PROPOSED"
+    assert match
+    assert match[0]["status"] == "PROPOSED"
 
 
 def test_amendments_do_not_leak_into_purchase_orders(client: TestClient, target: dict):
@@ -672,9 +669,9 @@ def test_amendments_do_not_leak_into_purchase_orders(client: TestClient, target:
     )
     po_number = next(
         i["EBELN"]
-        for i in client.get(
-            f"{ODATA}/A_SupplierInvoice('{target['invoice_number']}')"
-        ).json()["d"]["items"]
+        for i in client.get(f"{ODATA}/A_SupplierInvoice('{target['invoice_number']}')").json()["d"][
+            "items"
+        ]
     )
     po = client.get(f"{ODATA}/A_PurchaseOrder('{po_number}')").json()["d"]
     assert "amendment" not in json.dumps(po).lower()

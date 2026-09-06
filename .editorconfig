@@ -1,0 +1,25 @@
+# Line endings are LF everywhere: the generator's determinism tests compare
+# bytes, and a CRLF checkout on Windows would fail them for no real reason.
+# .gitattributes enforces it in git; this enforces it in the editor.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+[*.{yaml,yml,json,toml,html}]
+indent_size = 2
+
+[*.md]
+# Markdown uses trailing double-space for hard breaks.
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab

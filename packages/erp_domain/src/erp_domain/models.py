@@ -22,33 +22,15 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 # An int would strip leading zeros and skip the pattern check entirely.
 # ---------------------------------------------------------------------------
 
-PONumber = Annotated[
-    str, StringConstraints(pattern=r"^45\d{8}$"), Field(alias="EBELN")
-]
-POItemNumber = Annotated[
-    str, StringConstraints(pattern=r"^\d{5}$"), Field(alias="EBELP")
-]
-GRNumber = Annotated[
-    str, StringConstraints(pattern=r"^50\d{8}$"), Field(alias="MBLNR")
-]
-InvoiceNumber = Annotated[
-    str, StringConstraints(pattern=r"^51\d{8}$"), Field(alias="BELNR")
-]
-InvoiceItemNumber = Annotated[
-    str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="BUZEI")
-]
-VendorID = Annotated[
-    str, StringConstraints(pattern=r"^\d{10}$"), Field(alias="LIFNR")
-]
-MaterialID = Annotated[
-    str, StringConstraints(pattern=r"^\d{18}$"), Field(alias="MATNR")
-]
-PlantID = Annotated[
-    str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="WERKS")
-]
-Currency = Annotated[
-    str, StringConstraints(pattern=r"^[A-Z]{3}$"), Field(alias="WAERS")
-]
+PONumber = Annotated[str, StringConstraints(pattern=r"^45\d{8}$"), Field(alias="EBELN")]
+POItemNumber = Annotated[str, StringConstraints(pattern=r"^\d{5}$"), Field(alias="EBELP")]
+GRNumber = Annotated[str, StringConstraints(pattern=r"^50\d{8}$"), Field(alias="MBLNR")]
+InvoiceNumber = Annotated[str, StringConstraints(pattern=r"^51\d{8}$"), Field(alias="BELNR")]
+InvoiceItemNumber = Annotated[str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="BUZEI")]
+VendorID = Annotated[str, StringConstraints(pattern=r"^\d{10}$"), Field(alias="LIFNR")]
+MaterialID = Annotated[str, StringConstraints(pattern=r"^\d{18}$"), Field(alias="MATNR")]
+PlantID = Annotated[str, StringConstraints(pattern=r"^\d{4}$"), Field(alias="WERKS")]
+Currency = Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}$"), Field(alias="WAERS")]
 VendorRef = Annotated[str, Field(alias="XBLNR")]
 
 # Decimal, never float: this system exists to decide whether two amounts match,
@@ -70,6 +52,7 @@ InvoiceDate = Annotated[date, Field(alias="BLDAT")]
 
 class SapModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
+
 
 class Vendor(SapModel):
     vendor_id: VendorID

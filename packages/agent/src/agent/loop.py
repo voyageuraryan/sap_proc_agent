@@ -254,7 +254,7 @@ def run_agent(
     a network round trip. The CLI flushes once, in a finally block.
     """
     if completion_fn is None:
-        from litellm import completion as completion_fn  # noqa: PLC0415
+        from litellm import completion as completion_fn
     if tracer is None:
         tracer = build_tracer(settings)
 

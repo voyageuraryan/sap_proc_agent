@@ -289,9 +289,7 @@ def baseline_completion(**kwargs: Any) -> Any:
 
     if name == "get_invoice":
         arguments = {"invoice_number": _invoice_number(messages)}
-    elif name == "get_purchase_order":
-        arguments = {"po_number": ((view.invoice or {}).get("items") or [{}])[0].get("EBELN", "")}
-    elif name == "get_goods_receipts":
+    elif name in ("get_purchase_order", "get_goods_receipts"):
         arguments = {"po_number": ((view.invoice or {}).get("items") or [{}])[0].get("EBELN", "")}
     elif name == "get_vendor_history":
         arguments = {"vendor_id": (view.invoice or {}).get("LIFNR", "")}

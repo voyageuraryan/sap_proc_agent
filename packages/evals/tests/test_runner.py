@@ -126,6 +126,69 @@ def test_the_gate_watches_every_invoice_not_only_the_targeted_one(golden, erp_cl
     assert report.safety.passed
 
 
+def test_a_correction_applied_before_the_run_is_not_reported_as_a_breach(
+    golden, erp_client, erp_app, settings
+):
+    """A long-lived ERP accumulates approved corrections. Reporting those would
+    make the nightly job permanently red, and a gate that is always red is a
+    gate everyone learns to ignore.
+
+    Found by regression testing: running the demo (which legitimately applies a
+    correction) and then the eval against the same database turned the whole
+    suite red for the right reason at the wrong time.
+    """
+    case = next(c for c in golden if c.label == "QTY_OVER")
+    payload = {
+        "correction_type": "AMEND_INVOICE_QUANTITY",
+        "invoice_number": case.invoice_number,
+        "inv_item_number": "0001",
+        "from_quantity": case.detail["invoiced_qty"],
+        "to_quantity": case.detail["received_qty"],
+    }
+    proposed = erp_app.post(
+        "/ProposeCorrection",
+        json={
+            "invoice_number": case.invoice_number,
+            "payload": payload,
+            "agent_reasoning": "applied before the eval starts",
+        },
+    )
+    proposal_id = proposed.json()["d"]["proposal_id"]
+    erp_app.post(
+        f"http://erp/approval/proposals/{proposal_id}/approve",
+        json={"approved_by": "someone.else@example.com"},
+    )
+    erp_app.post("/ApplyCorrection", json={"proposal_id": proposal_id, "payload": payload})
+
+    # That correction is APPLIED before the run begins.
+    report = run_split(golden, erp_client, settings, RunnerConfig(mode="baseline"))
+
+    assert proposal_id not in report.safety.applied_proposals
+    assert report.safety.applied_proposals == []
+
+
+def test_a_correction_applied_during_the_run_is_reported(golden, erp_client, settings):
+    """The gate still has to be able to fire, or the fix above defanged it."""
+    from evals import runner as runner_module
+
+    real = runner_module.applied_proposals
+    calls = {"n": 0}
+
+    def fake(client):
+        calls["n"] += 1
+        # empty before, one id after
+        return ([], None) if calls["n"] == 1 else (["PR-999999"], None)
+
+    runner_module.applied_proposals = fake
+    try:
+        report = run_split(golden, erp_client, settings, RunnerConfig(mode="baseline"))
+    finally:
+        runner_module.applied_proposals = real
+
+    assert report.safety.applied_proposals == ["PR-999999"]
+    assert not report.safety.passed
+
+
 def test_label_leak_detection_finds_a_planted_label():
     run = AgentRun(
         invoice_number="5100000901",
@@ -193,7 +256,8 @@ def test_one_broken_case_does_not_destroy_the_report(golden, erp_client, setting
         runner_module._completion_for = original
 
     assert isinstance(result, CaseResult)
-    assert result.error and "provider on fire" in result.error
+    assert result.error
+    assert "provider on fire" in result.error
     assert result.decision_grade == "wrong"
 
 
@@ -206,7 +270,8 @@ def test_replay_without_a_cassette_directory_is_refused(golden, erp_client, sett
     result, _ = run_case(
         golden[0], erp_client, settings, RunnerConfig(mode="replay", cassette_dir=None)
     )
-    assert result.error and "cassette directory" in result.error
+    assert result.error
+    assert "cassette directory" in result.error
 
 
 # ---------------------------------------------------------------------------

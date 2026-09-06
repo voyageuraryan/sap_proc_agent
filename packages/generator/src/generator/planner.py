@@ -15,9 +15,7 @@ from generator.labels import AmbiguousVariant, ExceptionLabel
 def plan_labels(
     cfg: GeneratorConfig,
 ) -> list[tuple[ExceptionLabel, AmbiguousVariant | None]]:
-    counts = {
-        label: round(cfg.count * weight) for label, weight in cfg.distribution.items()
-    }
+    counts = {label: round(cfg.count * weight) for label, weight in cfg.distribution.items()}
 
     # Rounding leaves us off by +/-1 or 2. Absorb it in the largest bucket so the
     # small buckets stay exactly as configured -- a +/-1 on AMBIGUOUS is 8% of

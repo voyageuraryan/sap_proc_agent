@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from agent.cost import format_usd
@@ -362,4 +362,7 @@ def render_markdown(report: EvalReport) -> str:
 
 
 def now() -> str:
-    return datetime.now().isoformat(timespec="seconds")
+    """UTC, always. A report timestamp with no zone is ambiguous the moment it
+    leaves the machine that produced it -- and these get compared across a
+    laptop and a CI runner."""
+    return datetime.now(UTC).isoformat(timespec="seconds")

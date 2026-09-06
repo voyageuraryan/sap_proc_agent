@@ -49,9 +49,7 @@ def _to_decimal(raw: str) -> Decimal | None:
         return None
 
 
-def apply_amendments(
-    invoice: Invoice, payloads: Sequence[CorrectionPayload]
-) -> Invoice:
+def apply_amendments(invoice: Invoice, payloads: Sequence[CorrectionPayload]) -> Invoice:
     """Return a NEW Invoice with every payload applied, in the order given.
 
     Callers must pass payloads already ordered by applied_at -- order matters
@@ -152,8 +150,7 @@ def find_stale_conflict(
         # status. A client can act on the difference.
         return (
             "UNKNOWN_INVOICE_ITEM",
-            f"invoice {payload.invoice_number} has no item "
-            f"{payload.inv_item_number}",
+            f"invoice {payload.invoice_number} has no item {payload.inv_item_number}",
         )
 
     if kind == CorrectionType.AMEND_INVOICE_QUANTITY:

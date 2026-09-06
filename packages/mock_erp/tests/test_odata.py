@@ -27,9 +27,7 @@ def test_entity_wraps_in_d():
 
 
 def test_collection_wraps_in_d_results():
-    assert collection([{"MBLNR": "5000000101"}]) == {
-        "d": {"results": [{"MBLNR": "5000000101"}]}
-    }
+    assert collection([{"MBLNR": "5000000101"}]) == {"d": {"results": [{"MBLNR": "5000000101"}]}}
 
 
 def test_collection_accepts_empty_list():
@@ -112,9 +110,9 @@ def test_parse_po_filter_requires_a_filter():
 @pytest.mark.parametrize(
     "raw",
     [
-        "Supplier eq '1000000001'",          # wrong property
-        "PurchaseOrder gt '4500000047'",     # wrong operator
-        "PurchaseOrder eq 4500000047",       # unquoted
+        "Supplier eq '1000000001'",  # wrong property
+        "PurchaseOrder gt '4500000047'",  # wrong operator
+        "PurchaseOrder eq 4500000047",  # unquoted
         "nonsense",
     ],
 )
@@ -128,8 +126,8 @@ def test_parse_po_filter_rejects_unsupported_shapes(raw: str):
 @pytest.mark.parametrize(
     "raw",
     [
-        "PurchaseOrder eq '5100000101'",   # right length, wrong range (invoice)
-        "PurchaseOrder eq '450000'",       # too short
+        "PurchaseOrder eq '5100000101'",  # right length, wrong range (invoice)
+        "PurchaseOrder eq '450000'",  # too short
         "PurchaseOrder eq '45000000470'",  # too long
     ],
 )

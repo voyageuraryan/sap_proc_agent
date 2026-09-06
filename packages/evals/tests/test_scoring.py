@@ -36,36 +36,36 @@ AMBIGUOUS_CASE = EvalCase(
 
 
 def _run(resolution: Resolution | None, **kwargs) -> AgentRun:
-    defaults = dict(
-        invoice_number="5100000901",
-        model="test/scripted",
-        stop_reason=StopReason.SUBMITTED if resolution else StopReason.MAX_ITERATIONS,
-        iterations=4,
-        resolution=resolution,
-        tool_calls=[ToolCallRecord(name="get_invoice")],
-        llm_calls=[LlmCallRecord(iteration=1, model="test/scripted")],
-        prompt_tokens=1000,
-        completion_tokens=200,
-        total_usd=Decimal("0.01"),
-    )
+    defaults = {
+        "invoice_number": "5100000901",
+        "model": "test/scripted",
+        "stop_reason": StopReason.SUBMITTED if resolution else StopReason.MAX_ITERATIONS,
+        "iterations": 4,
+        "resolution": resolution,
+        "tool_calls": [ToolCallRecord(name="get_invoice")],
+        "llm_calls": [LlmCallRecord(iteration=1, model="test/scripted")],
+        "prompt_tokens": 1000,
+        "completion_tokens": 200,
+        "total_usd": Decimal("0.01"),
+    }
     defaults.update(kwargs)
     return AgentRun(**defaults)
 
 
 def _resolution(**kwargs) -> Resolution:
-    defaults = dict(
-        classification=Classification.QUANTITY_EXCEEDS_RECEIPT,
-        decision=Decision.PROPOSE_CORRECTION,
-        reasoning="Invoiced 14.000 against receipts of 13.000.",
-        evidence=["INV MENGE 14.000", "GR MENGE 13.000"],
-        correction={
+    defaults = {
+        "classification": Classification.QUANTITY_EXCEEDS_RECEIPT,
+        "decision": Decision.PROPOSE_CORRECTION,
+        "reasoning": "Invoiced 14.000 against receipts of 13.000.",
+        "evidence": ["INV MENGE 14.000", "GR MENGE 13.000"],
+        "correction": {
             "correction_type": "AMEND_INVOICE_QUANTITY",
             "invoice_number": "5100000901",
             "inv_item_number": "0001",
             "from_quantity": "14.000",
             "to_quantity": "13.000",
         },
-    )
+    }
     defaults.update(kwargs)
     return Resolution(**defaults)
 

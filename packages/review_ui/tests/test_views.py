@@ -152,7 +152,7 @@ def test_a_stale_proposal_carries_a_warning_and_a_flag():
     assert any("no longer holds" in w for w in view.warnings)
 
 
-@pytest.mark.parametrize("status,expected", list(ACTIONS_FOR_STATUS.items()))
+@pytest.mark.parametrize(("status", "expected"), list(ACTIONS_FOR_STATUS.items()))
 def test_buttons_are_rendered_from_the_state_machine(status, expected):
     """A button the server will refuse is worse than no button."""
     view = build_view({"status": status, "payload": QUANTITY}, INVOICE)
@@ -194,8 +194,9 @@ def test_the_evidence_panel_reconstructs_the_three_way_match():
 
 
 def test_the_evidence_panel_sums_multiple_receipts():
-    two = RECEIPTS + [
-        {"MBLNR": "5000000902", "EBELP": "00010", "MENGE": "1.000", "BUDAT": "2025-03-24"}
+    two = [
+        *RECEIPTS,
+        {"MBLNR": "5000000902", "EBELP": "00010", "MENGE": "1.000", "BUDAT": "2025-03-24"},
     ]
     assert evidence_rows(INVOICE, PO, two, "0001")["received_qty"] == "14.000"
 

@@ -350,8 +350,7 @@ def _take(roster: list, count: int | None, what: str) -> list:
         return list(roster)
     if count > len(roster):
         raise ValueError(
-            f"config asks for {count} {what} but only {len(roster)} are defined "
-            f"in master_data.py"
+            f"config asks for {count} {what} but only {len(roster)} are defined in master_data.py"
         )
     return roster[:count]
 

@@ -30,7 +30,9 @@ PAYLOAD_PAIRS = [
 ]
 
 
-@pytest.mark.parametrize("mine,theirs", PAYLOAD_PAIRS, ids=lambda m: getattr(m, "__name__", ""))
+@pytest.mark.parametrize(
+    ("mine", "theirs"), PAYLOAD_PAIRS, ids=lambda m: getattr(m, "__name__", "")
+)
 def test_payload_field_names_match_the_service(mine, theirs):
     assert set(mine.model_fields) == set(theirs.model_fields)
 

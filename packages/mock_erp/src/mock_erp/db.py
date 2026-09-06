@@ -35,12 +35,12 @@ SCHEMA = """
     ON amendments(invoice_number);
 """
 
+
 def open_db(path: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA journal_mode = WAL")
     conn.executescript(SCHEMA)
     conn.row_factory = sqlite3.Row
-    
-    return conn
 
+    return conn

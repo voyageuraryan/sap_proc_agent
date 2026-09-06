@@ -2,7 +2,6 @@
 name = "erp-domain"
 version = "0.1.0"
 description = "Shared SAP-flavoured procurement domain models"
-readme = "README.md"
 authors = [
     { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
 ]

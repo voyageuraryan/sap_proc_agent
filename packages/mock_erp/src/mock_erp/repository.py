@@ -160,6 +160,9 @@ class ProposalRepository:
         proposal = self.get(proposal_id)
         proposal.status = new_status = self._transition(proposal, ProposalAction.APPROVE)
         proposal.approved_by = approved_by
+        # Bound below as an ISO string, never as a datetime object: sqlite3's
+        # implicit datetime adapter is deprecated since 3.12 and drops the
+        # timezone, which would make an audit trail ambiguous across machines.
         approved_at = proposal.approved_at = datetime.now(UTC)
         approved_hash = proposal.approved_hash = proposal.payload_hash
 
@@ -174,7 +177,7 @@ class ProposalRepository:
                 status = ?
                 WHERE proposal_id = ?;
                 """,
-                (approved_by, approved_at, approved_hash, new_status, proposal_id),
+                (approved_by, approved_at.isoformat(), approved_hash, new_status, proposal_id),
             )
 
         return proposal
@@ -196,7 +199,7 @@ class ProposalRepository:
                 status = ?
                 WHERE proposal_id = ?;
                 """,
-                (rejected_by, rejected_at, reason, new_status, proposal_id),
+                (rejected_by, rejected_at.isoformat(), reason, new_status, proposal_id),
             )
 
         return proposal
@@ -217,9 +220,7 @@ class ProposalRepository:
         if payload_hash(payload) != proposal.approved_hash:
             raise ProposalError(
                 code="PAYLOAD_MISMATCH",
-                message=(
-                    "payload does not match the payload that was approved"
-                ),
+                message=("payload does not match the payload that was approved"),
                 status=409,
             )
 
@@ -298,7 +299,6 @@ class ProposalRepository:
         ]
 
     def list_proposals(self, status: ProposalStatus | None = None) -> list[Proposal]:
-        #     )
         if status is None:
             cursor = self.conn.execute("SELECT * FROM proposals ORDER BY sequence_id")
         else:

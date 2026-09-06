@@ -149,10 +149,14 @@ def _string_literals(path) -> list[str]:
     docstrings = set()
     for node in ast.walk(tree):
         body = getattr(node, "body", None)
-        if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-            if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant):
-                if isinstance(body[0].value.value, str):
-                    docstrings.add(id(body[0].value))
+        if (
+            isinstance(node, ast.Module | ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef)
+            and body
+            and isinstance(body[0], ast.Expr)
+            and isinstance(body[0].value, ast.Constant)
+            and isinstance(body[0].value.value, str)
+        ):
+            docstrings.add(id(body[0].value))
     return [
         node.value
         for node in ast.walk(tree)

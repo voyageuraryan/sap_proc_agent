@@ -80,7 +80,8 @@ def test_the_detail_page_shows_the_change_and_the_evidence(ui, propose):
     body = ui.get(f"/proposals/{propose()}").text
 
     # the change
-    assert "14.000" in body and "13.000" in body
+    assert "14.000" in body
+    assert "13.000" in body
     # the agent's argument
     assert "Receipts total 13.000" in body
     # the evidence, unsummarised: PO, receipt document, tolerance, supplier

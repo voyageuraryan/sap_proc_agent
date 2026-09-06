@@ -19,9 +19,17 @@ BASE = "/sap/opu/odata/sap/ZPROC_SRV"
 
 # Ground truth vocabulary. None of it may appear in a served response.
 LABEL_VALUES = (
-    "CLEAN", "PRICE_MINOR", "PRICE_MAJOR", "QTY_OVER",
-    "GR_MISSING", "GR_PARTIAL", "DUP_INVOICE", "AMBIGUOUS",
-    "DANGLING_PO_LINE", "UNAUTHORISED_OVER_DELIVERY", "CONFLICTING_RECEIPTS",
+    "CLEAN",
+    "PRICE_MINOR",
+    "PRICE_MAJOR",
+    "QTY_OVER",
+    "GR_MISSING",
+    "GR_PARTIAL",
+    "DUP_INVOICE",
+    "AMBIGUOUS",
+    "DANGLING_PO_LINE",
+    "UNAUTHORISED_OVER_DELIVERY",
+    "CONFLICTING_RECEIPTS",
 )
 # "detail" is deliberately NOT in this list: FastAPI's own error bodies use
 # {"detail": "Not Found"}, so asserting on it would false-positive on every
@@ -52,10 +60,7 @@ def client() -> TestClient:
 @pytest.fixture(scope="module")
 def raw_data() -> dict:
     d = repo_root() / "data" / "erp"
-    return {
-        p.stem: json.loads(p.read_text(encoding="utf-8"))
-        for p in d.glob("*.json")
-    }
+    return {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in d.glob("*.json")}
 
 
 # --------------------------------------------------------------------------
@@ -114,9 +119,7 @@ def test_tolerance_is_composed_not_stored(client: TestClient, raw_data: dict):
     """
     assert "ToleranceConfig" not in raw_data["purchase_orders"][0]
 
-    granite = next(
-        po for po in raw_data["purchase_orders"] if po["LIFNR"] == "1000000006"
-    )
+    granite = next(po for po in raw_data["purchase_orders"] if po["LIFNR"] == "1000000006")
     body = client.get(f"{BASE}/A_PurchaseOrder('{granite['EBELN']}')").json()
     tol = body["d"]["ToleranceConfig"]
     assert tol["PriceVariancePct"] == "2.0"
@@ -130,9 +133,7 @@ def test_tolerance_falls_back_to_default(client: TestClient, raw_data: dict):
     Source has to be decided by asking whether the vendor is IN by_vendor.
     Checking `is None` would label every default as vendor-specific.
     """
-    unlisted = next(
-        po for po in raw_data["purchase_orders"] if po["LIFNR"] == "1000000001"
-    )
+    unlisted = next(po for po in raw_data["purchase_orders"] if po["LIFNR"] == "1000000001")
     body = client.get(f"{BASE}/A_PurchaseOrder('{unlisted['EBELN']}')").json()
     tol = body["d"]["ToleranceConfig"]
     assert tol["PriceVariancePct"] == "5.0"
@@ -152,12 +153,11 @@ def test_goods_receipts_for_a_po(client: TestClient, raw_data: dict):
     )
     assert resp.status_code == 200
     rows = resp.json()["d"]["results"]
-    assert rows and all(r["EBELN"] == gr["EBELN"] for r in rows)
+    assert rows
+    assert all(r["EBELN"] == gr["EBELN"] for r in rows)
 
 
-def test_goods_receipts_empty_collection_when_none_posted(
-    client: TestClient, raw_data: dict
-):
+def test_goods_receipts_empty_collection_when_none_posted(client: TestClient, raw_data: dict):
     """GR_MISSING: the PO exists, nothing was received. 200 with results: [].
 
     This must NOT be a 404 and must NOT raise. A 404 here would make "no goods
@@ -166,9 +166,7 @@ def test_goods_receipts_empty_collection_when_none_posted(
     bad reference.
     """
     with_grs = {g["EBELN"] for g in raw_data["goods_receipts"]}
-    without = next(
-        po["EBELN"] for po in raw_data["purchase_orders"] if po["EBELN"] not in with_grs
-    )
+    without = next(po["EBELN"] for po in raw_data["purchase_orders"] if po["EBELN"] not in with_grs)
     resp = client.get(
         f"{BASE}/A_MaterialDocumentItem",
         params={"$filter": f"PurchaseOrder eq '{without}'"},
@@ -244,9 +242,7 @@ def test_invoice_queue_is_a_sorted_collection(client: TestClient):
     assert numbers == sorted(numbers)
 
 
-def test_both_duplicate_invoices_are_served_and_unmarked(
-    client: TestClient, raw_data: dict
-):
+def test_both_duplicate_invoices_are_served_and_unmarked(client: TestClient, raw_data: dict):
     """A duplicate must look perfect in isolation. Nothing flags it."""
     seen: dict[tuple[str, str], list[str]] = {}
     for inv in raw_data["invoices"]:
@@ -256,9 +252,7 @@ def test_both_duplicate_invoices_are_served_and_unmarked(
     for belnr in pair:
         body = client.get(f"{BASE}/A_SupplierInvoice('{belnr}')").json()["d"]
         assert body["BELNR"] == belnr
-        assert not any(
-            "dup" in str(k).lower() or "duplicate" in str(k).lower() for k in body
-        )
+        assert not any("dup" in str(k).lower() or "duplicate" in str(k).lower() for k in body)
 
 
 # --------------------------------------------------------------------------
@@ -289,26 +283,21 @@ def test_vendor_history_exposes_invoice_references(client: TestClient):
     this field, 12 of 200 scenarios are unsolvable by any agent -- and it would
     read as a model failure when it is a tool-design failure.
     """
-    hist = client.get(
-        f"{BASE}/VendorHistory", params={"VendorID": "'1000000006'"}
-    ).json()["d"]
+    hist = client.get(f"{BASE}/VendorHistory", params={"VendorID": "'1000000006'"}).json()["d"]
     refs = hist["InvoiceReferences"]
-    assert refs and {"BELNR", "XBLNR", "BLDAT"} <= set(refs[0])
+    assert refs
+    assert {"BELNR", "XBLNR", "BLDAT"} <= set(refs[0])
     assert [r["BELNR"] for r in refs] == sorted(r["BELNR"] for r in refs)
 
 
-def test_a_duplicate_is_discoverable_through_vendor_history(
-    client: TestClient, raw_data: dict
-):
+def test_a_duplicate_is_discoverable_through_vendor_history(client: TestClient, raw_data: dict):
     counts: dict[tuple[str, str], int] = {}
     for inv in raw_data["invoices"]:
         key = (inv["LIFNR"], inv["XBLNR"])
         counts[key] = counts.get(key, 0) + 1
     vendor_id, vendor_ref = next(k for k, n in counts.items() if n > 1)
 
-    hist = client.get(
-        f"{BASE}/VendorHistory", params={"VendorID": f"'{vendor_id}'"}
-    ).json()["d"]
+    hist = client.get(f"{BASE}/VendorHistory", params={"VendorID": f"'{vendor_id}'"}).json()["d"]
     matching = [r for r in hist["InvoiceReferences"] if r["XBLNR"] == vendor_ref]
     assert len(matching) == 2
 

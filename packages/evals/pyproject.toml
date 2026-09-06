@@ -2,7 +2,6 @@
 name = "evals"
 version = "0.1.0"
 description = "Offline eval harness: scores the agent against ground truth, and gates on safety"
-readme = "README.md"
 authors = [
     { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
 ]
