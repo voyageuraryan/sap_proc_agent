@@ -136,8 +136,14 @@ def test_corrupt_json_is_refused(tmp_path):
 
 
 def test_a_recorded_run_replays_identically(erp_client, settings, tmp_path, root):
-    """The property that makes CI free: same transcript, same score, no API."""
-    case = next(c for c in load_cases("golden", root=root) if c.label == "QTY_OVER")
+    """The property that makes CI free: same transcript, same score, no API.
+
+    A read-only scenario, deliberately. A cassette records the MODEL's side of
+    the conversation, not the ERP's -- tools re-execute for real on replay --
+    so a run that writes only replays against a backend in the same state.
+    That limitation is demonstrated in its own test below rather than dodged.
+    """
+    case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
 
     recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
     live = run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
@@ -154,6 +160,34 @@ def test_a_recorded_run_replays_identically(erp_client, settings, tmp_path, root
     assert replayed.resolution == live.resolution
     assert [c.name for c in replayed.tool_calls] == [c.name for c in live.tool_calls]
     assert len(recorder.cassette.turns) == live.iterations
+
+
+def test_replaying_a_run_with_side_effects_diverges_and_says_so(
+    erp_client, settings, tmp_path, root
+):
+    """A cassette holds the model's turns, not the ERP's answers.
+
+    Recording a QTY_OVER run raises a proposal. Replaying it against the same
+    ERP raises a SECOND one, so the tool result differs, so the transcript
+    differs, so the fingerprint no longer matches -- and the replay stops.
+
+    That is the fingerprint doing its job on a genuinely diverged run, not a
+    false alarm. The consequence for CI is real and worth stating: replay
+    needs a backend in the state the recording was made against, which is why
+    the workflow starts a fresh ERP for every job.
+    """
+    case = next(c for c in load_cases("golden", root=root) if c.label == "QTY_OVER")
+    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
+    live = run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    assert any(c.name == "propose_correction" for c in live.tool_calls)
+
+    with pytest.raises(CassetteError, match="no longer matches"):
+        run_agent(
+            case.invoice_number,
+            erp_client,
+            settings,
+            completion_fn=Replayer(recorder.cassette),
+        )
 
 
 def test_replay_refuses_a_cassette_recorded_against_a_different_prompt(

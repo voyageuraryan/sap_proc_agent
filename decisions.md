@@ -997,3 +997,164 @@ money needs all three together, and doing one of them would be theatre.
 **This is stated here rather than discovered by a reviewer,** because "I know
 exactly what is missing and why I stopped there" is a better answer than a
 half-built login screen.
+
+---
+
+## 2026-09-06 — The demo is a program, not a set of instructions
+
+**Decision:** `scripts/demo.py` runs the seven acts in order, at a readable
+pace, reading every number live from the running services. CI runs it with
+`--no-pause` on every push.
+
+**Rejected:** a written runbook to follow while recording.
+
+**Why:** a recorded walkthrough that fumbles is worse than no video, and the
+things that go wrong on camera are the boring ones — a service not started, a
+proposal id that moved, a copy-paste that lost a quote. Scripting it makes every
+take identical and every figure on screen provably live rather than staged.
+Testing it in CI means a broken demo is found on a Tuesday, not while recording.
+
+**Consequence worth naming:** the default mode is the rule baseline, so the demo
+needs no API key and is byte-identical every run. `--mode live` exists for the
+one take where the real cost curve is worth showing.
+
+---
+
+## 2026-09-06 — The rule baseline now actually raises its proposals
+
+**Bug, found while building the demo.** The baseline concluded
+`PROPOSE_CORRECTION` and then went straight to `submit_resolution` — deciding to
+propose without ever proposing. The eval scored it as ideal, because the
+*decision* was right, and the demo's act 4 found no proposal to show.
+
+Two things were wrong with that beyond the demo. The eval never exercised the
+write path through the baseline, so 200 scenarios of "nothing was written" were
+weaker evidence than they looked. And "decided to propose" is not the same act
+as "raised something a human can approve" — which is exactly the distinction
+this project is about.
+
+The baseline now calls `propose_correction` first and submits on the next turn.
+The 200-scenario run raises ~56 proposals and still reports zero applied and zero
+documents changed, which is a materially stronger result than before.
+
+---
+
+## 2026-09-06 — A cassette records the model's side, not the world's
+
+**Found by the fingerprint doing its job.** Recording a QTY_OVER run and
+replaying it against the same ERP fails: the recorded run raised a proposal, the
+replay raises a *second* one, so the tool result differs, so the transcript
+differs, so the fingerprint no longer matches.
+
+That is correct behaviour, not a false alarm — the run genuinely diverged. But
+it is a real limitation and it is now documented and tested
+(`test_replaying_a_run_with_side_effects_diverges_and_says_so`) rather than
+discovered later by someone whose CI went red.
+
+**The consequence:** replay needs a backend in the state the recording was made
+against. CI already starts a fresh ERP per job, so it holds — but that is now a
+requirement rather than an accident, and the workflow comment says so.
+
+**Rejected:** recording tool results into the cassette as well, so replay would
+not execute them. That would turn the cassette into a mock of the entire ERP,
+and the eval would stop testing the integration — which is the only part of this
+project worth testing.
+
+---
+
+## 2026-09-06 — One image, two entry points
+
+**Decision:** a single Dockerfile; `command:` selects the ERP or the review UI.
+The dataset is baked into the image rather than mounted.
+
+**Why:** the services share every dependency, so separate images would double
+build time and registry footprint to save nothing. And the dataset is a pure
+function of a seed and a config that both live in version control, so baking it
+in makes an image and its data one reproducible artefact — `sap-proc-agent:abc123`
+fully determines what the agent will see.
+
+**Tradeoff:** regenerating the data means rebuilding the image. Correct: they
+are the same artefact, and being able to change one without the other is the
+bug, not the feature.
+
+Multi-stage so the runtime layer carries no build tooling; non-root, read-only
+root filesystem, and the approval database on the only writable volume.
+
+---
+
+## 2026-09-06 — The ERP is a StatefulSet with exactly one replica
+
+**Decision:** `deploy/k8s` runs the ERP as a StatefulSet with a
+`volumeClaimTemplate` and `replicas: 1`; the review UI is a Deployment with two.
+
+**Why:** the approval database is the audit trail. An `emptyDir` would lose who
+approved what on the first reschedule, which would make the central guarantee
+unprovable after any node drain. The review UI holds nothing — it is a client of
+the ERP — so it scales horizontally and the approval state stays where the state
+machine can guard it.
+
+**`replicas: 1` is a constraint, not an oversight.** SQLite is a single-writer
+store; a second replica would serve stale approvals. `test_the_erp_is_single_writer`
+asserts it so nobody "fixes" it by scaling up. The thing that removes the
+constraint is Postgres, not more replicas.
+
+---
+
+## 2026-09-06 — The NetworkPolicy is belt and braces, and says so
+
+**Decision:** the manifests include a NetworkPolicy restricting who may reach
+the ERP, and the deploy README states plainly that it is **not** the mechanism
+preventing the agent from approving its own proposals.
+
+**Why:** approval and proposal live on the same Service and the same port, so no
+network rule can tell them apart. A policy that *looked* like it enforced the
+separation would be worse than none — someone would trust it. The separation is
+enforced where it actually can be: the agent's tool registry contains no
+approval capability, and a test enumerates it.
+
+This is the same instinct as refusing to ship a login box that checks nothing.
+Security theatre is more dangerous than a documented gap, because a documented
+gap gets fixed.
+
+---
+
+## 2026-09-06 — Deployment manifests are tested, and the test says what it is not
+
+**Decision:** `tests/test_deploy.py` parses every manifest and asserts the
+things that survive code review and surface in production: non-root, dropped
+capabilities, read-only root filesystem *with a writable /tmp*, resource
+requests and limits, both probes with liveness more patient than readiness, no
+secret shipped with a value, and compose and Kubernetes agreeing on the entry
+points.
+
+**What it explicitly is not:** a green `kubectl apply`. These manifests have
+never touched a live cluster, and both the test docstring and the deploy README
+say so. Claiming cluster experience I do not have would be the one thing in this
+repo that could not survive a follow-up question.
+
+Kept in a top-level `tests/` rather than inside a package, because deployment
+belongs to no package.
+
+---
+
+## 2026-09-06 — The SAP mapping document is the differentiator, so it is honest
+
+**Decision:** `docs/sap-mapping.md` maps every mock endpoint to its real
+S/4HANA counterpart, includes illustrative CDS and service-definition ABAP, and
+carries an explicit list of what breaks on a live system — authorisation
+objects, rate limits, multi-line POs, unit-of-measure conversion, currency and
+FX, fiscal year as part of the invoice key, pagination over `MSEG`, and change
+documents.
+
+**Why it is written that way:** for an SAP-adjacent role this document is the
+thing that separates "built a demo" from "understands the system". But the
+fastest way to destroy that is one claim that does not survive a follow-up
+question. So it opens by stating that the ABAP is illustrative and has not been
+activated, and the "what changes" list is longer and more specific than the
+"what I built" list.
+
+**The sharpest point in it:** on a real system, authorisation objects would
+enforce read-only access for the agent's technical user — which is a *stronger*
+guarantee than my tool registry, because it is enforced by the system of record
+rather than by my own code. Saying that out loud is better than pretending my
+version is the ceiling.

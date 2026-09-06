@@ -1,0 +1,73 @@
+# The approval database is the audit trail, so this is a StatefulSet with a
+# volume claim rather than a Deployment with an emptyDir. Losing it on a
+# reschedule would mean losing the record of who approved what.
+#
+# replicas: 1 and no rolling update, because SQLite is a single-writer store.
+# A second replica would silently serve stale approvals -- see decisions.md for
+# why SQLite is still the right call at this scale and what replaces it if not.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: erp
+  namespace: proc-agent
+  labels: { app.kubernetes.io/name: erp, app.kubernetes.io/part-of: sap-proc-agent }
+spec:
+  serviceName: erp
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: erp }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: erp }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+        - name: erp
+          image: sap-proc-agent:local
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "mock_erp.app:app", "--host", "0.0.0.0", "--port", "8000"]
+          ports: [{ name: http, containerPort: 8000 }]
+          envFrom:
+            - configMapRef: { name: proc-agent-config }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: approvals, mountPath: /data }
+            - { name: tmp, mountPath: /tmp }
+          # readiness gates traffic; liveness restarts. Same endpoint, different
+          # thresholds: a slow start must not be mistaken for a hung process.
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests: { cpu: 50m, memory: 192Mi }
+            limits: { memory: 512Mi }
+      volumes:
+        - name: tmp
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata: { name: approvals }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 1Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: erp
+  namespace: proc-agent
+spec:
+  selector: { app.kubernetes.io/name: erp }
+  ports: [{ name: http, port: 8000, targetPort: http }]

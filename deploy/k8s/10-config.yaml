@@ -1,0 +1,31 @@
+# Configuration, not secrets. Every value here is safe in a git diff -- which
+# is the test for whether something belongs in a ConfigMap.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proc-agent-config
+  namespace: proc-agent
+data:
+  MOCK_ERP_ERP_DATA_DIR: /app/data/erp
+  MOCK_ERP_DB_PATH: /data/approvals.sqlite3
+  REVIEW_ERP_BASE_URL: http://erp:8000
+  AGENT_ERP_BASE_URL: http://erp:8000/sap/opu/odata/sap/ZPROC_SRV
+  AGENT_TRACE_ENVIRONMENT: cluster
+---
+# Provider and tracing credentials. Deliberately NOT committed with values:
+# apply it from a secrets manager, or
+#   kubectl -n proc-agent create secret generic proc-agent-secrets \
+#     --from-literal=ANTHROPIC_API_KEY=... --from-literal=LANGFUSE_SECRET_KEY=...
+#
+# The keys are listed so a missing one fails at deploy time rather than on the
+# first request. stringData with empty values is a placeholder, not a default.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: proc-agent-secrets
+  namespace: proc-agent
+type: Opaque
+stringData:
+  ANTHROPIC_API_KEY: ""
+  LANGFUSE_PUBLIC_KEY: ""
+  LANGFUSE_SECRET_KEY: ""

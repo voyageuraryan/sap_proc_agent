@@ -174,8 +174,15 @@ Full reasoning: [docs/data-plan.md](docs/data-plan.md).
 ```
 sap-proc-agent/
 ├── docs/
+│   ├── case-study.md    # the narrative: problem, architecture, results, gaps
+│   ├── sap-mapping.md   # what each mock endpoint stands in for, and what breaks
+│   ├── demo.md          # the demo, shot by shot
 │   ├── spec.md          # what ships in v1 and what deliberately doesn't
 │   └── data-plan.md     # where the data comes from, exception taxonomy
+├── deploy/k8s/          # manifests, validated structurally by tests/
+├── scripts/demo.py      # the demo, as a program
+├── Dockerfile           # one image, two entry points
+├── compose.yaml         # docker compose up
 ├── decisions.md         # design decisions, alternatives rejected, and why
 ├── data/
 │   ├── config/          # scenarios.yaml -- the one input to the generator
@@ -223,8 +230,9 @@ because it shapes the data model.
 - [x] Agent loop (tool-calling, terminal-tool structured output)
 - [x] Tracing + cost accounting (Langfuse, local JSONL, per-call cost table)
 - [x] Eval suite in CI (rule baseline, cassette replay, safety gates)
-- [x] Review UI (server-rendered approval queue; 377 tests green)
-- [ ] Case study + demo video
+- [x] Review UI (server-rendered approval queue)
+- [x] Case study + scripted demo (409 tests green)
+- [x] Containers, Kubernetes manifests, SAP mapping
 
 ---
 
@@ -373,12 +381,43 @@ Each action form carries the payload hash it rendered, and the server refuses
 if the proposal has moved since the page was drawn: **you approved what you
 were shown**. There is no authentication, and the header says so on every page.
 
+**See the whole thing in four minutes:**
+
+```bash
+uv run python scripts/demo.py
+```
+
+Seven acts — the queue, the trap, the agent, the wall, the human, the cost, the
+score. Scripted so it is identical every run, and every number on screen is read
+live from the running services. `--mode live` uses a real model; the default
+needs no API key. [`docs/demo.md`](docs/demo.md) is the shot list.
+
+**Or with containers:**
+
+```bash
+docker compose up --build          # ERP on :8000, review UI on :8001
+docker compose run --rm evals      # 200 scenarios; non-zero on a safety failure
+kubectl apply -k deploy/k8s        # manifests, validated by tests/test_deploy.py
+```
+
 **Tests and lint:**
 
 ```bash
-uv run pytest -q          # 377 passed
+uv run pytest -q          # 409 passed
 uv run ruff check .
 ```
+
+---
+
+## Read next
+
+- [`docs/case-study.md`](docs/case-study.md) — the whole thing in one document:
+  the thesis, the architecture, the approval gate, what the numbers mean, the
+  bugs that did not crash, and what I would do differently.
+- [`decisions.md`](decisions.md) — every design decision with the alternative I
+  rejected and why.
+- [`docs/sap-mapping.md`](docs/sap-mapping.md) — what each mock endpoint stands
+  in for in real S/4HANA, and the honest list of what breaks on a live system.
 
 ---
 

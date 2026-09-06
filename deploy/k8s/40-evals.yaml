@@ -1,0 +1,77 @@
+# The eval suite as a CronJob, because "evals exist before the demo is polished"
+# has to keep being true after deployment. Nightly, against the deterministic
+# rule baseline: free, offline, and it fails loudly if a write ever escapes the
+# approval gate in a real cluster.
+#
+# proc-evals exits 1 on a safety failure and 2 if the harness could not run.
+# restartPolicy Never + backoffLimit 0 means a red job stays red rather than
+# retrying until it accidentally passes.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: evals
+  namespace: proc-agent
+  labels: { app.kubernetes.io/name: evals, app.kubernetes.io/part-of: sap-proc-agent }
+spec:
+  schedule: "17 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+          containers:
+            - name: evals
+              image: sap-proc-agent:local
+              imagePullPolicy: IfNotPresent
+              command: ["proc-evals", "--split", "all", "--mode", "baseline", "--quiet"]
+              env:
+                - { name: AGENT_TRACING, value: "false" }
+              envFrom:
+                - configMapRef: { name: proc-agent-config }
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+              volumeMounts:
+                - { name: tmp, mountPath: /tmp }
+                - { name: reports, mountPath: /app/evals }
+              resources:
+                requests: { cpu: 100m, memory: 256Mi }
+                limits: { memory: 512Mi }
+          volumes:
+            - name: tmp
+              emptyDir: {}
+            - name: reports
+              emptyDir: {}
+---
+# The agent has read access and one write: it can create a proposal. It has no
+# route to /approval, so this policy is belt and braces on top of a tool
+# registry that contains no approval capability at all.
+#
+# Deliberately NOT a NetworkPolicy that blocks the approval routes: they live on
+# the same Service and port, so a network rule could not tell them apart. The
+# separation is enforced where it can be -- in what the agent is able to ask for.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: erp-ingress
+  namespace: proc-agent
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: erp }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: review }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: evals }
+      ports:
+        - { protocol: TCP, port: 8000 }

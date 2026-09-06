@@ -87,6 +87,11 @@ jobs:
             echo "skipping"
           fi
 
+      # The demo is a program, so it can be tested like one. A broken demo
+      # discovered while recording is a bad afternoon.
+      - name: The demo runs end to end
+        run: uv run python scripts/demo.py --no-pause
+
       - name: Upload eval reports
         if: always()
         uses: actions/upload-artifact@v4

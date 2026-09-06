@@ -60,4 +60,6 @@ select = ["E", "F", "I", "UP", "B"]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
 
 [tool.pytest.ini_options]
-testpaths = ["packages"]
+# `tests/` holds the checks that belong to no package: deployment manifests,
+# compose, and the repo layout itself.
+testpaths = ["packages", "tests"]

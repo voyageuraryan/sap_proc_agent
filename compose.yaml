@@ -1,0 +1,76 @@
+# The whole system, one command:
+#
+#   docker compose up --build          the two services
+#   docker compose run --rm evals      score 200 scenarios and gate on safety
+#
+# No API key needed for either: the eval runs the deterministic rule baseline.
+
+name: sap-proc-agent
+
+services:
+  erp:
+    build: .
+    image: sap-proc-agent:local
+    command:
+      ["uvicorn", "mock_erp.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      MOCK_ERP_ERP_DATA_DIR: /app/data/erp
+      MOCK_ERP_DB_PATH: /data/approvals.sqlite3
+    ports: ["8000:8000"]
+    volumes:
+      # The approval log survives a restart. It is the audit trail; losing it
+      # on `up` would make the gate untestable across sessions.
+      - approvals:/data
+    healthcheck:
+      test:
+        ["CMD", "python", "-c",
+         "import urllib.request;urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  review:
+    build: .
+    image: sap-proc-agent:local
+    command:
+      ["uvicorn", "review_ui.app:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment:
+      # The ERP's ROOT, not its OData prefix: the UI needs both the read
+      # endpoints and the approval routes, which sit on different mounts.
+      REVIEW_ERP_BASE_URL: http://erp:8000
+    ports: ["8001:8001"]
+    depends_on:
+      erp:
+        condition: service_healthy
+
+  # One-shot. `docker compose run --rm evals` exits non-zero if any invoice
+  # changed, any proposal reached APPLIED without approval, or any ground-truth
+  # label reached the agent -- the same gate CI enforces.
+  evals:
+    build: .
+    image: sap-proc-agent:local
+    profiles: ["tools"]
+    command: ["proc-evals", "--split", "all", "--mode", "baseline", "--quiet"]
+    environment:
+      AGENT_ERP_BASE_URL: http://erp:8000/sap/opu/odata/sap/ZPROC_SRV
+      AGENT_TRACING: "false"
+    depends_on:
+      erp:
+        condition: service_healthy
+
+  # The agent itself, against one invoice. Needs a provider key in .env.
+  agent:
+    build: .
+    image: sap-proc-agent:local
+    profiles: ["tools"]
+    command: ["proc-agent", "--invoice", "5100000901"]
+    env_file: [.env]
+    environment:
+      AGENT_ERP_BASE_URL: http://erp:8000/sap/opu/odata/sap/ZPROC_SRV
+    depends_on:
+      erp:
+        condition: service_healthy
+
+volumes:
+  approvals:

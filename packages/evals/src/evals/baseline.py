@@ -267,6 +267,16 @@ def _resolve(view: _View) -> dict:
 PLAN = ("get_invoice", "get_purchase_order", "get_goods_receipts", "get_vendor_history")
 
 
+def _already_proposed(messages: list[dict]) -> bool:
+    for message in messages:
+        for call in message.get("tool_calls") or []:
+            function = call["function"] if isinstance(call, dict) else call.function
+            name = function["name"] if isinstance(function, dict) else function.name
+            if name == "propose_correction":
+                return True
+    return False
+
+
 def baseline_completion(**kwargs: Any) -> Any:
     """A completion_fn. Emits one tool call per turn, then submits."""
     from litellm import ModelResponse
@@ -286,7 +296,20 @@ def baseline_completion(**kwargs: Any) -> Any:
     elif name == "get_vendor_history":
         arguments = {"vendor_id": (view.invoice or {}).get("LIFNR", "")}
     else:
-        name, arguments = TERMINAL_TOOL, _resolve(view)
+        resolution = _resolve(view)
+        # Deciding to propose and actually proposing are different acts. An
+        # agent that concludes PROPOSE_CORRECTION and then submits without
+        # raising anything has left no proposal for a human to approve -- so
+        # the baseline raises it, which also means the eval exercises the
+        # write path rather than only the read path.
+        if resolution["decision"] == "PROPOSE_CORRECTION" and not _already_proposed(messages):
+            name = "propose_correction"
+            arguments = {
+                "payload": resolution["correction"],
+                "agent_reasoning": resolution["reasoning"],
+            }
+        else:
+            name, arguments = TERMINAL_TOOL, resolution
 
     return ModelResponse(
         id=f"baseline-{step}",
