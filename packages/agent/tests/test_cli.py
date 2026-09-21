@@ -13,6 +13,7 @@ from agent import cli
 from agent.loop import AgentRun, LlmCallRecord, StopReason
 from agent.schemas import Classification, Decision, Resolution
 from agent.tracing import JsonlTracer, NullTracer
+from agent.settings import get_settings
 from conftest import INVOICE
 
 
@@ -66,6 +67,9 @@ def _run(**kwargs) -> AgentRun:
 @pytest.fixture
 def patched(monkeypatch, erp_app):
     """Replace run_agent and ErpClient so the CLI can be driven without a model."""
+    for name in ("AGENT_TRACING", "AGENT_TRACE_FILE"):
+        monkeypatch.delenv(name, raising=False)
+    get_settings.cache_clear()
     captured: dict = {}
 
     class FakeClient:
@@ -86,7 +90,9 @@ def patched(monkeypatch, erp_app):
 
     monkeypatch.setattr(cli, "ErpClient", FakeClient)
     monkeypatch.setattr(cli, "run_agent", fake_run_agent)
-    return captured
+    yield captured
+    get_settings.cache_clear()
+    # return captured
 
 
 def test_invoice_is_required(patched):
