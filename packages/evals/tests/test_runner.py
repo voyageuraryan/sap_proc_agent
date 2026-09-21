@@ -11,13 +11,12 @@ from decimal import Decimal
 
 import pytest
 from agent.loop import AgentRun, StopReason
+from evals import cli
 from evals.dataset import load_cases
 from evals.report import render_markdown, render_terminal
 from evals.runner import RunnerConfig, RunnerError, run_case, run_split
 from evals.safety import FORBIDDEN_STRINGS, compare, find_label_leaks, snapshot
 from evals.scoring import CaseResult
-
-from evals import cli
 
 
 @pytest.fixture
