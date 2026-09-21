@@ -95,6 +95,16 @@ jobs:
       - name: The demo runs end to end
         run: uv run python scripts/demo.py --no-pause
 
+      # The two servers above are started with `&`, so they outlive the steps
+      # that launched them. They are `uv run` children and keep a lock on the
+      # uv cache, which makes setup-uv's post-job `uv cache prune --ci` wait
+      # 300s for a lock that is never released and then fail the whole job --
+      # after every real step has already gone green. Shut them down here,
+      # while we are still in a step that can.
+      - name: Stop the background servers
+        if: always()
+        run: pkill -f uvicorn || true
+
       - name: Upload eval reports
         if: always()
         uses: actions/upload-artifact@v4
