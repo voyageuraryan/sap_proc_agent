@@ -92,7 +92,7 @@ def patched(monkeypatch, erp_app):
     monkeypatch.setattr(cli, "run_agent", fake_run_agent)
     yield captured
     get_settings.cache_clear()
-    # return captured
+    return captured
 
 
 def test_invoice_is_required(patched):
