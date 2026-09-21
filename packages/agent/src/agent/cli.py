@@ -119,7 +119,7 @@ def _settings_from(args: argparse.Namespace) -> AgentSettings:
             ("max_iterations", args.max_iterations),
             ("temperature", args.temperature),
             ("trace_file", args.trace_file),
-            ("tracing", False if args.no_trace else None),
+            ("tracing", True if args.no_trace else None),
         )
         if value is not None
     }
