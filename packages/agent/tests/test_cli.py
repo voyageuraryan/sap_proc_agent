@@ -12,8 +12,8 @@ import pytest
 from agent import cli
 from agent.loop import AgentRun, LlmCallRecord, StopReason
 from agent.schemas import Classification, Decision, Resolution
-from agent.tracing import JsonlTracer, NullTracer
 from agent.settings import get_settings
+from agent.tracing import JsonlTracer, NullTracer
 from conftest import INVOICE
 
 
