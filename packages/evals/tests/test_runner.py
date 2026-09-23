@@ -230,29 +230,31 @@ def test_the_forbidden_list_covers_the_variants_too():
 # ---------------------------------------------------------------------------
 
 
-def test_one_broken_case_does_not_destroy_the_report(golden, erp_client, settings):
+def test_one_broken_case_does_not_destroy_the_report(golden, erp_client, settings, monkeypatch):
     """A stale cassette or a timeout has to show up as a failed CASE. Aborting
     the run would let one scenario take down the other 199."""
-
-    def explode(**kwargs):
-        raise RuntimeError("provider on fire")
-
-    config = RunnerConfig(mode="live")
-    import evals.runner as runner_module
-
-    original = runner_module._completion_for
-
     from contextlib import contextmanager
+
+    import evals.runner as runner_module
+    from langchain_core.language_models import BaseChatModel
+
+    class ExplodingModel(BaseChatModel):
+        @property
+        def _llm_type(self) -> str:
+            return "exploding"
+
+        def bind_tools(self, tools, **kwargs):
+            return self
+
+        def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+            raise RuntimeError("provider on fire")
 
     @contextmanager
     def broken(case, settings, config):
-        yield explode, None
+        yield ExplodingModel(), []
 
-    runner_module._completion_for = broken
-    try:
-        result, _ = run_case(golden[0], erp_client, settings, config)
-    finally:
-        runner_module._completion_for = original
+    monkeypatch.setattr(runner_module, "_model_for", broken)
+    result, _ = run_case(golden[0], erp_client, settings, RunnerConfig(mode="live"))
 
     assert isinstance(result, CaseResult)
     assert result.error

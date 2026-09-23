@@ -63,7 +63,9 @@ def build_parser() -> argparse.ArgumentParser:
         "that was never run -- for debugging the harness only.",
     )
     parser.add_argument("--limit", type=int, default=None, help="First N cases only")
-    parser.add_argument("--model", default=None)
+    parser.add_argument(
+        "--model", default=None, help="provider:model for record/live, e.g. openai:gpt-4o"
+    )
     parser.add_argument("--base-url", default=None)
     parser.add_argument("--out", type=Path, default=None, help="Directory for the report files")
     parser.add_argument("--json", action="store_true", help="Print the report as JSON")

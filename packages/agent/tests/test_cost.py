@@ -202,6 +202,16 @@ def test_litellm_is_consulted_before_the_local_pin():
     assert order[0] == "litellm"
 
 
+def test_the_langchain_model_spelling_prices_like_the_litellm_one():
+    """Settings now say provider:model; both price tables are keyed provider/model."""
+    from agent.cost import pricing_key
+
+    assert pricing_key("anthropic:claude-sonnet-4-5") == MODEL
+    assert pricing_key(MODEL) == MODEL
+    assert pricing_key("openai:ft:gpt-4o:org") == "openai/ft:gpt-4o:org"
+    assert cost_for("anthropic:claude-sonnet-4-5", 1000, 500) == cost_for(MODEL, 1000, 500)
+
+
 def test_formatting_shows_six_places():
     assert format_usd(Decimal("0.00004800")) == "$0.000048"
     assert format_usd(None) == "unpriced"

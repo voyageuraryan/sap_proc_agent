@@ -10,6 +10,7 @@ dependencies = [
     "agent",
     "generator",
     "httpx",
+    "langchain-core>=1.6",
     "pydantic",
     "pyyaml",
 ]

@@ -8,7 +8,7 @@ picture you cannot diff is a picture that goes stale.
 - [3. The eight scenarios](#3-the-eight-scenarios)
 - [4. End-to-end: one invoice, start to finish](#4-end-to-end-one-invoice-start-to-finish)
 - [5. The approval state machine](#5-the-approval-state-machine)
-- [6. Inside the agent loop](#6-inside-the-agent-loop)
+- [6. Inside the agent graph](#6-inside-the-agent-graph)
 - [7. How a write becomes visible](#7-how-a-write-becomes-visible)
 - [8. Evaluation and safety gates](#8-evaluation-and-safety-gates)
 - [9. Observability](#9-observability)
@@ -275,43 +275,60 @@ about whether their payload would have matched.
 
 ---
 
-## 6. Inside the agent loop
+## 6. Inside the agent graph
 
-The whole agent is a message list and a for-loop that grows it. There is no
-other state.
+The agent is a [LangGraph](https://langchain-ai.github.io/langgraph/)
+`StateGraph` with three nodes. The state is the message list plus a few
+counters; the message list is the only thing the model ever sees. The chat
+model is any LangChain `BaseChatModel` — `ChatAnthropic` by default, built by
+`init_chat_model` from `AGENT_MODEL` — and the tools are LangChain
+`StructuredTool`s, so `bind_tools` renders them in whichever provider's wire
+format is in use.
 
 ```mermaid
 flowchart TB
-    INIT["messages = [system, user]"] --> CALL["completion(model, messages, tools)"]
-    CALL --> APPEND["append the assistant message<br/><i>always, before anything can fail</i>"]
-    APPEND --> HAS{"tool_calls?"}
+    START(["START<br/>messages = [system, user]"]) --> AGENT["<b>agent</b> node<br/>chat_model.bind_tools(tools).invoke(messages)<br/><i>the AIMessage is appended, always</i>"]
+    AGENT --> HAS{"tool_calls or<br/>invalid_tool_calls?"}
 
-    HAS -->|no, first time| NUDGE["append a nudge<br/>'call a tool or submit'"] --> CAP
-    HAS -->|no, second time| STOP1(["stop: NO_TOOL_CALL"])
-    HAS -->|yes| EACH["for each tool_call"]
+    HAS -->|no| NUDGE["<b>nudge</b> node"]
+    NUDGE -->|first time| NMSG["append 'call a tool or submit'"] --> CAP1{"iterations < max?"}
+    CAP1 -->|yes| AGENT
+    CAP1 -->|no| STOP3(["END: MAX_ITERATIONS"])
+    NUDGE -->|second time| STOP1(["END: NO_TOOL_CALL"])
 
-    EACH --> TERM{"name == submit_resolution?"}
-    TERM -->|yes| VALID{"validates as Resolution?"}
-    VALID -->|no| FEED["append the validation error<br/>as the tool result"] --> CAP
-    VALID -->|yes| STOP2(["stop: SUBMITTED"])
-    TERM -->|no| EXEC["execute the tool"]
-
-    EXEC --> RESULT["append a tool message<br/>keyed by tool_call_id<br/><i>success or failure, always text</i>"]
-    RESULT --> CAP{"iterations < max?"}
-    CAP -->|yes| CALL
-    CAP -->|no| STOP3(["stop: MAX_ITERATIONS"])
+    HAS -->|yes| TOOLS["<b>tools</b> node<br/>answer EVERY call with a ToolMessage<br/><i>success or failure, always text</i>"]
+    TOOLS --> TERM{"a submit_resolution<br/>validated as Resolution?"}
+    TERM -->|yes| STOP2(["END: SUBMITTED"])
+    TERM -->|no| CAP2{"iterations < max?"}
+    CAP2 -->|yes| AGENT
+    CAP2 -->|no| STOP3
 ```
 
-One invariant governs the whole file:
+Every decision to stop is made **inside a node** and written to `stop_reason`;
+the edges only read it. That keeps routing trivially correct, and it puts every
+"why did it stop" in the state, where the run record picks it up.
 
-> **Every assistant `tool_call` must be answered by exactly one `tool` message
-> carrying the same `tool_call_id`.**
+A hand-built graph rather than LangChain's prebuilt `create_agent`, because the
+prebuilt loop cannot express three things this agent depends on: a terminal
+tool whose acceptance *ends* the run, exactly one nudge before giving up on
+prose, and a stop reason recorded as data rather than inferred afterwards.
 
-Break it one way (drop the assistant message) and the model re-asks forever,
-burning tokens. Break it the other (append the assistant message with no
-results) and the provider returns 400. That is why `_execute_tool_call` **cannot
-raise** — an unknown tool, malformed JSON, a schema violation, an ERP 404 and an
-unexpected exception all come back as *text the model can read*.
+One invariant governs the whole graph:
+
+> **Every tool call the model makes must be answered by exactly one
+> `ToolMessage` carrying the same `tool_call_id`.**
+
+Break it one way (drop the model's turn) and the model re-asks forever, burning
+tokens. Break it the other (a tool call with no result) and the provider returns
+400. That is why the tool node's `_execute` **cannot raise**. An unknown tool, a
+schema violation, an ERP 404 and an unexpected exception all come back as *text
+the model can read*. The same goes for a call whose arguments were not JSON at
+all: LangChain files those under `invalid_tool_calls`, and they get an answer
+too.
+
+The graph's output is folded into the same `AgentRun` record the hand-written
+loop returned, field for field. The eval harness, the review UI and `--json`
+read that record and nothing else.
 
 An `ERP error PO_NOT_FOUND` in the transcript is therefore **evidence**, and
 escalating on it is the correct behaviour.
@@ -430,28 +447,39 @@ to the human the gate depends on.
 
 ```mermaid
 flowchart TB
-    LOOP["agent loop"] -->|"tracer.span(...)"| IFACE["Tracer<br/><i>an interface</i>"]
-    IFACE --> NULL["NullTracer<br/>off, nothing imported"]
-    IFACE --> JSONL["JsonlTracer<br/>local file, no account"]
-    IFACE --> LF["LangfuseTracer<br/>the shareable view"]
-    IFACE --> COMP["CompositeTracer<br/>both at once"]
-    LOOP -.->|"never imports"| LFSDK["langfuse SDK"]
+    GRAPH["agent graph"] -->|"LangChain callbacks<br/>chain · chat model · tool"| CFG["config['callbacks']"]
+    CFG --> NULL["NullTracer<br/>off, no handlers"]
+    CFG --> JSONL["JsonlCallbackHandler<br/>local file, no account"]
+    CFG --> LF["langfuse.langchain.CallbackHandler<br/>the shareable view"]
+    CFG --> REC["Recorder<br/>cassettes, eval record mode"]
+    GRAPH -.->|"never imports"| LFSDK["langfuse SDK"]
 ```
 
-One `agent.run` span wraps one `llm.completion` span per iteration and one
-`tool.<name>` span per call:
+The graph never calls a tracer. LangChain emits a callback for the graph, for
+every node, for every chat-model call and for every tool call, and each backend
+is just a handler attached to the run's config. Langfuse's own LangChain handler
+turns those into a nested trace, with a generation per model call that carries
+model, token usage and Langfuse's cost. Once the run is over, its outcome
+(`stop_reason`, `decision`, `classification`) is attached as categorical
+**scores**, so every run that never submitted is one filter away. LangGraph's
+routing functions carry LangChain's `langsmith:hidden` tag: Langfuse files them
+at DEBUG level and the JSONL handler skips them, so a trace reads as the agent's
+steps, not as edge plumbing.
+
+One `agent.run` root wraps an `agent` node and a `tools` node per iteration,
+with the model call and the tool calls nested under them:
 
 ```
- 2   llm  llm.completion    usage={'input': 4200, 'output': 95}  cost=$0.014025
- 3   tool tool.get_invoice                                        42.0ms
- 4   llm  llm.completion    usage={'input': 5100, 'output': 88}  cost=$0.016620
- 5   tool tool.get_purchase_order                                  2.3ms
- 9   tool tool.get_invoice   ERROR=INVOICE_NOT_FOUND               1.7ms
- 1 run  agent.run                                              3175.2ms
+ 2  llm   ChatAnthropic         usage={'input': 4200, 'output': 95}  cost=0.014025
+ 1  chain agent                                                        1604.1ms
+ 2  tool  get_invoice                                                    42.0ms
+ 1  chain tools                                                          43.2ms
+ 2  tool  get_invoice           error=INVOICE_NOT_FOUND                   1.7ms
+ 0  chain agent.run                                                    3175.2ms
 ```
 
-Written on span *close*, so the file reads bottom-up like a flame graph and a
-crashed run still leaves everything that completed.
+A line is written when its run *ends*, so the file reads bottom-up like a flame
+graph, and a crashed run still leaves everything that completed.
 
 **The shape of the cost curve is the finding.** Input tokens grow every turn
 because the whole transcript is re-sent, so cost is roughly **quadratic in tool

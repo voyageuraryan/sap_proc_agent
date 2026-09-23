@@ -1,8 +1,9 @@
 """Run a split and produce a report.
 
 The seam the CLI calls and the tests call. Everything it needs arrives as an
-argument -- the cases, the client, the settings, the completion function -- so
-it can be exercised against a rule engine, a cassette, or a live model without
+argument -- the cases, the client, the settings, the mode -- and each mode is
+just a different LangChain chat model handed to the same agent graph, so it
+can be exercised against a rule engine, a cassette, or a live model without
 knowing which.
 
 Modes, in the order you would reach for them:
@@ -27,7 +28,7 @@ from agent.loop import AgentRun, StopReason, run_agent
 from agent.settings import AgentSettings
 from agent.tracing import NullTracer, Tracer
 
-from evals.baseline import baseline_completion
+from evals.baseline import BaselineChatModel
 from evals.cassettes import Cassette, CassetteError, Recorder, Replayer, cassette_path
 from evals.dataset import EvalCase
 from evals.report import EvalReport, now
@@ -52,18 +53,23 @@ class RunnerError(RuntimeError):
 
 
 @contextmanager
-def _completion_for(
+def _model_for(
     case: EvalCase, settings: AgentSettings, config: RunnerConfig
-) -> Iterator[tuple[object, Cassette | None]]:
-    """Yield the completion_fn for one case, plus a cassette to save if recording."""
+) -> Iterator[tuple[object, list]]:
+    """Yield the chat model for one case, plus any per-run callbacks.
+
+    Recording is a CALLBACK on the real model, not a wrapper around it: the
+    model runs untouched, and the cassette is saved only after the run
+    completes -- a crashed run leaves no half-written cassette behind.
+    """
     if config.mode == "baseline":
-        yield baseline_completion, None
+        yield BaselineChatModel(), []
         return
 
     if config.mode == "live":
-        from litellm import completion
+        from agent.models import build_chat_model
 
-        yield completion, None
+        yield build_chat_model(settings), []
         return
 
     if config.cassette_dir is None:
@@ -79,14 +85,22 @@ def _completion_for(
                 f"but {case.scenario_id} now resolves to {case.invoice_number}. "
                 f"The dataset changed -- re-record."
             )
-        yield Replayer(cassette, strict=not config.allow_stale), None
+        yield (
+            Replayer(
+                cassette,
+                model=settings.model,
+                temperature=settings.temperature,
+                strict=not config.allow_stale,
+            ),
+            [],
+        )
         return
 
     # record
-    from litellm import completion
+    from agent.models import build_chat_model
 
-    recorder = Recorder(completion, case.scenario_id, case.invoice_number, settings.model)
-    yield recorder, recorder.cassette
+    recorder = Recorder(case.scenario_id, case.invoice_number, settings.model, settings.temperature)
+    yield build_chat_model(settings), [recorder]
     recorder.cassette.save(path)
 
 
@@ -106,14 +120,15 @@ def run_case(
     """
     started = time.perf_counter()
     try:
-        with _completion_for(case, settings, config) as (completion_fn, _):
+        with _model_for(case, settings, config) as (chat_model, callbacks):
             run = run_agent(
                 case.invoice_number,
                 client,
                 settings,
                 scenario_id=case.scenario_id,
-                completion_fn=completion_fn,
+                chat_model=chat_model,
                 tracer=tracer or NullTracer(),
+                callbacks=callbacks,
             )
     except Exception as exc:  # noqa: BLE001 - one bad case must not end the run
         duration_ms = (time.perf_counter() - started) * 1000.0

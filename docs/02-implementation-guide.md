@@ -39,6 +39,7 @@ about the cases you chose. An eval tells you about the cases you did not.
 | 9 | Review UI | Server-rendered approval queue, zero JavaScript | 49 |
 | 10 | Case study + demo | Scripted walkthrough, run in CI | — |
 | 11 | Deploy | Docker, Kubernetes, SAP mapping | 53 |
+| 12 | LangChain rebuild | Loop → LangGraph `StateGraph`, tools → `StructuredTool`, tracing → Langfuse's LangChain handler | agent 127, evals 115 |
 
 ## Step-by-step
 
@@ -87,14 +88,15 @@ asserted.
 ### 6 · Agent loop
 
 Six tools, an iteration cap, and `Resolution` registered as the terminal tool's
-argument schema. `completion_fn` is injectable so tests can drive a scripted
-model. `_execute_tool_call` never raises.
+argument schema. The model is injectable so tests can drive a scripted one. The
+tool executor never raises. (Originally a hand-written loop over LiteLLM; since
+step 12, a LangGraph graph — see below.)
 
 ### 7 · Tracing and cost
 
-A `Tracer` interface with Null / JSONL / Langfuse behind it, so `loop.py` never
-imports langfuse and the demo runs offline. Cost lands on `AgentRun`, not in the
-tracer.
+Null / JSONL / Langfuse backends, chosen at the edge, so the agent never imports
+langfuse and the demo runs offline. Cost lands on `AgentRun`, not in the tracer.
+(Since step 12 every backend is a LangChain callback handler.)
 
 ### 8 · Eval harness
 
@@ -109,6 +111,31 @@ A separate FastAPI app, Jinja2, zero JavaScript, POST-then-redirect.
 
 `scripts/demo.py` runs seven acts and is executed by CI. One Docker image with
 two entry points; Kubernetes manifests validated structurally by `tests/`.
+
+### 12 · The LangChain rebuild
+
+The agentic layer re-expressed in the LangChain family, on the
+`langchain-variant` branch. **Only `packages/agent` was rebuilt**, plus the
+model seam in `packages/evals`. The ERP, the approval gate, the generator, the
+review UI, the dataset and every scoring table are byte-for-byte untouched, and
+the rule baseline still scores 200/200 ideal through the new graph. That is the
+evidence the rebuild preserved behaviour.
+
+| Was | Now |
+| --- | --- |
+| `loop.py`: a `for` loop over `litellm.completion` | `graph.py`: a LangGraph `StateGraph` — `agent`, `tools`, `nudge` nodes; `loop.run_agent` is now the thin entry point around it |
+| `ToolSpec` dataclass + `to_openai_schemas` | LangChain `StructuredTool` per tool, same argument models, same descriptions byte for byte |
+| `completion_fn=` (a LiteLLM-shaped callable) | `chat_model=` (any `BaseChatModel`); `init_chat_model("anthropic:claude-sonnet-4-5")` by default |
+| `Tracer.span(...)` called by the loop | LangChain callbacks; Langfuse's own `CallbackHandler`, plus a JSONL handler; outcome recorded as Langfuse scores |
+| Payload redaction in the loop | Langfuse's `mask=` hook; the JSONL handler redacts itself |
+| Rule baseline as a `completion_fn` | `BaselineChatModel(BaseChatModel)` |
+| Cassette `Recorder` wrapping `completion` | `Recorder` is a callback handler *watching* the real model; `Replayer` is a chat model. Cassette format v2 |
+| `AGENT_MODEL=anthropic/claude-sonnet-4-5` | `anthropic:claude-sonnet-4-5`; the old spelling is still accepted |
+
+LiteLLM stays as a dependency for **one** thing: its maintained price map,
+behind `agent/cost.py`. LangChain has no price table, and a pinned one is worse
+for every model this project does not pin. Nothing sends a request through
+LiteLLM any more.
 
 ---
 
@@ -325,6 +352,22 @@ recorded it as an `R100` rename.
 **The mount refused to overwrite files in place**, so file transfers moved the
 original aside first and copied fresh.
 
+## B8 — The LangChain rebuild
+
+Each of these would have passed a casual review. Two of them would have shipped
+a transcript or a test run that silently lied.
+
+| Issue | Fix |
+| --- | --- |
+| `langchain_core.messages.convert_to_openai_messages` **drops `invalid_tool_calls`** — a call whose arguments were not JSON. The tool message answering it then answers a call the transcript says was never made: the protocol violation this project is organised around, introduced by a library helper | `agent/messages.py` renders the transcript itself and keeps malformed calls, raw argument string and all. `test_a_malformed_call_is_kept_in_the_transcript_and_answered` |
+| `convert_to_openai_tool` **inlines `$defs` and drops `additionalProperties`**, so the model no longer sees `extra="forbid"` | Harmless, because Pydantic still enforces it when the tool validates (an invented `confidence` field is still rejected and fed back). The schema tests now compare field sets and required sets instead of bytes |
+| LangGraph traces its **routing functions as chain runs**, so every trace read `agent → after_agent → tools → continue_or_stop …` | routers wrapped with LangChain's `langsmith:hidden` tag; Langfuse files them at DEBUG, the JSONL handler skips them |
+| LangChain passes a **tool's run name only in `serialized`**, not as the `name` kwarg it passes for chains. The recording test double read only the kwarg and saw `None` for every tool | read both, as the JSONL handler already did |
+| The test suite **hung forever** in a Langfuse fixture's `client.shutdown()`. The SDK keeps one resource manager per public key for the life of the process; the second test's client reused the first test's already-shut-down manager and queued onto a queue with no consumer, then `join()`ed it | a unique public key per fixture, with a comment saying why |
+| `record_outcome` scores queued for a dead host made teardown retry delivery for minutes | the fixture binds each `create_score` call against the real SDK signature, then records it instead of sending. A misspelt argument still fails the test |
+| Adding `max_tokens` to the traced-settings allow-list **tripped the credential-name guard** (it contains `token`) | kept out of the allow-list. The guard is deliberately blunt, and a false positive costs one field of metadata; loosening it would cost more |
+| `scripts/demo.py` crashes on a Windows console when output is redirected: cp1252 cannot encode its box-drawing characters | not a rebuild bug, and CI runs on UTF-8 Linux; locally, `PYTHONIOENCODING=utf-8` |
+
 ---
 
 # Part C — design decisions, with the alternatives rejected
@@ -372,12 +415,19 @@ Condensed. Each entry is: the decision, what was rejected, and the reason.
 | **`scenario_id` closed over, not a tool argument** | ask the model | The model cannot know it, so asking invites a hallucination that mislabels the eval row |
 | **One nudge before `NO_TOOL_CALL`** | stop immediately; nudge forever | A model that opens with prose should not kill the run; `NO_TOOL_CALL` now means "asked twice" |
 | **Scripted model, real ERP, in tests** | mock both | Faking the ERP tests our *idea* of the contract — which is how the alias leak survived |
+| **A hand-built LangGraph `StateGraph`** | `langchain.agents.create_agent`; keep the hand-written loop | The prebuilt agent cannot end on a terminal tool, nudge exactly once, or record why it stopped. The hand-written loop worked, but kept control flow in a `for` loop only one file understood, where a graph is data LangGraph executes, traces and can draw |
+| **Stop decisions inside nodes; edges only read `stop_reason`** | decide in the conditional edges | An edge cannot write state, so a stop decided there would have to be re-derived afterwards — and the two derivations would one day disagree |
+| **The scripted test model is a real `BaseChatModel`** | patch the graph's model call | Then the tests drive the same `bind_tools` → `invoke` path ChatAnthropic takes, not a shortcut around it |
+| **Model as `provider:model` via `init_chat_model`** | import `ChatAnthropic` directly | Swapping provider stays a config change; the old LiteLLM spelling is still accepted so no `.env` breaks |
 
 ## C4 — Observability
 
 | Decision | Rejected | Why |
 | --- | --- | --- |
-| **`Tracer` interface, three backends** | call the Langfuse SDK from the loop; `@observe` | Otherwise the demo needs a SaaS signup, and the vendor's name ends up on every signature in the call path |
+| **Backends are LangChain callback handlers** | call the Langfuse SDK from the graph; `@observe` | The graph emits callbacks whether or not anyone listens, so observability is a handler list in the run config. The demo needs no SaaS signup, and no vendor name appears on any signature in the call path |
+| **Langfuse's own `CallbackHandler`**, not an adapter of ours | keep the hand-written span adapter | The vendor maintains the mapping from LangChain runs to generations, usage and cost, which is the part that drifts with every SDK release |
+| **The outcome as Langfuse scores** | an ERROR level on the root span | A callback cannot know how the run *ended*. A categorical score set afterwards can be filtered, charted and compared across releases |
+| **Cassette recorder is a callback; replayer is a model** | wrap the real model in a recording model | A wrapper appears in the trace as a second generation, doubling cost there, or else hides the real one. Observing leaves the real call untouched |
 | **A local JSONL backend** | Langfuse only | Makes tracing demonstrable offline on a clone — worth more than a screenshot of someone else's dashboard |
 | **Cost lives on `AgentRun`** | let Langfuse derive it | Cost is a property of the run whether anyone is watching. It must be in `--json`, in CI, and in the terminal — and the two numbers cannot then disagree |
 | **Unknown model → `unpriced`, never `0.0`** | default to zero | A zero in a cost column reads as *free*. A partial sum labelled "total" is the same lie one level up |
@@ -403,7 +453,8 @@ Condensed. Each entry is: the decision, what was rejected, and the reason.
 
 | Gap | Why it is still open |
 | --- | --- |
-| **Prompt-cache tokens unaccounted** | `_usage()` reads only prompt/completion. Anthropic prices cache creation and cache read separately, so the cost table *overstates* input cost once caching is on. Not fixed before there was a benchmark to measure the fix against |
+| **Prompt-cache tokens unaccounted** | The agent node reads only `input_tokens` / `output_tokens` from LangChain's `usage_metadata`. Anthropic prices cache creation and cache read separately (LangChain reports them under `input_token_details`), so the cost table *overstates* input cost once caching is on. Not fixed before there was a benchmark to measure the fix against |
+| **The LangChain variant has not been run against a live model** | Every test and the 200-scenario baseline drive the real graph through LangChain's real `bind_tools` → `invoke` path, but with a scripted or rule-based model. The first `--mode record` run on this branch is the live check |
 | **No authentication** | Needs three changes together (see C2). One of them alone is theatre |
 | **One PO line per scenario** | The array shape is right, so multi-line is a generator change not a schema migration — but the eval set does not yet exercise an invoice billing two lines with different variances |
 | **Replay needs a matching backend state** | A cassette records the model's side, not the world's. CI starts a fresh ERP per job; that is now a requirement, not an accident |

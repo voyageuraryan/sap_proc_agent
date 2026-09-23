@@ -133,7 +133,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--invoice", required=True, help="Invoice number, e.g. 5100000901")
     parser.add_argument("--scenario-id", default=None, help="Eval bookkeeping, e.g. SC-0009")
-    parser.add_argument("--model", default=None, help="Override the configured model")
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Override the configured model, as provider:model (e.g. openai:gpt-4o)",
+    )
     parser.add_argument("--base-url", default=None, help="Override the mock ERP base URL")
     parser.add_argument("--max-iterations", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
@@ -155,7 +159,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    # Loads ANTHROPIC_API_KEY into the environment for LiteLLM to find. Done
+    # Loads ANTHROPIC_API_KEY into the environment for the LangChain provider
+    # package to find. Done
     # here, at the edge, not at import time -- an imported module that mutates
     # os.environ is a surprise.
     load_dotenv()
@@ -163,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     settings = _settings_from(args)
 
     # Built here, not inside run_agent, so the CLI can flush it in a finally --
-    # Langfuse batches spans in a background thread, and a process that exits
+    # Langfuse batches observations in a background thread, and a process that exits
     # without flushing silently loses the trace it just paid to produce.
     tracer = build_tracer(settings)
     client = ErpClient(settings.erp_base_url, settings.request_timeout)

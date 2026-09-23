@@ -6,14 +6,20 @@
 and *cannot* change a document without a named human approving the exact bytes
 it proposed.**
 
-[![tests](https://img.shields.io/badge/tests-433%20passing-2f5d50)](#testing)
+[![tests](https://img.shields.io/badge/tests-442%20passing-2f5d50)](#testing)
 [![lint](https://img.shields.io/badge/ruff-clean-2f5d50)](#testing)
 [![warnings](https://img.shields.io/badge/warnings-0-2f5d50)](#testing)
 [![python](https://img.shields.io/badge/python-3.13-3776ab)](pyproject.toml)
 [![uv](https://img.shields.io/badge/packaging-uv-de5fe9)](https://docs.astral.sh/uv/)
+[![langgraph](https://img.shields.io/badge/agent-LangGraph-1c3c3c)](docs/03-architecture.md#6-inside-the-agent-graph)
 [![licence](https://img.shields.io/badge/licence-MIT-6b6b68)](LICENSE)
 
 *The model is close to the least interesting component here. That is the point.*
+
+**`langchain-variant` branch:** the agent is built on the LangChain family:
+a LangGraph `StateGraph`, LangChain tools and chat models, and Langfuse's
+LangChain handler for tracing. Everything else is unchanged from `main`.
+[What changed, and why](docs/02-implementation-guide.md#12--the-langchain-rebuild).
 
 [Quick start](#quick-start) ·
 [What it does](#what-it-does) ·
@@ -295,7 +301,7 @@ packages/
 ├── erp_domain/   SAP-shaped models, shared by the generator and the ERP
 ├── generator/    200 labelled scenarios from one seed, byte-reproducible
 ├── mock_erp/     OData V2 read service + the approval state machine
-├── agent/        the tool-calling loop — talks HTTP, imports none of the above
+├── agent/        a LangGraph tool-calling graph — talks HTTP, imports none of the above
 ├── evals/        scoring + safety gates — the only reader of data/labels/
 └── review_ui/    the human queue — a client of the ERP, not part of it
 ```
@@ -314,7 +320,7 @@ in **[docs/03-architecture.md](docs/03-architecture.md)**.
 ## Testing
 
 ```bash
-uv run pytest -q       # 433 passed, 0 warnings
+uv run pytest -q       # 442 passed, 0 warnings
 uv run ruff check .    # clean, under a curated strict rule set incl. S (bandit) and BLE
 make check             # exactly what CI runs
 ```
@@ -327,8 +333,8 @@ chose.
 | --- | ---: | --- |
 | `generator` | 8 | Byte-reproducibility, hash-seed independence, taxonomy shape |
 | `mock_erp` | 90 | OData dialect, the full illegal-transition matrix, three attacks on the gate |
-| `agent` | 121 | Loop protocol, structured output, tracing-changes-nothing, cost honesty |
-| `evals` | 112 | Scoring tables, cassette fingerprints, label isolation |
+| `agent` | 127 | Graph protocol, structured output, tracing-changes-nothing, cost honesty, the real Langfuse handler |
+| `evals` | 115 | Scoring tables, cassette fingerprints, label isolation |
 | `review_ui` | 49 | The gate from the UI side, stale-page refusal, separation of powers |
 | `tests/` | 53 | Deployment manifests and the documentation set itself |
 
@@ -389,7 +395,7 @@ All eleven planned steps are complete.
 - [x] Deterministic scenario generator + exception taxonomy
 - [x] OData read endpoints on the mock ERP
 - [x] Human approval state machine
-- [x] Agent loop with typed, schema-enforced output
+- [x] Agent loop with typed, schema-enforced output (rebuilt on LangGraph on this branch)
 - [x] Tracing and cost accounting
 - [x] Eval suite with safety gates in CI
 - [x] Review UI

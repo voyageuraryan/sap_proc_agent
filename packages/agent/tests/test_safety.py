@@ -78,7 +78,7 @@ def test_proposing_does_not_change_the_invoice(erp_app, erp_client, settings):
         ),
         calls(tc(TERMINAL_TOOL, **RESOLUTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.stop_reason is StopReason.SUBMITTED
 
     proposal_call = next(c for c in run.tool_calls if c.name == "propose_correction")
@@ -105,7 +105,7 @@ def test_the_full_gate_from_the_agents_own_proposal(erp_app, erp_client, setting
         ),
         calls(tc(TERMINAL_TOOL, **RESOLUTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model, scenario_id="SC-0009")
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model, scenario_id="SC-0009")
     proposal_id = json.loads(run.tool_calls[0].result_summary)["proposal_id"]
 
     assert erp_client.get_invoice(INVOICE)["items"][0]["MENGE"] == "14.000"
@@ -168,7 +168,7 @@ def test_the_agents_own_reads_never_contain_a_ground_truth_label(erp_client, set
         ),
         calls(tc(TERMINAL_TOOL, **RESOLUTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     served = " ".join(m["content"] for m in run.messages if m.get("role") == "tool")
     leaked = {label for label in labels if label in served}
@@ -194,5 +194,5 @@ def test_scenario_id_is_not_something_the_model_can_set(erp_client, settings):
     propose = next(t for t in schema if t["function"]["name"] == "propose_correction")
     params = propose["function"]["parameters"]
     assert set(params["properties"]) == {"payload", "agent_reasoning"}
-    for definition in params.get("$defs", {}).values():
-        assert "scenario_id" not in definition.get("properties", {})
+    # Nested payload schemas are inlined, so search the whole rendering.
+    assert "scenario_id" not in json.dumps(params)

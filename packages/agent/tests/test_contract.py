@@ -138,21 +138,29 @@ def test_every_tool_schema_is_json_serialisable_and_described(erp_client):
 
 
 def test_the_terminal_tool_schema_is_the_resolution_model(erp_client):
-    """Structured output is enforced by the tool schema, not by parsing prose."""
+    """Structured output is enforced by the tool schema, not by parsing prose.
+
+    LangChain renders the schema with its $defs inlined, so it is compared
+    field by field rather than byte for byte: the same fields, the same
+    required set, as the Resolution model the tool validates against.
+    """
     tools = to_openai_schemas(build_tools(erp_client))
     submit = next(t for t in tools if t["function"]["name"] == TERMINAL_TOOL)
-    assert submit["function"]["parameters"] == Resolution.model_json_schema()
-    required = set(submit["function"]["parameters"]["required"])
-    assert {"classification", "decision", "reasoning", "evidence"} <= required
+    parameters = submit["function"]["parameters"]
+    reference = Resolution.model_json_schema()
+    assert set(parameters["properties"]) == set(reference["properties"])
+    assert set(parameters["required"]) == set(reference["required"])
+    assert {"classification", "decision", "reasoning", "evidence"} <= set(parameters["required"])
+    assert build_tools(erp_client)[TERMINAL_TOOL].args_schema is Resolution
 
 
 def test_the_enums_reach_the_model_as_closed_lists(erp_client):
     """If the values were free-form strings the eval could never score them."""
     tools = to_openai_schemas(build_tools(erp_client))
     submit = next(t for t in tools if t["function"]["name"] == TERMINAL_TOOL)
-    defs = submit["function"]["parameters"]["$defs"]
-    assert set(defs["Classification"]["enum"]) == {c.value for c in Classification}
-    assert len(defs["Decision"]["enum"]) == 4
+    properties = submit["function"]["parameters"]["properties"]
+    assert set(properties["classification"]["enum"]) == {c.value for c in Classification}
+    assert len(properties["decision"]["enum"]) == 4
 
 
 def test_no_classification_value_is_an_accidental_alias():
@@ -172,5 +180,5 @@ def test_the_resolution_the_loop_returns_is_the_one_the_model_sent(erp_client, s
         "evidence": ["INV MENGE 14.000", "GR MENGE 14.000", "PO NETPR 41.90"],
     }
     model = ScriptedModel(calls(tc(TERMINAL_TOOL, **payload)))
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.resolution.model_dump(mode="json", exclude_none=True) == payload

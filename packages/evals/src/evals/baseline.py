@@ -1,8 +1,9 @@
 """A deterministic three-way-match rule engine, shaped like a model.
 
-Every LLM eval needs a trivial baseline, and this is it. It plugs in as
-`completion_fn`, reads prior tool results out of the message list exactly as a
-model would, and emits real tool calls. The agent cannot tell the difference.
+Every LLM eval needs a trivial baseline, and this is it. It is a LangChain
+`BaseChatModel`, so it plugs into the agent graph exactly where ChatAnthropic
+does; it reads prior tool results out of the message list exactly as a model
+would, and emits real tool calls. The agent cannot tell the difference.
 
 What it buys:
 
@@ -29,8 +30,13 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from agent.messages import to_openai_dicts
 from agent.schemas import Classification, Decision
 from agent.tools import TERMINAL_TOOL
+from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import AIMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.utils.function_calling import convert_to_openai_tool
 
 
 @dataclass
@@ -277,60 +283,63 @@ def _already_proposed(messages: list[dict]) -> bool:
     return False
 
 
-def baseline_completion(**kwargs: Any) -> Any:
-    """A completion_fn. Emits one tool call per turn, then submits."""
-    from litellm import ModelResponse
-
-    messages: list[dict] = kwargs["messages"]
+def _next_turn(messages: list[dict]) -> tuple[int, str, dict]:
+    """(step, tool name, arguments) for the next turn, from the transcript alone."""
     view = _read_messages(messages)
 
     step = sum(1 for m in messages if m.get("role") == "assistant")
     name: str | None = PLAN[step] if step < len(PLAN) else None
 
     if name == "get_invoice":
-        arguments = {"invoice_number": _invoice_number(messages)}
-    elif name in ("get_purchase_order", "get_goods_receipts"):
-        arguments = {"po_number": ((view.invoice or {}).get("items") or [{}])[0].get("EBELN", "")}
-    elif name == "get_vendor_history":
-        arguments = {"vendor_id": (view.invoice or {}).get("LIFNR", "")}
-    else:
-        resolution = _resolve(view)
-        # Deciding to propose and actually proposing are different acts. An
-        # agent that concludes PROPOSE_CORRECTION and then submits without
-        # raising anything has left no proposal for a human to approve -- so
-        # the baseline raises it, which also means the eval exercises the
-        # write path rather than only the read path.
-        if resolution["decision"] == "PROPOSE_CORRECTION" and not _already_proposed(messages):
-            name = "propose_correction"
-            arguments = {
-                "payload": resolution["correction"],
-                "agent_reasoning": resolution["reasoning"],
-            }
-        else:
-            name, arguments = TERMINAL_TOOL, resolution
+        return step, name, {"invoice_number": _invoice_number(messages)}
+    if name in ("get_purchase_order", "get_goods_receipts"):
+        po = ((view.invoice or {}).get("items") or [{}])[0].get("EBELN", "")
+        return step, name, {"po_number": po}
+    if name == "get_vendor_history":
+        return step, name, {"vendor_id": (view.invoice or {}).get("LIFNR", "")}
 
-    return ModelResponse(
-        id=f"baseline-{step}",
-        model=kwargs.get("model", "baseline/rules"),
-        created=0,
-        choices=[
-            {
-                "index": 0,
-                "finish_reason": "tool_calls",
-                "message": {
-                    "role": "assistant",
-                    "content": None,
-                    "tool_calls": [
-                        {
-                            "id": f"call_baseline_{step}",
-                            "type": "function",
-                            "function": {"name": name, "arguments": json.dumps(arguments)},
-                        }
-                    ],
-                },
-            }
-        ],
-        # A rule engine consumes no tokens. Reporting zero rather than omitting
-        # usage keeps the cost column honest: free, not unknown.
-        usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-    )
+    resolution = _resolve(view)
+    # Deciding to propose and actually proposing are different acts. An
+    # agent that concludes PROPOSE_CORRECTION and then submits without
+    # raising anything has left no proposal for a human to approve -- so
+    # the baseline raises it, which also means the eval exercises the
+    # write path rather than only the read path.
+    if resolution["decision"] == "PROPOSE_CORRECTION" and not _already_proposed(messages):
+        return (
+            step,
+            "propose_correction",
+            {"payload": resolution["correction"], "agent_reasoning": resolution["reasoning"]},
+        )
+    return step, TERMINAL_TOOL, resolution
+
+
+class BaselineChatModel(BaseChatModel):
+    """The rule engine, as a chat model. Emits one tool call per turn, then submits."""
+
+    @property
+    def _llm_type(self) -> str:
+        return "baseline-rules"
+
+    def bind_tools(self, tools, **kwargs):
+        # The rules already know the tool names; binding exists so the graph
+        # can treat this exactly like a provider model.
+        return self.bind(tools=[convert_to_openai_tool(t) for t in tools], **kwargs)
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        step, name, arguments = _next_turn(to_openai_dicts(messages))
+        reply = AIMessage(
+            content="",
+            id=f"baseline-{step}",
+            tool_calls=[
+                {
+                    "name": name,
+                    "args": arguments,
+                    "id": f"call_baseline_{step}",
+                    "type": "tool_call",
+                }
+            ],
+            # A rule engine consumes no tokens. Reporting zero rather than
+            # omitting usage keeps the cost column honest: free, not unknown.
+            usage_metadata={"input_tokens": 0, "output_tokens": 0, "total_tokens": 0},
+        )
+        return ChatResult(generations=[ChatGeneration(message=reply)])

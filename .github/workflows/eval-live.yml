@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       model:
-        description: "LiteLLM provider/model, e.g. anthropic/claude-sonnet-4-5"
+        description: "LangChain provider:model, e.g. anthropic:claude-sonnet-4-5"
         required: false
         default: ""
       split:
@@ -52,7 +52,9 @@ jobs:
 
       - name: Run the live eval
         env:
-          # Only the provider you actually use needs to be set.
+          # Only the provider you actually use needs to be set. A provider
+          # other than Anthropic also needs its LangChain package in the lock
+          # (langchain-openai, langchain-google-genai).
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

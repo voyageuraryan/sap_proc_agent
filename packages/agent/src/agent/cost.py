@@ -15,6 +15,13 @@ Two sources of truth, in this order:
 
 If neither knows the model, the cost is None -- "unpriced" -- and that is
 reported as such. A silent zero would be worse than a blank: it reads as free.
+
+LiteLLM is kept for its price map ONLY. The LangChain rebuild moved every
+provider call to LangChain's chat models; nothing here sends a request. The
+map is kept because LangChain has no price table of its own, and a maintained
+upstream table beats a hand-kept one for every model this project does not
+pin. Langfuse prices generations server-side from its own table as well, so
+the trace and the AgentRun are two independent readings of the same run.
 """
 
 from __future__ import annotations
@@ -149,6 +156,20 @@ def local_cost(model: str, prompt_tokens: int, completion_tokens: int):
     )
 
 
+def pricing_key(model: str) -> str:
+    """The id both price tables are keyed by: LiteLLM's "provider/model".
+
+    Settings now carry LangChain's "provider:model" spelling. Only the first
+    colon is the provider boundary, so a fine-tune id that contains colons
+    keeps them.
+    """
+    head = model.split("/", 1)[0]
+    if ":" in head:
+        provider, _, rest = model.partition(":")
+        return f"{provider}/{rest}"
+    return model
+
+
 def cost_for(
     model: str,
     prompt_tokens: int,
@@ -172,8 +193,9 @@ def cost_for(
     if not model:
         return UNPRICED
 
+    key = pricing_key(model)
     for fn in cost_fns if cost_fns is not None else (litellm_cost, local_cost):
-        result = fn(model, prompt_tokens, completion_tokens)
+        result = fn(key, prompt_tokens, completion_tokens)
         if result is not None:
             return TokenCost(input_usd=result[0], output_usd=result[1])
     return UNPRICED

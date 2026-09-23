@@ -8,7 +8,7 @@ import json
 
 import pytest
 from agent.loop import run_agent
-from evals.baseline import baseline_completion
+from evals.baseline import BaselineChatModel
 from evals.cassettes import (
     CASSETTE_VERSION,
     Cassette,
@@ -132,8 +132,25 @@ def test_corrupt_json_is_refused(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# record and replay against the real loop
+# record and replay against the real graph
 # ---------------------------------------------------------------------------
+
+
+def _record(case, erp_client, settings):
+    """Run the baseline with a Recorder attached; return (run, recorder)."""
+    recorder = Recorder(case.scenario_id, case.invoice_number, settings.model, settings.temperature)
+    run = run_agent(
+        case.invoice_number,
+        erp_client,
+        settings,
+        chat_model=BaselineChatModel(),
+        callbacks=[recorder],
+    )
+    return run, recorder
+
+
+def _replayer(cassette, settings, **kwargs):
+    return Replayer(cassette, model=settings.model, temperature=settings.temperature, **kwargs)
 
 
 def test_a_recorded_run_replays_identically(erp_client, settings, tmp_path, root):
@@ -146,21 +163,30 @@ def test_a_recorded_run_replays_identically(erp_client, settings, tmp_path, root
     """
     case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
 
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    live = run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    live, recorder = _record(case, erp_client, settings)
     recorder.cassette.save(cassette_path(tmp_path, case.scenario_id))
 
     replayed = run_agent(
         case.invoice_number,
         erp_client,
         settings,
-        completion_fn=Replayer(Cassette.load(cassette_path(tmp_path, case.scenario_id))),
+        chat_model=_replayer(Cassette.load(cassette_path(tmp_path, case.scenario_id)), settings),
     )
 
     assert replayed.stop_reason == live.stop_reason
     assert replayed.resolution == live.resolution
     assert [c.name for c in replayed.tool_calls] == [c.name for c in live.tool_calls]
     assert len(recorder.cassette.turns) == live.iterations
+
+
+def test_recording_observes_the_model_and_does_not_replace_it(erp_client, settings, root):
+    """The Recorder is a callback. The run it watched must be the run that
+    would have happened without it."""
+    case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
+    watched, _ = _record(case, erp_client, settings)
+    plain = run_agent(case.invoice_number, erp_client, settings, chat_model=BaselineChatModel())
+    assert watched.resolution == plain.resolution
+    assert watched.iterations == plain.iterations
 
 
 def test_replaying_a_run_with_side_effects_diverges_and_says_so(
@@ -178,8 +204,7 @@ def test_replaying_a_run_with_side_effects_diverges_and_says_so(
     the workflow starts a fresh ERP for every job.
     """
     case = next(c for c in load_cases("golden", root=root) if c.label == "QTY_OVER")
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    live = run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    live, recorder = _record(case, erp_client, settings)
     assert any(c.name == "propose_correction" for c in live.tool_calls)
 
     with pytest.raises(CassetteError, match="no longer matches"):
@@ -187,7 +212,7 @@ def test_replaying_a_run_with_side_effects_diverges_and_says_so(
             case.invoice_number,
             erp_client,
             settings,
-            completion_fn=Replayer(recorder.cassette),
+            chat_model=_replayer(recorder.cassette, settings),
         )
 
 
@@ -198,35 +223,48 @@ def test_replay_refuses_a_cassette_recorded_against_a_different_prompt(
     for a prompt that was never run -- a false negative on exactly the change
     you wanted to measure."""
     case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    _, recorder = _record(case, erp_client, settings)
 
     cassette = recorder.cassette
     cassette.turns[0]["fingerprint"] = "0" * 64  # as if the prompt had changed
 
     with pytest.raises(CassetteError, match="no longer matches"):
-        run_agent(case.invoice_number, erp_client, settings, completion_fn=Replayer(cassette))
+        run_agent(
+            case.invoice_number, erp_client, settings, chat_model=_replayer(cassette, settings)
+        )
+
+
+def test_replay_refuses_a_cassette_recorded_for_a_different_model(erp_client, settings, root):
+    """Switching model is the change a cassette must never paper over."""
+    case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
+    _, recorder = _record(case, erp_client, settings)
+
+    with pytest.raises(CassetteError, match="no longer matches"):
+        run_agent(
+            case.invoice_number,
+            erp_client,
+            settings,
+            chat_model=Replayer(recorder.cassette, model="openai:gpt-4o"),
+        )
 
 
 def test_allow_stale_replays_anyway_and_records_the_mismatch(erp_client, settings, root):
     """An escape hatch for debugging the harness, never for scoring."""
     case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    _, recorder = _record(case, erp_client, settings)
     recorder.cassette.turns[0]["fingerprint"] = "0" * 64
 
-    replayer = Replayer(recorder.cassette, strict=False)
-    run = run_agent(case.invoice_number, erp_client, settings, completion_fn=replayer)
+    replayer = _replayer(recorder.cassette, settings, strict=False)
+    run = run_agent(case.invoice_number, erp_client, settings, chat_model=replayer)
     assert run.stop_reason.value == "SUBMITTED"
     assert replayer.mismatches == [0]
 
 
-def test_a_loop_that_now_makes_more_calls_exhausts_the_cassette(erp_client, settings, root):
-    """Recorded four turns, loop now wants five: that is a code change, and
+def test_a_graph_that_now_makes_more_calls_exhausts_the_cassette(erp_client, settings, root):
+    """Recorded four turns, graph now wants five: that is a code change, and
     replaying the first four would score a run that never finished."""
     case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    _, recorder = _record(case, erp_client, settings)
 
     truncated = Cassette(
         scenario_id=case.scenario_id,
@@ -235,20 +273,31 @@ def test_a_loop_that_now_makes_more_calls_exhausts_the_cassette(erp_client, sett
         turns=recorder.cassette.turns[:-1],
     )
     with pytest.raises(CassetteError, match="re-record"):
-        run_agent(case.invoice_number, erp_client, settings, completion_fn=Replayer(truncated))
+        run_agent(
+            case.invoice_number, erp_client, settings, chat_model=_replayer(truncated, settings)
+        )
 
 
-def test_replay_rebuilds_the_providers_own_response_type(erp_client, settings, root):
-    """Not a local shim: the loop must see in replay exactly what it sees in
-    production, or the cassette tests a different code path."""
-    from litellm import ModelResponse
+def test_replay_rebuilds_the_models_own_message_type(erp_client, settings, root):
+    """Not a local shim: the graph must see in replay exactly what it sees in
+    production -- an AIMessage with parsed tool_calls and usage -- or the
+    cassette tests a different code path."""
+    from langchain_core.messages import AIMessage
 
     case = next(c for c in load_cases("golden", root=root) if c.label == "CLEAN")
-    recorder = Recorder(baseline_completion, case.scenario_id, case.invoice_number, settings.model)
-    run_agent(case.invoice_number, erp_client, settings, completion_fn=recorder)
+    _, recorder = _record(case, erp_client, settings)
 
     # strict=False because this calls the replayer directly with a stub
     # request; the fingerprint check is exercised in its own tests above.
-    replayer = Replayer(recorder.cassette, strict=False)
-    response = replayer(model=settings.model, messages=[], tools=[], temperature=0.0)
-    assert isinstance(response, ModelResponse)
+    reply = _replayer(recorder.cassette, settings, strict=False).invoke([])
+    assert isinstance(reply, AIMessage)
+    assert reply.tool_calls[0]["name"] == "get_invoice"
+    assert reply.usage_metadata["input_tokens"] == 0
+
+
+def test_the_recorder_and_replayer_agree_on_a_provider_rendered_tool():
+    """The recorder fingerprints tools as the PROVIDER was sent them; the
+    replayer as LangChain renders them. Both must hash the same."""
+    anthropic_style = [{"name": "get_invoice", "description": "Fetch an invoice."}]
+    openai_style = [{"type": "function", "function": anthropic_style[0]}]
+    assert _fp(tools=anthropic_style) == _fp(tools=openai_style)

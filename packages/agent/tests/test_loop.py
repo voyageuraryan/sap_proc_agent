@@ -1,4 +1,4 @@
-"""The tool-calling loop, driven by a scripted model.
+"""The agent graph, driven by a scripted LangChain chat model.
 
 What is under test is the HARNESS, not the reasoning: that every failure mode
 becomes a message rather than an exception, that the transcript stays
@@ -56,7 +56,7 @@ def test_a_full_run_reaches_a_resolution(erp_client, settings):
         calls(tc("get_goods_receipts", po_number=PO)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     assert run.stop_reason is StopReason.SUBMITTED
     assert run.iterations == 4
@@ -78,7 +78,7 @@ def test_every_tool_call_is_answered_exactly_once(erp_client, settings):
         ),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     ids = _assistant_tool_call_ids(run.messages)
     answered = [m["tool_call_id"] for m in _tool_messages(run.messages)]
@@ -95,7 +95,7 @@ def test_parallel_tool_calls_in_one_turn_are_all_executed(erp_client, settings):
         ),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert [c.name for c in run.tool_calls][:3] == [
         "get_invoice",
         "get_purchase_order",
@@ -106,7 +106,7 @@ def test_parallel_tool_calls_in_one_turn_are_all_executed(erp_client, settings):
 
 def test_the_model_is_offered_every_tool_including_the_terminal_one(erp_client, settings):
     model = ScriptedModel(calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)))
-    run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     names = {t["function"]["name"] for t in model.calls[0]["tools"]}
     assert names == {
@@ -120,13 +120,37 @@ def test_the_model_is_offered_every_tool_including_the_terminal_one(erp_client, 
     # A terminal tool that is not offered can never be called, and the run
     # could then only ever end in MAX_ITERATIONS.
     assert TERMINAL_TOOL in names
-    assert model.calls[0]["temperature"] == 0.0
+
+
+def test_the_real_model_is_built_with_the_configured_temperature(monkeypatch):
+    """Temperature is a property of the chat model in LangChain, not of a call.
+
+    0.0 because this is a classification task with a right answer, and the
+    eval suite has to be reproducible run to run.
+    """
+    from agent.models import build_chat_model
+    from agent.settings import AgentSettings
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+    model = build_chat_model(AgentSettings(model="anthropic:claude-sonnet-4-5"))
+    assert type(model).__name__ == "ChatAnthropic"
+    assert model.temperature == 0.0
+    assert model.model == "claude-sonnet-4-5"
+
+
+def test_the_legacy_litellm_model_spelling_still_works():
+    """An .env written before the rebuild says anthropic/claude-sonnet-4-5."""
+    from agent.models import provider_model
+
+    assert provider_model("anthropic/claude-sonnet-4-5") == "anthropic:claude-sonnet-4-5"
+    assert provider_model("anthropic:claude-sonnet-4-5") == "anthropic:claude-sonnet-4-5"
+    assert provider_model("openai:ft:gpt-4o:org") == "openai:ft:gpt-4o:org"
 
 
 def test_the_first_two_messages_are_system_then_user(erp_client, settings):
     model = ScriptedModel(calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)))
-    run_agent(INVOICE, erp_client, settings, completion_fn=model)
-    sent = model.calls[0]["messages"]
+    run_agent(INVOICE, erp_client, settings, chat_model=model)
+    sent = model.sent(0)
     assert sent[0]["role"] == "system"
     assert sent[1]["role"] == "user"
     assert INVOICE in sent[1]["content"]
@@ -152,13 +176,13 @@ def test_an_erp_404_becomes_a_message_not_an_exception(erp_client, settings):
             )
         ),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     assert run.stop_reason is StopReason.SUBMITTED
     assert run.tool_calls[0].error == "INVOICE_NOT_FOUND"
     assert "INVOICE_NOT_FOUND" in _tool_messages(run.messages)[0]["content"]
     # And the model got to see it, which is the point.
-    assert "INVOICE_NOT_FOUND" in json.dumps(model.calls[1]["messages"])
+    assert "INVOICE_NOT_FOUND" in json.dumps(model.sent(1))
 
 
 def test_an_unknown_tool_name_becomes_a_message(erp_client, settings):
@@ -166,7 +190,7 @@ def test_an_unknown_tool_name_becomes_a_message(erp_client, settings):
         calls(tc("delete_invoice", invoice_number=INVOICE)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "UNKNOWN_TOOL"
     assert "no tool named 'delete_invoice'" in _tool_messages(run.messages)[0]["content"]
     assert run.stop_reason is StopReason.SUBMITTED
@@ -177,9 +201,24 @@ def test_malformed_json_arguments_become_a_message(erp_client, settings):
         calls(raw_call("get_invoice", '{"invoice_number": ')),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "BAD_JSON"
     assert run.stop_reason is StopReason.SUBMITTED
+
+
+def test_a_malformed_call_is_kept_in_the_transcript_and_answered(erp_client, settings):
+    """LangChain's own OpenAI converter drops invalid_tool_calls. Ours must not:
+    the tool message answering it would otherwise answer a call never made."""
+    bad = raw_call("get_invoice", '{"invoice_number": ')
+    model = ScriptedModel(calls(bad), calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)))
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
+
+    assert bad["id"] in _assistant_tool_call_ids(run.messages)
+    answered = [m["tool_call_id"] for m in _tool_messages(run.messages)]
+    assert answered.count(bad["id"]) == 1
+    # The raw string survives, so the transcript shows what the model sent.
+    assistant = next(m for m in run.messages if m.get("tool_calls"))
+    assert assistant["tool_calls"][0]["function"]["arguments"] == '{"invoice_number": '
 
 
 def test_arguments_that_miss_the_schema_become_a_message(erp_client, settings):
@@ -187,7 +226,7 @@ def test_arguments_that_miss_the_schema_become_a_message(erp_client, settings):
         calls(tc("get_invoice", wrong_field="x")),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "VALIDATION_ERROR"
     assert "invoice_number" in _tool_messages(run.messages)[0]["content"]
 
@@ -205,7 +244,7 @@ def test_an_incoherent_resolution_is_rejected_and_can_be_retried(erp_client, set
         calls(tc(TERMINAL_TOOL, **broken)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     assert run.tool_calls[0].error == "RESOLUTION_INVALID"
     assert "requires a `correction` payload" in _tool_messages(run.messages)[0]["content"]
@@ -226,7 +265,7 @@ def test_escalate_without_a_reason_is_rejected(erp_client, settings):
         ),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "RESOLUTION_INVALID"
     assert "escalate_to" in _tool_messages(run.messages)[0]["content"]
 
@@ -237,7 +276,7 @@ def test_a_clean_classification_cannot_ask_for_a_correction(erp_client, settings
         calls(tc(TERMINAL_TOOL, **incoherent)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "RESOLUTION_INVALID"
 
 
@@ -247,7 +286,7 @@ def test_an_invented_extra_field_is_rejected(erp_client, settings):
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION, confidence=0.9)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.tool_calls[0].error == "RESOLUTION_INVALID"
     assert "confidence" in _tool_messages(run.messages)[0]["content"]
 
@@ -259,7 +298,7 @@ def test_an_invented_extra_field_is_rejected(erp_client, settings):
 
 def test_prose_gets_one_nudge_then_stops(erp_client, settings):
     model = ScriptedModel(says("Let me think about this."), says("Still thinking."))
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     assert run.stop_reason is StopReason.NO_TOOL_CALL
     assert run.resolution is None
@@ -274,14 +313,14 @@ def test_prose_followed_by_a_tool_call_recovers(erp_client, settings):
         says("Let me think about this."),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     assert run.stop_reason is StopReason.SUBMITTED
 
 
 def test_a_model_that_never_submits_stops_at_the_iteration_cap(erp_client, settings):
     """The cost ceiling. Without it, a looping model bills until someone notices."""
     model = ScriptedModel(*[calls(tc("get_invoice", invoice_number=INVOICE)) for _ in range(4)])
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
 
     assert run.stop_reason is StopReason.MAX_ITERATIONS
     assert run.iterations == settings.max_iterations
@@ -296,7 +335,7 @@ def test_the_run_serialises_to_json(erp_client, settings):
         calls(tc("get_invoice", invoice_number=INVOICE)),
         calls(tc(TERMINAL_TOOL, **SUBMIT_QTY_CORRECTION)),
     )
-    run = run_agent(INVOICE, erp_client, settings, completion_fn=model)
+    run = run_agent(INVOICE, erp_client, settings, chat_model=model)
     reloaded = json.loads(run.model_dump_json())
     assert reloaded["stop_reason"] == "SUBMITTED"
     assert reloaded["resolution"]["correction"]["to_quantity"] == "13.000"

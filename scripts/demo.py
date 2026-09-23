@@ -326,16 +326,16 @@ def run_agent_once(erp: str, invoice_number: str, mode: str) -> dict:
     from agent.settings import AgentSettings
 
     settings = AgentSettings(erp_base_url=f"{erp}{ODATA}", tracing=False)
-    completion_fn = None
+    chat_model = None  # None: run_agent builds the configured provider model
     if mode == "baseline":
-        from evals.baseline import baseline_completion
+        from evals.baseline import BaselineChatModel
 
-        completion_fn = baseline_completion
+        chat_model = BaselineChatModel()
         settings = settings.model_copy(update={"model": "baseline/rules"})
 
     with ErpClient(settings.erp_base_url, settings.request_timeout) as client:
         run = run_agent(
-            invoice_number, client, settings, scenario_id="SC-0009", completion_fn=completion_fn
+            invoice_number, client, settings, scenario_id="SC-0009", chat_model=chat_model
         )
     if run.resolution is None:
         raise SystemExit(f"the agent did not submit a resolution ({run.stop_reason.value})")

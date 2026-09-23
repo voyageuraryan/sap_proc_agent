@@ -112,7 +112,7 @@ of who may import what.
 | `erp_domain` | SAP-shaped models shared by the generator and the ERP |
 | `generator` | 200 labelled scenarios from one seed |
 | `mock_erp` | OData V2 read service **plus** the approval state machine |
-| `agent` | The tool-calling loop. Talks HTTP; imports none of the above |
+| `agent` | The tool-calling agent, as a LangGraph graph over LangChain tools and chat models. Talks HTTP; imports none of the above |
 | `evals` | Scoring and safety gates. The only reader of the ground truth |
 | `review_ui` | The human queue. A client of the ERP, not part of it |
 

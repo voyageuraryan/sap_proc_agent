@@ -1,14 +1,18 @@
 [project]
 name = "agent"
 version = "0.1.0"
-description = "Procurement exception agent: tool-calling loop over the mock SAP OData service"
+description = "Procurement exception agent: a LangGraph tool-calling graph over the mock SAP OData service"
 authors = [
     { name = "Sai Aryan Nampally", email = "voyageuraryan@gmail.com" }
 ]
 requires-python = ">=3.13"
 dependencies = [
     "httpx",
-    "langfuse>=3.0",
+    "langchain>=1.4",
+    "langchain-anthropic>=1.7",
+    "langchain-core>=1.6",
+    "langfuse>=4.0",
+    "langgraph>=1.2",
     "litellm>=1.98.0",
     "pydantic>=2.13.4",
     "pydantic-settings",
